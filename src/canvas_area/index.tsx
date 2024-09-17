@@ -1,22 +1,19 @@
 import "./index.css"
-import { useEffect, useRef, useState } from "preact/hooks";
-import { layerT } from "../data";
-import { window_sizeT } from "../App";
-import { ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
-import { Dispatch, StateUpdater } from "preact/hooks";
+import { useEffect, useRef, useState } from "react";
 import { background_image } from "./background";
-import { RefObject } from "preact";
+import { useRecoilState } from "recoil";
+import { zoom_state } from "../zoom_in_out";
+import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
+import { current_layer_state, layer_arr_state, window_size_state } from "../App";
 
-export const CanvasArea = (props: {
-    layer_arr: layerT[],
-    current_layer: number,
-    set_layer_arr: (arg0: layerT[]) => void,
-    window_size: window_sizeT,
-    zoom: number,
-    set_zoom: Dispatch<StateUpdater<number>>,
-    zoom_reset_button_ref: RefObject<HTMLDivElement>,
+export const CanvasArea = () => {
+    const [current_layer, set_current_layer] = useRecoilState(current_layer_state);
+    const [layer_arr, set_layer_arr] = useRecoilState(layer_arr_state);
 
-}) => {
+    const [zoom, set_zoom] = useRecoilState(zoom_state);
+    const [scroll_horizontal, set_scroll_horizontal] = useRecoilState(scroll_horizontal_state)
+    const [scroll_vertical, set_scroll_vertical] = useRecoilState(scroll_vertical_state)
+
     const canvas_body_ref = useRef<HTMLDivElement>(null);
     const canvas_background_ref = useRef<HTMLDivElement>(null);
     const canvas_area_ref = useRef<HTMLDivElement>(null);
@@ -29,18 +26,35 @@ export const CanvasArea = (props: {
     const [background_width, set_background_width] = useState(0);
     const [background_height, set_background_height] = useState(0);
 
-    let [scroll_vertical  , set_scroll_vertical] = useState(0);
-    let [scroll_horizontal, set_scroll_horizontal] = useState(0);
+    useEffect(() => {
+        const area = canvas_area_ref.current;
+        if (!area) return;
+        area.onwheel = e => {
+            if (e.deltaY == 0) return;
+            if (!e.shiftKey && !e.ctrlKey) {
+                let z = 0;
+                set_zoom(_ => { z = _; return _; })
+                set_scroll_vertical(s => Math.max(-0.5, Math.min(0.5, s + Math.sign(e.deltaY) / (40 * z))))
+            } else if (e.shiftKey && !e.ctrlKey) {
+                let z = 0;
+                set_zoom(_ => { z = _; return _; })
+                set_scroll_horizontal(s => Math.max(-0.5, Math.min(0.5, s + Math.sign(e.deltaY) / (40 * z))))
+
+            } else if (e.deltaY != 0 && e.ctrlKey) {
+                set_zoom(v => Math.max(0.5, v / ((2 ** (1 / 8)) ** Math.sign(e.deltaY))));
+            }
+        }
+    }, [canvas_area_ref.current]);
 
     useEffect(() => {
         set_area_height(canvas_area_ref.current?.clientHeight ?? 0);
         set_area_width(canvas_area_ref.current?.clientWidth ?? 0);
-    }, [props.window_size]);
+    }, [window_size_state]);
 
     useEffect(() => {
         const div_body = canvas_body_ref.current;
         const div_back = canvas_background_ref.current;
-        const new_layer = props.layer_arr[props.current_layer];
+        const new_layer = layer_arr![current_layer];
         const background = background_image(Math.max(new_layer.body.width, new_layer.body.height) / 4, ["#111", "#222"]);
         if (!(div_body && div_back && new_layer)) return;
 
@@ -57,50 +71,30 @@ export const CanvasArea = (props: {
         set_background_width(background.width);
         background.style.height = "100%"
         background.style.width = "100%"
-    }, [props.current_layer]);
-
-    useEffect(() => {
-        const area = canvas_area_ref.current;
-        if (!area) return;
-        area.onwheel = e => {
-            if (e.deltaY != 0 && e.ctrlKey) {
-                props.set_zoom(v => Math.max(0.5, v / ((2 ** (1 / 8)) ** Math.sign(e.deltaY))));
-            }
-        }
-    }, [canvas_area_ref.current])
+    }, [current_layer]);
 
     return (<div id="canvas_area" ref={canvas_area_ref}>
         <div id="canvas_background_div" ref={canvas_background_ref} style={{
-            left: (-0.5 * background_width * props.zoom * 8) + (0.5 * area_width) - (scroll_horizontal * canvas_width * props.zoom),
-            top: (-0.5 * background_height * props.zoom * 8) + (0.5 * area_height) - (scroll_vertical * canvas_height * props.zoom),
-            width: background_width * props.zoom * 8,
-            height: background_height * props.zoom * 8,
+            left: (-0.5 * background_width * zoom * 8) + (0.5 * area_width) - (scroll_horizontal * canvas_width * zoom),
+            top: (-0.5 * background_height * zoom * 8) + (0.5 * area_height) - (scroll_vertical * canvas_height * zoom),
+            width: background_width * zoom * 8,
+            height: background_height * zoom * 8,
         }}>
         </div>
         <div id="canvas_body_div" ref={canvas_body_ref} style={{
-            //left: (scroll_horizontal + 0.5) * (area_width  - canvas_width  * props.zoom),
-            //top : (scroll_vertical   + 0.5) * (area_height - canvas_height * props.zoom),
-            left: (-0.5 * canvas_width * props.zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_width * props.zoom),
-            top: (-0.5 * canvas_height * props.zoom) + (0.5 * area_height) - (scroll_vertical * canvas_height * props.zoom),
-            width: canvas_width * props.zoom,
-            height: canvas_height * props.zoom,
+            left: (-0.5 * canvas_width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_width * zoom),
+            top: (-0.5 * canvas_height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_height * zoom),
+            width: canvas_width * zoom,
+            height: canvas_height * zoom,
         }}>
         </div>
         <ScrollBarVertical
-            canvas_area={canvas_area_ref.current}
-            set_scroll_vertical={set_scroll_vertical}
             canvas_height={canvas_height}
             area_height={area_height}
-            zoom={props.zoom}
-            zoom_reset_button_ref={props.zoom_reset_button_ref}
         />
         <ScrollBarHorizontal
-            canvas_area={canvas_area_ref.current}
-            set_scroll_horizontal={set_scroll_horizontal}
             canvas_width={canvas_width}
             area_width={area_width}
-            zoom={props.zoom}
-            zoom_reset_button_ref={props.zoom_reset_button_ref}
         />
     </div >)
 }

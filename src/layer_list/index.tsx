@@ -1,10 +1,13 @@
-import { useEffect, useRef } from "preact/hooks"
-import { layerT } from "../data"
+import { useEffect, useRef } from "react"
 import "./index.css"
+import { useRecoilState } from "recoil"
+import { current_layer_state, layer_arr_state } from "../App"
 
-export const LayerList = (props: { layer_arr: layerT[], current_layer: number, set_current_layer: (arg0: number) => void }) => {
+export const LayerList = () => {
+    const [layer_arr, set_layer_arr] =useRecoilState(layer_arr_state);
+    const [current_layer, set_current_layer] = useRecoilState(current_layer_state);
     return (<div id="layer_list">
-        {props.layer_arr.map((l, i) => {
+        {layer_arr!.map((l, i) => {
             const div_ref = useRef<HTMLDivElement>(null)
             useEffect(() => {
                 const preview_div = div_ref.current;
@@ -16,11 +19,11 @@ export const LayerList = (props: { layer_arr: layerT[], current_layer: number, s
             useEffect(() => {
                 const preview_div = div_ref.current;
                 if (!preview_div) return;
-                if (i === props.current_layer) preview_div.classList.add("layer_thumbnail_selected");
-                if (i !== props.current_layer) preview_div.classList.remove("layer_thumbnail_selected");
-            }, [props.layer_arr[props.current_layer], div_ref.current])
+                if (i ===  current_layer!) preview_div.classList.add("layer_thumbnail_selected");
+                if (i !==  current_layer!) preview_div.classList.remove("layer_thumbnail_selected");
+            }, [layer_arr![current_layer!], div_ref.current])
             return (
-                <div ref={div_ref} class="layer_thumbnail" onClick={() => { props.set_current_layer(i) }}>
+                <div key={i} ref={div_ref} className="layer_thumbnail" onClick={() => { set_current_layer(i) }}>
                 </div>
             )
         })}

@@ -1,11 +1,15 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
-import { ReactNode } from "preact/compat";
-import { Dispatch, StateUpdater, useEffect, useRef, useState } from "preact/hooks";
+import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { canvas_size_state, layer_arr_state } from "../App";
+import { save_file } from "../data";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
     const [selected, set_selected] = useState(-1);
+    const layer_arr = useRecoilValue(layer_arr_state)!;
+    const canvas_size = useRecoilValue(canvas_size_state)!;
     document.addEventListener("mousedown", e => {
         if (!menu_bar_ref.current) return;
         if (menu_bar_ref.current.contains(e.target as unknown as Node)) return;
@@ -14,17 +18,21 @@ export const MenuBar = () => {
     return (
         <div ref={menu_bar_ref} id="title_bar_menu_bar">
             <MenuButton label="ファイル" id="title_bar_menu_file_button" nth={0} selected={selected} set_selected={set_selected}>
-                <MenuContent on_click={() => { }} >保存</MenuContent>
-                </MenuButton>
+                <MenuContent on_click={() => {
+                    const path = window.prompt();
+                    if (!path) return;
+                    save_file({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } }, path);
+                }} >保存</MenuContent>
+            </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
                 <MenuContent ><a href="https://bananahexagon.github.io" target="_blank">ホームページ</a></MenuContent>
-                <MenuContent on_click={() => { invoke("open_devtools", {window: appWindow}) }} >開発者ツール</MenuContent>
+                <MenuContent on_click={() => { invoke("open_devtools", { window: appWindow }) }} >開発者ツール</MenuContent>
             </MenuButton>
-        </div>
+        </div >
     )
 }
 
-const MenuButton = (props: { label: string, id: string, nth: number, selected: number, set_selected: Dispatch<StateUpdater<number>>, children: ReactNode }) => {
+const MenuButton = (props: { label: string, id: string, nth: number, selected: number, set_selected: Dispatch<SetStateAction<number>>, children: ReactNode }) => {
     const label_ref = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const label = label_ref.current
@@ -33,15 +41,15 @@ const MenuButton = (props: { label: string, id: string, nth: number, selected: n
         label.onmouseover = () => props.set_selected(selected => selected === -1 ? -1 : props.nth);
     }, [label_ref])
     return (
-        <div class="title_bar_menu_button" id={props.id} >
-            <div class={`title_bar_menu_button_label ${props.nth === props.selected ? "title_bar_menu_button_label_opened" : ""}`} ref={label_ref}>{props.label}</div>
-            <div class={`title_bar_menu_contents ${props.nth === props.selected ? "title_bar_menu_contents_opened" : ""}`}>{props.children}</div>
+        <div className="title_bar_menu_button" id={props.id} >
+            <div className={`title_bar_menu_button_label ${props.nth === props.selected ? "title_bar_menu_button_label_opened" : ""}`} ref={label_ref}>{props.label}</div>
+            <div className={`title_bar_menu_contents ${props.nth === props.selected ? "title_bar_menu_contents_opened" : ""}`}>{props.children}</div>
         </div>
     )
 }
 
 const MenuContent = (props: { children: ReactNode, on_click?: () => void }) => {
     return (
-        <div class="title_bar_menu_content" onClick={props.on_click}>{props.children}</div>
+        <div className="title_bar_menu_content" onClick={props.on_click}>{props.children}</div>
     )
 }

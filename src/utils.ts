@@ -49,26 +49,3 @@ export class Result<T, E> {
         }
     }
 }
-
-type state_setter<T> = T | ((arg0: T) => T);
-
-/** Tが関数型だとバグります */
-export class State<T> {
-    private v: T;
-    private f: (arg0: state_setter<T>) => void;
-    public constructor(v: [T, (arg0: state_setter<T>) => void]) {
-        this.v = v[0];
-        this.f = v[1];
-    }
-    public set(u: state_setter<T>) {
-        if (typeof u === "function" && u.length === 1) {
-            this.f(u);
-            this.f((_) => { this.v = _; return _ })
-        } else {
-            this.v = u as T;
-        }
-    }
-    public val() {
-        return this.v
-    }
-}

@@ -3,23 +3,50 @@
 
 use std::{
     fs::File,
-    io::{BufReader, Read},
+    io::{BufReader, Read, Write},
     path::Path,
 };
 
-use tauri::Manager;
+use tauri::{command, Manager};
 use window_shadows::set_shadow;
-use zip::ZipArchive;
+use zip::{write::FileOptions, ZipArchive, ZipWriter};
 
 use base64;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
+#[command]
 fn open_devtools(window: tauri::Window) {
     window.open_devtools();
 }
 
-#[tauri::command]
+#[command]
+fn save_file(layers: Vec<String>, meta_data: String, path: String) -> Result<(), String> {
+    let mut path = path;
+    if !path.ends_with(".zip") {
+        path.push_str(".zip");
+    }
+    let file = File::create(&path).map_err(|e| e.to_string())?;
+    let mut zip = ZipWriter::new(file);
+
+    let opts: FileOptions<'_, ()> = FileOptions::default()
+        .compression_method(zip::CompressionMethod::Stored);
+    for (i, layer_base64) in layers.iter().enumerate() {
+        // Base64デコード
+        let image_data = base64::decode(layer_base64).map_err(|e| e.to_string())?;
+
+        // ZIPエントリーを作成
+        let filename = format!("{}.png", i);
+        zip.start_file(filename, opts)
+            .map_err(|e| e.to_string())?;
+        zip.write_all(&image_data).map_err(|e| e.to_string())?;
+    }
+
+    zip.finish().map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[command]
 fn load_file(path: String) -> Result<(String, Vec<String>), String> {
     let zip_path = Path::new(&path);
     let zip_file = File::open(&zip_path).map_err(|e| e.to_string())?;
@@ -57,7 +84,11 @@ fn main() {
             set_shadow(window, true).unwrap();
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![open_devtools, load_file])
+        .invoke_handler(tauri::generate_handler![
+            open_devtools,
+            load_file,
+            save_file
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -5,7 +5,7 @@ export type layerT = { body: HTMLCanvasElement, ctx: CanvasRenderingContext2D, p
 
 type data_fileT = {
     layers: string[],
-    meta_data: {
+    canvas_size: {
         width: number,
         height: number,
     },
@@ -13,7 +13,7 @@ type data_fileT = {
 
 export const load_file = async (path: string): Promise<Result<data_fileT, unknown>> => {
     const v = await Result.from_try_catch_async<[string, string[]]>((() => invoke("load_file", { path })))
-    return v.on_ok(([meta_data, layers]) => ({ layers, meta_data: JSON.parse(meta_data) }))
+    return v.on_ok(([canvas_size, layers]) => ({ layers, canvas_size: JSON.parse(canvas_size) }))
 }
 
 export const binary_to_bitmap = (data: string): Promise<Result<ImageBitmap, unknown>> => Result.from_try_catch_async(async () => {
@@ -22,9 +22,36 @@ export const binary_to_bitmap = (data: string): Promise<Result<ImageBitmap, unkn
     return image_bitmap;
 })
 
+export const save_file = async (
+    data: {
+        layers: HTMLCanvasElement[],
+        meta_data: {
+            canvas_size: {
+                width: number,
+                height: number,
+            }
+        }
+    },
+    path: string
+): Promise<void> => {
+    const layers: string[] = [];
+    data.layers.forEach((c) => {
+        layers.push(canvas_to_binary(c))
+    });
+    await invoke("save_file", {
+        layers: layers,
+        metaData: JSON.stringify(data.meta_data),
+        path: path,
+    })
+}
+
+export const canvas_to_binary = (canvas: HTMLCanvasElement): string => {
+    return canvas.toDataURL('image/png').split(',')[1];
+}
+
 //　export const load_file = async (path: string): Promise<Result<data_fileT, unknown>> => {
 //　    const v = await Result.from_try_catch_async<[string, Uint8Array[]]>((() => invoke("load_file", { path })))
-//　    return v.on_ok(([meta_data, layers]) => ({ layers, meta_data: JSON.parse(meta_data) }))
+//　    return v.on_ok(([canvas_size, layers]) => ({ layers, canvas_size: JSON.parse(canvas_size) }))
 //　}
 
 // export const binary_to_bitmap = async (data: Uint8Array): Promise<Result<ImageBitmap, unknown>> => Result.from_try_catch_async(async () => {

@@ -1,23 +1,26 @@
-import { Equal, ZoomIn, ZoomOut } from "lucide-preact"
+import { Equal, ZoomIn, ZoomOut } from "lucide-react"
 import "./index.css"
-import { Dispatch, StateUpdater, useEffect, useRef } from "preact/hooks";
-import { RefObject } from "preact";
+import { useEffect, useRef } from "react";
+import { RefObject } from "react";
+import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { scroll_horizontal_state, scroll_vertical_state } from "../canvas_area/scroll_bar";
 
-export const ZoomInOut = (props: { zoom_reset_button_ref: RefObject<HTMLDivElement>, zoom: number, set_zoom: Dispatch<StateUpdater<number>> }) => {
+export const zoom_state = atom({
+    key: "canvas_zoom_state",
+    default: 1,
+})
 
-    const zoom_set = (z: number | ((arg0: number) => number)) => {
-        if (typeof z == "number") {
-            props.set_zoom(z);
-        } else {
-            props.set_zoom(z);
-        }
-    }
+export const ZoomInOut = (props: { zoom_reset_button_ref: RefObject<HTMLDivElement> }) => {
+    const [zoom, set_zoom] = useRecoilState(zoom_state);
+    const set_scroll_vertical =   useSetRecoilState(scroll_vertical_state);
+    const set_scroll_horizontal = useSetRecoilState(scroll_horizontal_state);
     const text_box_ref = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         const text_box = text_box_ref.current;
         if (!text_box) return;
-        text_box.value = `${Math.round(props.zoom * 100) / 100}`;
-    }, [text_box_ref.current, props.zoom]);
+        text_box.value = `${Math.round(zoom * 100) / 100}`;
+    }, [text_box_ref.current, zoom]);
 
     useEffect(() => {
         const text_box = text_box_ref.current;
@@ -32,16 +35,16 @@ export const ZoomInOut = (props: { zoom_reset_button_ref: RefObject<HTMLDivEleme
                 onInput={(e) => {
                     const raw_v = Number.parseFloat((e.target as unknown as HTMLInputElement).value);
                     const v = 0 < raw_v ? raw_v : 1
-                    zoom_set(v);
+                    set_zoom(v);
                     (e.target as unknown as HTMLInputElement).value = `${v}`;
                 }}
                 type="number"
                 id="zoom_text_box"
             /></div></div>
             <div id="zoom_in_out_button_outer">
-                <div class="zoom_in_out_button" id="zoom_out_button" onClick={() => zoom_set(v => Math.max(0.5, v / (2 ** (1 / 8))))}>   <ZoomOut size="20px" /></div>
-                <div class="zoom_in_out_button" id="zoom_reset_button" ref={props.zoom_reset_button_ref} onClick={() => zoom_set(1)}> <Equal size="20px" /></div>
-                <div class="zoom_in_out_button" id="zoom_in_button" onClick={() => zoom_set(v => v * (2 ** (1 / 8)))}>    <ZoomIn size="20px" /></div>
+                <div className="zoom_in_out_button" id="zoom_out_button" onClick={() => set_zoom(v => Math.max(0.5, v / (2 ** (1 / 8))))}><ZoomOut size="20px" /></div>
+                <div className="zoom_in_out_button" id="zoom_reset_button" onClick={() => { set_zoom(1); set_scroll_vertical(0); set_scroll_horizontal(0); }}><Equal size="20px" /></div>
+                <div className="zoom_in_out_button" id="zoom_in_button" onClick={() => set_zoom(v => v * (2 ** (1 / 8)))}><ZoomIn size="20px" /></div>
             </div>
         </div>
     )
