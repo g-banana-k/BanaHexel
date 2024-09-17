@@ -1,0 +1,32 @@
+div#tool_select {
+    width: 130px;
+    height: 100%;
+}
+
+div.tool_icon {
+    height: 32px;
+    width: 32px;
+    padding: 4px;
+    margin: 6px 18px 6px 6px;
+    border-radius: 4px;
+    position: relative;
+    display: inline-block;
+}
+
+div.tool_icon:hover {
+    background-color: #5fe07544;
+}
+
+div.tool_icon.selected_tool_icon {
+    background-color: #5fe075;
+}
+
+div.tool_icon svg {
+    position: absolute;
+    color: #fff;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}

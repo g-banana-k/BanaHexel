@@ -1,0 +1,112 @@
+div#title_bar {
+    height: 36px;
+    width: 100%;
+    background-color: #444;
+    padding: 0;
+    margin: 0;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+}
+
+div#title_bar_app_icon {
+    height: 36px;
+    width: 40px;
+    position: relative;
+}
+
+div#title_bar_app_icon svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+div.title_bar_menu_button_label {
+    height: 100%;
+    padding: 0px 8px;
+    border-radius: 4px;
+}
+
+div.title_bar_menu_button {
+    font-size: 13px;
+    margin: 4px 0px;
+    height: 28px;
+    line-height: 28px;
+    user-select: none;
+    display: inline-block;
+}
+
+div.title_bar_menu_button_label:hover,
+div.title_bar_menu_button_label_opened {
+    background-color: #5558;
+}
+
+div#title_bar_window_control {
+    height: 100%;
+    width: 135px;
+    display: flex;
+    flex-direction: row;
+}
+
+div.title_bar_flex_space {
+    flex-grow: 1;
+}
+
+div.title_bar_window_button {
+    height: 100%;
+    flex-grow: 1;
+    position: relative;
+}
+
+div.title_bar_window_button svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+div#maximize_button:hover {
+    background-color: #555;
+}
+
+div#minimize_button:hover {
+    background-color: #555;
+}
+
+div#close_button:hover {
+    background-color: #f00;
+}
+
+div.title_bar_menu_contents.title_bar_menu_contents_opened {
+    display: block;
+}
+
+div.title_bar_menu_contents {
+    display: none;
+    position: absolute;
+    background-color: #555;
+    border-radius: 4px;
+    padding: 3px;
+}
+
+div.title_bar_menu_content {
+    width: 200px;
+    height: 25px;
+    line-height: 25px;
+    padding: 0 20px;
+}
+
+div.title_bar_menu_content:hover {
+    background-color: #333;
+    border-radius: 4px;
+}
+
+div.title_bar_menu_content a {
+    color: #fff;
+    text-decoration: none;
+}
