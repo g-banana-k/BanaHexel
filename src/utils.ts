@@ -9,6 +9,14 @@ export class Result<T, E> {
         if (this.is_ok()) return this.v as T;
         else throw new Error(`unwrap: ${this.v as E}`);
     }
+    public unwrap_or(d: T): T {
+        if (this.is_ok()) return this.v as T;
+        else return d;
+    }
+    public unwrap_or_else(f: () => T): T {
+        if (this.is_ok()) return this.v as T;
+        else return f();
+    }
     public unwrap_err(): E {
         if (this.is_ok()) throw new Error(`${this.v as T}`);
         else return this.v as E
@@ -46,6 +54,46 @@ export class Result<T, E> {
             return Result.Ok(v)
         } catch (e) {
             return Result.Err(e)
+        }
+    }
+}
+
+export class Option<T> {
+    private v: T | undefined;
+    private is_some_flag: boolean;
+    private constructor(v: T | undefined, is_some: boolean) {
+        this.v = v;
+        this.is_some_flag = is_some;
+    }
+    public unwrap(): T {
+        if (this.is_some()) return this.v as T;
+        else throw new Error(`unwrap`);
+    }
+    public unwrap_or(d: T): T {
+        if (this.is_some()) return this.v as T;
+        else return d
+    }
+    public unwrap_or_else(f: () => T): T {
+        if (this.is_some()) return this.v as T;
+        else return f();
+    }
+    public static Some<T>(v: T): Option<T> { return new Option<T>(v, true) }
+    public static None<T>(): Option<T> { return new Option<T>(undefined, false) }
+    public is_some(): boolean {
+        return this.is_some_flag;
+    }
+    public on_some<U>(f: (arg0: T) => U): Option<U> {
+        if (this.is_some()) {
+            return Option.Some(f(this.unwrap()))
+        } else {
+            return Option.None()
+        }
+    }
+    public static from_nullable<T>(v: T | null): Option<T> {
+        if( v !== null) {
+            return Option.Some<T>(v);
+        } else {
+            return Option.None();
         }
     }
 }

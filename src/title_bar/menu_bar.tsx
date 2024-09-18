@@ -1,15 +1,20 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { canvas_size_state, layer_arr_state } from "../App";
-import { save_file } from "../data";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { canvas_size_state, is_loading_state, layer_arr_state, open_and_load_file } from "../App";
+import { open_file, save_file } from "../data";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
     const [selected, set_selected] = useState(-1);
     const layer_arr = useRecoilValue(layer_arr_state)!;
     const canvas_size = useRecoilValue(canvas_size_state)!;
+
+    const set_loading = useSetRecoilState(is_loading_state);
+    const set_layer_arr = useSetRecoilState(layer_arr_state);
+    const set_canvas_size = useSetRecoilState(canvas_size_state);
+
     document.addEventListener("mousedown", e => {
         if (!menu_bar_ref.current) return;
         if (menu_bar_ref.current.contains(e.target as unknown as Node)) return;
@@ -19,10 +24,15 @@ export const MenuBar = () => {
         <div ref={menu_bar_ref} id="title_bar_menu_bar">
             <MenuButton label="ファイル" id="title_bar_menu_file_button" nth={0} selected={selected} set_selected={set_selected}>
                 <MenuContent on_click={() => {
-                    const path = window.prompt();
-                    if (!path) return;
-                    save_file({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } }, path);
-                }} >保存</MenuContent>
+                    save_file({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
+                }} >名前を付けて保存</MenuContent>
+                <MenuContent on_click={async () => {
+                    const new_data = (await open_file()).unwrap();
+                    new_data.on_some(v => {
+                        set_loading(true);
+                        open_and_load_file(v, { set_loading, set_layer_arr, set_canvas_size });
+                    })
+                }} >開く</MenuContent>
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
                 <MenuContent ><a href="https://bananahexagon.github.io" target="_blank">ホームページ</a></MenuContent>

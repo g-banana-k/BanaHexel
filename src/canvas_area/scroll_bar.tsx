@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { window_size_state } from "../App";
 import { zoom_state } from "../zoom_in_out";
@@ -16,6 +16,8 @@ export const scroll_horizontal_state = atom({
 export const ScrollBarVertical = (props: {
     canvas_height: number,
     area_height: number,
+    set_canvas_height: Dispatch<SetStateAction<number>>,
+    set_area_height  : Dispatch<SetStateAction<number>>,
 }) => {
     let [scroll, set_scroll] = useRecoilState(scroll_vertical_state);
     const zoom = useRecoilValue(zoom_state);
@@ -24,6 +26,7 @@ export const ScrollBarVertical = (props: {
 
     const bar_height = props.area_height * (props.area_height / (props.canvas_height * (zoom + 1)));
     const bar_move_area = props.area_height * (1 - props.area_height / (props.canvas_height * (zoom + 1)));
+    console.log(bar_height, bar_move_area);
 
     const bar_ref = useRef<HTMLDivElement>(null);
 
@@ -82,15 +85,15 @@ export const ScrollBarHorizontal = (props: {
 
     let [is_dragging, set_dragging] = useState(false);
 
-    const bar_width = props.area_width * (props.area_width / (props.canvas_width * (zoom + 1)));
-    const bar_move_area = props.area_width * (1 - props.area_width / (props.canvas_width * (zoom + 1)));
+    let bar_width = props.area_width * (props.area_width / (props.canvas_width * (zoom + 1)));
+    let bar_move_area = props.area_width * (1 - props.area_width / (props.canvas_width * (zoom + 1)));
 
     const bar_ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const bar = bar_ref.current;
         if (!bar) return;
-        if (props.area_width == 0 || props.area_width == 0) return;
+        if (props.area_width == 0) return;
         let start_bar = 0;
         let start_ptr_x = 0;
         bar.addEventListener("mousedown", e => {

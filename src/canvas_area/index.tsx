@@ -1,7 +1,7 @@
 import "./index.css"
 import { useEffect, useRef, useState } from "react";
 import { background_image } from "./background";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { zoom_state } from "../zoom_in_out";
 import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
 import { current_layer_state, layer_arr_state, window_size_state } from "../App";
@@ -13,15 +13,16 @@ export const CanvasArea = () => {
     const [zoom, set_zoom] = useRecoilState(zoom_state);
     const [scroll_horizontal, set_scroll_horizontal] = useRecoilState(scroll_horizontal_state)
     const [scroll_vertical, set_scroll_vertical] = useRecoilState(scroll_vertical_state)
+    const window_size = useRecoilValue(window_size_state);
 
     const canvas_body_ref = useRef<HTMLDivElement>(null);
     const canvas_background_ref = useRef<HTMLDivElement>(null);
     const canvas_area_ref = useRef<HTMLDivElement>(null);
 
-    const [canvas_height, set_canvas_height] = useState(0);
-    const [canvas_width, set_canvas_width] = useState(0);
-    const [area_height, set_area_height] = useState(0);
-    const [area_width, set_area_width] = useState(0);
+    let [canvas_height, set_canvas_height] = useState(0);
+    let [canvas_width , set_canvas_width ] = useState(0);
+    let [area_height  , set_area_height  ] = useState(0);
+    let [area_width   , set_area_width   ] = useState(0);
 
     const [background_width, set_background_width] = useState(0);
     const [background_height, set_background_height] = useState(0);
@@ -48,8 +49,8 @@ export const CanvasArea = () => {
 
     useEffect(() => {
         set_area_height(canvas_area_ref.current?.clientHeight ?? 0);
-        set_area_width(canvas_area_ref.current?.clientWidth ?? 0);
-    }, [window_size_state]);
+        set_area_width (canvas_area_ref.current?.clientWidth ?? 0);
+    }, [window_size]);
 
     useEffect(() => {
         const div_body = canvas_body_ref.current;
@@ -91,6 +92,8 @@ export const CanvasArea = () => {
         <ScrollBarVertical
             canvas_height={canvas_height}
             area_height={area_height}
+            set_canvas_height={set_canvas_height}
+            set_area_height  ={set_area_height}
         />
         <ScrollBarHorizontal
             canvas_width={canvas_width}
