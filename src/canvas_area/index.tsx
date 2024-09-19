@@ -98,7 +98,7 @@ export const CanvasArea = () => {
             width: canvas_width * zoom,
             height: canvas_height * zoom,
             backgroundColor: "#0000",
-            outline: `${canvas_width+canvas_height}px solid #333`,
+            outline: `${area_width+area_height}px solid #333`,
         }} />
         <ScrollBarVertical
             canvas_height={canvas_height}
