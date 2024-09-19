@@ -38,7 +38,9 @@
                 "title": "banahexel",
                 "width": 800,
                 "height": 600,
-                "decorations": false
+                "decorations": false,
+                "minWidth": 400,
+                "minHeight": 300
             }
         ],
         "security": {

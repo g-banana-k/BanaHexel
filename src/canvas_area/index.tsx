@@ -20,9 +20,9 @@ export const CanvasArea = () => {
     const canvas_area_ref = useRef<HTMLDivElement>(null);
 
     let [canvas_height, set_canvas_height] = useState(0);
-    let [canvas_width , set_canvas_width ] = useState(0);
-    let [area_height  , set_area_height  ] = useState(0);
-    let [area_width   , set_area_width   ] = useState(0);
+    let [canvas_width, set_canvas_width] = useState(0);
+    let [area_height, set_area_height] = useState(0);
+    let [area_width, set_area_width] = useState(0);
 
     const [background_width, set_background_width] = useState(0);
     const [background_height, set_background_height] = useState(0);
@@ -30,16 +30,20 @@ export const CanvasArea = () => {
     useEffect(() => {
         const area = canvas_area_ref.current;
         if (!area) return;
+        let c_h = canvas_height;
+        let c_w = canvas_width;
         area.onwheel = e => {
             if (e.deltaY == 0) return;
             if (!e.shiftKey && !e.ctrlKey) {
                 let z = 0;
                 set_zoom(_ => { z = _; return _; })
-                set_scroll_vertical(s => Math.max(-0.5, Math.min(0.5, s + Math.sign(e.deltaY) / (40 * z))))
+                set_canvas_height(_ => { c_h = _; return _; });
+                set_scroll_vertical(s => Math.max(-0.5, Math.min(0.5, s + Math.sign(e.deltaY) / (c_h / 20 * z))))
             } else if (e.shiftKey && !e.ctrlKey) {
                 let z = 0;
                 set_zoom(_ => { z = _; return _; })
-                set_scroll_horizontal(s => Math.max(-0.5, Math.min(0.5, s + Math.sign(e.deltaY) / (40 * z))))
+                set_canvas_width(_ => { c_w = _; return _; });
+                set_scroll_horizontal(s => Math.max(-0.5, Math.min(0.5, s + Math.sign(e.deltaY) / (c_w / 20 * z))))
 
             } else if (e.deltaY != 0 && e.ctrlKey) {
                 set_zoom(v => Math.max(0.5, v / ((2 ** (1 / 8)) ** Math.sign(e.deltaY))));
@@ -49,7 +53,7 @@ export const CanvasArea = () => {
 
     useEffect(() => {
         set_area_height(canvas_area_ref.current?.clientHeight ?? 0);
-        set_area_width (canvas_area_ref.current?.clientWidth ?? 0);
+        set_area_width(canvas_area_ref.current?.clientWidth ?? 0);
     }, [window_size]);
 
     useEffect(() => {
@@ -72,7 +76,7 @@ export const CanvasArea = () => {
         set_background_width(background.width);
         background.style.height = "100%"
         background.style.width = "100%"
-    }, [current_layer]);
+    }, [current_layer, layer_arr]);
 
     return (<div id="canvas_area" ref={canvas_area_ref}>
         <div id="canvas_background_div" ref={canvas_background_ref} style={{
@@ -80,20 +84,25 @@ export const CanvasArea = () => {
             top: (-0.5 * background_height * zoom * 8) + (0.5 * area_height) - (scroll_vertical * canvas_height * zoom),
             width: background_width * zoom * 8,
             height: background_height * zoom * 8,
-        }}>
-        </div>
+        }}></div>
         <div id="canvas_body_div" ref={canvas_body_ref} style={{
             left: (-0.5 * canvas_width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_width * zoom),
             top: (-0.5 * canvas_height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_height * zoom),
             width: canvas_width * zoom,
             height: canvas_height * zoom,
-        }}>
-        </div>
+        }}></div>
+        <div style={{
+            position:"absolute",
+            left: (-0.5 * canvas_width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_width * zoom),
+            top: (-0.5 * canvas_height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_height * zoom),
+            width: canvas_width * zoom,
+            height: canvas_height * zoom,
+            backgroundColor: "#0000",
+            outline: `${canvas_width+canvas_height}px solid #333`,
+        }} />
         <ScrollBarVertical
             canvas_height={canvas_height}
             area_height={area_height}
-            set_canvas_height={set_canvas_height}
-            set_area_height  ={set_area_height}
         />
         <ScrollBarHorizontal
             canvas_width={canvas_width}

@@ -1,6 +1,5 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-import { window_size_state } from "../App";
 import { zoom_state } from "../zoom_in_out";
 
 export const scroll_vertical_state = atom({
@@ -16,8 +15,6 @@ export const scroll_horizontal_state = atom({
 export const ScrollBarVertical = (props: {
     canvas_height: number,
     area_height: number,
-    set_canvas_height: Dispatch<SetStateAction<number>>,
-    set_area_height  : Dispatch<SetStateAction<number>>,
 }) => {
     let [scroll, set_scroll] = useRecoilState(scroll_vertical_state);
     const zoom = useRecoilValue(zoom_state);
@@ -26,7 +23,6 @@ export const ScrollBarVertical = (props: {
 
     const bar_height = props.area_height * (props.area_height / (props.canvas_height * (zoom + 1)));
     const bar_move_area = props.area_height * (1 - props.area_height / (props.canvas_height * (zoom + 1)));
-    console.log(bar_height, bar_move_area);
 
     const bar_ref = useRef<HTMLDivElement>(null);
 
@@ -67,9 +63,13 @@ export const ScrollBarVertical = (props: {
             className="canvas_scroll_bar"
             style={{
                 ...{
+                    userSelect: "none",
                     height: (!Number.isNaN(bar_height) ? bar_height : 0),
                     top: (scroll + 0.5) * (!Number.isNaN(bar_move_area) ? bar_move_area : 0),
                 },
+                ...( bar_move_area <= 0 ? {
+                    display: "none"
+                } : {}),
                 ...(is_dragging ? { backgroundColor: "#0008" } : {})
             }}
         ></div >
@@ -129,7 +129,11 @@ export const ScrollBarHorizontal = (props: {
                 ...{
                     width: (!Number.isNaN(bar_width) ? bar_width : 0),
                     left: (scroll + 0.5) * (!Number.isNaN(bar_move_area) ? bar_move_area : 0),
+                    userSelect: "none"
                 },
+                ...( bar_move_area <= 0 ? {
+                    display: "none"
+                } : {}),
                 ...(is_dragging ? { backgroundColor: "#0008" } : {})
             }}
         ></div >

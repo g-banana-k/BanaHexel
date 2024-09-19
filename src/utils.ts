@@ -97,3 +97,5 @@ export class Option<T> {
         }
     }
 }
+
+export type UnRequired<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

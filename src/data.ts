@@ -18,11 +18,11 @@ export const open_file_from_path = async (path: string): Promise<Result<data_fil
     return v.on_ok(([canvas_size, layers]) => ({ layers, meta_data: JSON.parse(canvas_size) }))
 }
 
-export const open_file = async (): Promise<Result<Option<data_fileT>, unknown>> => {
-    const v = await Result.from_try_catch_async<[string, string[]] | null>(() => invoke("open_file", {}));
+export const open_file = async (): Promise<Result<Option<[string, data_fileT]>, unknown>> => {
+    const v = await Result.from_try_catch_async<[string, [string, string[]]] | null>(() => invoke("open_file", {}));
     return v.on_ok(v =>
         Option.from_nullable(v)
-            .on_some(([canvas_size, layers]) => ({ layers, meta_data: JSON.parse(canvas_size) }))
+        .on_some(([path, [canvas_size, layers]]) => ([path, { layers, meta_data: JSON.parse(canvas_size) }] as [string, data_fileT]))
     ).on_err(_ => _);
 }
 
@@ -33,7 +33,29 @@ export const binary_to_bitmap = (data: string): Promise<Result<ImageBitmap, unkn
     return image_bitmap;
 })
 
-export const save_file = async (
+export const save_file_new = async (
+    data: {
+        layers: HTMLCanvasElement[],
+        meta_data: {
+            canvas_size: {
+                width: number,
+                height: number,
+            }
+        }
+    },
+): Promise<string> => {
+    const layers: string[] = [];
+    data.layers.forEach((c) => {
+        layers.push(canvas_to_binary(c))
+    });
+    return await invoke("save_file_new", {
+        layers: layers,
+        metaData: JSON.stringify(data.meta_data),
+    })
+}
+
+export const save_file_with_path = async (
+    path: string,
     data: {
         layers: HTMLCanvasElement[],
         meta_data: {
@@ -48,7 +70,8 @@ export const save_file = async (
     data.layers.forEach((c) => {
         layers.push(canvas_to_binary(c))
     });
-    await invoke("save_file", {
+    await invoke("save_file_with_path", {
+        path: path,
         layers: layers,
         metaData: JSON.stringify(data.meta_data),
     })

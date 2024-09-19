@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    fs::File,
+    fs::{File, OpenOptions},
     io::{BufReader, Read, Write},
     path::Path,
 };
@@ -19,8 +19,10 @@ fn open_devtools(window: tauri::Window) {
     window.open_devtools();
 }
 
+type DataFileT = (String, Vec<String>);
+
 #[command]
-fn save_file(layers: Vec<String>, meta_data: String) -> Result<Option<String>, String> {
+fn save_file_new(layers: Vec<String>, meta_data: String) -> Result<Option<String>, String> {
     let path = FileDialogBuilder::new()
         .set_title("名前を付けて保存")
         .add_filter("BanaHexel Projects", &["bhp"])
@@ -60,7 +62,37 @@ fn save_file(layers: Vec<String>, meta_data: String) -> Result<Option<String>, S
 }
 
 #[command]
-fn open_file_from_path(path: String) -> Result<(String, Vec<String>), String> {
+fn save_file_with_path(path: String, layers: Vec<String>, meta_data: String) -> Result<(), String> {
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .open(path).map_err(|e| e.to_string())?;
+    let mut zip = ZipWriter::new(file);
+
+    let opts: FileOptions<'_, ()> =
+        FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+    for (i, layer_base64) in layers.iter().enumerate() {
+        // Base64デコード
+        let image_data = base64::decode(layer_base64).map_err(|e| e.to_string())?;
+
+        // ZIPエントリーを作成
+        let filename = format!("{}.png", i);
+        zip.start_file(filename, opts).map_err(|e| e.to_string())?;
+        zip.write_all(&image_data).map_err(|e| e.to_string())?;
+    }
+    zip.start_file("project.json", opts)
+        .map_err(|e| e.to_string())?;
+    zip.write_all(meta_data.as_bytes())
+        .map_err(|e| e.to_string())?;
+
+    zip.finish().map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[command]
+fn open_file_from_path(path: String) -> Result<DataFileT, String> {
     let zip_path = Path::new(&path);
     let zip_file = File::open(&zip_path).map_err(|e| e.to_string())?;
     let mut archive = ZipArchive::new(BufReader::new(zip_file)).map_err(|e| e.to_string())?;
@@ -90,7 +122,7 @@ fn open_file_from_path(path: String) -> Result<(String, Vec<String>), String> {
 }
 
 #[command]
-fn open_file() -> Result<Option<(String, Vec<String>)>, String> {
+fn open_file() -> Result<Option<(String, DataFileT)>, String> {
     let path = FileDialogBuilder::new()
         .set_title("開く")
         .add_filter("BanaHexel Projects", &["bhp"])
@@ -100,6 +132,11 @@ fn open_file() -> Result<Option<(String, Vec<String>)>, String> {
     } else {
         return Ok(None);
     };
+    let path_string = path
+        .to_str()
+        .ok_or("Can't convert path to string".to_string())
+        .unwrap()
+        .to_string();
     let zip_file = File::open(&path).map_err(|e| e.to_string())?;
     let mut archive = ZipArchive::new(BufReader::new(zip_file)).map_err(|e| e.to_string())?;
     let mut json_res = String::new();
@@ -124,7 +161,7 @@ fn open_file() -> Result<Option<(String, Vec<String>)>, String> {
     }
     img_vec_res.sort_by_key(|(_, i)| *i);
     let img_vec_res = img_vec_res.into_iter().map(|(v, _)| v).collect::<Vec<_>>();
-    Ok(Some((json_res, img_vec_res)))
+    Ok(Some((path_string, (json_res, img_vec_res))))
 }
 
 fn main() {
@@ -138,8 +175,9 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             open_devtools,
             open_file_from_path,
-            save_file,
-            open_file
+            open_file,
+            save_file_new,
+            save_file_with_path,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
