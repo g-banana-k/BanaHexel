@@ -7,8 +7,8 @@ import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, Sc
 import { current_layer_state, layer_arr_state, window_size_state } from "../App";
 
 export const CanvasArea = () => {
-    const [current_layer, set_current_layer] = useRecoilState(current_layer_state);
-    const [layer_arr, set_layer_arr] = useRecoilState(layer_arr_state);
+    const [current_layer, _set_current_layer] = useRecoilState(current_layer_state);
+    const [layer_arr, _set_layer_arr] = useRecoilState(layer_arr_state);
 
     const [zoom, set_zoom] = useRecoilState(zoom_state);
     const [scroll_horizontal, set_scroll_horizontal] = useRecoilState(scroll_horizontal_state)
@@ -92,13 +92,13 @@ export const CanvasArea = () => {
             height: canvas_height * zoom,
         }}></div>
         <div style={{
-            position:"absolute",
+            position: "absolute",
             left: (-0.5 * canvas_width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_width * zoom),
             top: (-0.5 * canvas_height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_height * zoom),
             width: canvas_width * zoom,
             height: canvas_height * zoom,
             backgroundColor: "#0000",
-            outline: `${area_width+area_height}px solid #333`,
+            outline: `${area_width + area_height}px solid #333`,
         }} />
         <ScrollBarVertical
             canvas_height={canvas_height}

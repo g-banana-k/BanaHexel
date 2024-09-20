@@ -1,7 +1,7 @@
 div#tool_select_outer {
     width: 130px;
     height: 100%;
-    position:relative;
+    position: relative;
     overflow: auto;
     scrollbar-gutter: stable;
     scrollbar-color: #555 #0000;
@@ -30,7 +30,7 @@ div.tool_icon:hover {
 }
 
 div.tool_icon.selected_tool_icon {
-    background-color: #5fe075;
+    background-color: #5fe07566;
 }
 
 div.tool_icon svg {
