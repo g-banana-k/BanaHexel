@@ -64,7 +64,7 @@ export const Slider = ({
     }}>
         <div ref={knob_ref} className="tool_menu_slider_knob" style={{
             left: val / max * width - 5,
-            top: -5,
+            top: -3,
             width: 10,
             height: height + 6
         }} ></div>
