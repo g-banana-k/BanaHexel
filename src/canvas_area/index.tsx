@@ -5,6 +5,7 @@ import { SetterOrUpdater, useRecoilState, useRecoilValue } from "recoil";
 import { zoom_state } from "../zoom_in_out";
 import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
 import { canvas_size_state, current_layer_state, layer_arr_state, window_size_state } from "../App";
+import { CanvasEditor } from "./editor";
 
 export const CanvasArea = () => {
     const [current_layer, _set_current_layer] = useRecoilState(current_layer_state);
@@ -81,8 +82,8 @@ export const CanvasArea = () => {
 
     return (<div id="canvas_area" ref={canvas_area_ref}>
         <div id="canvas_background_div" ref={canvas_background_ref} style={{
-            left: (-0.5 * background_width * zoom * 8) + (0.5 * area_width) - (scroll_horizontal * canvas_size.width * zoom),
-            top: (-0.5 * background_height * zoom * 8) + (0.5 * area_height) - (scroll_vertical * canvas_size.height * zoom),
+            left: (0.5 * area_width) - ((scroll_horizontal + 0.5) * canvas_size.width * zoom),
+            top: (0.5 * area_height) - ((scroll_vertical + 0.5) * canvas_size.height * zoom),
             width: background_width * zoom * 8,
             height: background_height * zoom * 8,
         }}></div>
@@ -101,6 +102,15 @@ export const CanvasArea = () => {
             backgroundColor: "#0000",
             outline: `${area_width + area_height}px solid #333`,
         }} />
+        <CanvasEditor
+            canvas_width={canvas_size.width}
+            canvas_height={canvas_size.height}
+            zoom={zoom}
+            area_width={area_width}
+            area_height={area_height}
+            scroll_horizontal={scroll_horizontal}
+            scroll_vertical={scroll_vertical}
+        />
         <ScrollBarVertical
             canvas_height={canvas_size.height}
             area_height={area_height}
@@ -111,3 +121,14 @@ export const CanvasArea = () => {
         />
     </div >)
 }
+
+export const canvas_tools = [
+    "none",
+    "brush_tool",
+    "eraser_tool",
+    "bucket_tool",
+    "select_tool",
+    "rect_tool",
+    "circle_tool",
+    "line_tool",
+] as const;

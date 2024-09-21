@@ -18,6 +18,7 @@ export const ScrollBarVertical = (props: {
 }) => {
     let [scroll, set_scroll] = useRecoilState(scroll_vertical_state);
     const zoom = useRecoilValue(zoom_state);
+    let [once, set_once] = useState(false);
 
     let [is_dragging, set_dragging] = useState(false);
 
@@ -31,6 +32,9 @@ export const ScrollBarVertical = (props: {
     useEffect(() => {
         const bar = bar_ref.current;
         if (!bar) return;
+        if (once) return;
+        set_once(true);
+        once = true;
         let start_bar = 0;
         let start_ptr_y = 0;
         bar.addEventListener("mousedown", e => {
@@ -83,6 +87,7 @@ export const ScrollBarHorizontal = (props: {
 }) => {
     let [scroll, set_scroll] = useRecoilState(scroll_horizontal_state);
     const zoom = useRecoilValue(zoom_state);
+    let [once, set_once] = useState(false);
 
     let [is_dragging, set_dragging] = useState(false);
 
@@ -96,6 +101,9 @@ export const ScrollBarHorizontal = (props: {
     useEffect(() => {
         const bar = bar_ref.current;
         if (!bar) return;
+        if (once) return;
+        set_once(true);
+        once = true;
         let start_bar = 0;
         let start_ptr_x = 0;
         bar.addEventListener("mousedown", e => {
@@ -131,7 +139,7 @@ export const ScrollBarHorizontal = (props: {
                 ...{
                     width: (!Number.isNaN(bar_width.current) ? bar_width.current : 0),
                     left: (scroll + 0.5) * (!Number.isNaN(bar_move_area.current) ? bar_move_area.current : 0),
-                    userSelect: "none"
+                    userSelect: "none",
                 },
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"

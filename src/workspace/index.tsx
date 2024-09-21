@@ -2,7 +2,7 @@ import { ToolSelect } from "../tool_select"
 import { ToolMenu } from "../tool_menu"
 import { CanvasArea } from "../canvas_area"
 import "./index.css"
-import { layerT } from "../data"
+import { Layer } from "../data"
 import { ZoomInOut } from "../zoom_in_out"
 import { useRef } from "react"
 

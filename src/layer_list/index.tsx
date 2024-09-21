@@ -21,7 +21,7 @@ export const LayerList = () => {
                 if (!preview_div) return;
                 if (i ===  current_layer!) preview_div.classList.add("layer_thumbnail_selected");
                 if (i !==  current_layer!) preview_div.classList.remove("layer_thumbnail_selected");
-            }, [layer_arr![current_layer!], div_ref.current])
+            }, [current_layer])
             return (
                 <div key={i} ref={div_ref} className="layer_thumbnail" onClick={() => { set_current_layer(i) }}>
                 </div>

@@ -22,12 +22,6 @@ export const ZoomInOut = (props: { zoom_reset_button_ref: RefObject<HTMLDivEleme
         text_box.value = `${Math.round(zoom * 100) / 100}`;
     }, [text_box_ref.current, zoom]);
 
-    useEffect(() => {
-        const text_box = text_box_ref.current;
-        if (!text_box) return;
-        text_box.onchange
-    }, [text_box_ref.current]);
-
     return (
         <div id="zoom_in_out">
             <div id="zoom_ratio_outer"><div id="zoom_ratio_inner">1 : <input
