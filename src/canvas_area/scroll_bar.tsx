@@ -21,15 +21,16 @@ export const ScrollBarVertical = (props: {
 
     let [is_dragging, set_dragging] = useState(false);
 
-    const bar_height = props.area_height * (props.area_height / (props.canvas_height * (zoom + 1)));
-    const bar_move_area = props.area_height * (1 - props.area_height / (props.canvas_height * (zoom + 1)));
+    const bar_height = useRef(0);
+    bar_height.current = props.area_height * (props.area_height / (props.canvas_height * (zoom + 1)));
+    const bar_move_area = useRef(0);
+    bar_move_area.current = props.area_height * (1 - props.area_height / (props.canvas_height * (zoom + 1)));
 
     const bar_ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const bar = bar_ref.current;
         if (!bar) return;
-        if (props.area_height == 0 || props.area_height == 0) return;
         let start_bar = 0;
         let start_ptr_y = 0;
         bar.addEventListener("mousedown", e => {
@@ -42,19 +43,19 @@ export const ScrollBarVertical = (props: {
         });
         document.addEventListener("mousemove", e => {
             if (is_dragging) {
-                const v = Math.max(-0.5, Math.min(0.5, (e.pageY - start_ptr_y) / bar_move_area + start_bar));
+                const v = Math.max(-0.5, Math.min(0.5, (e.pageY - start_ptr_y) / bar_move_area.current + start_bar));
                 set_scroll(v);
             }
         });
         document.addEventListener("mouseup", e => {
             if (is_dragging) {
-                const v = Math.max(-0.5, Math.min(0.5, (e.pageY - start_ptr_y) / bar_move_area + start_bar));
+                const v = Math.max(-0.5, Math.min(0.5, (e.pageY - start_ptr_y) / bar_move_area.current + start_bar));
                 set_scroll(v);
                 set_dragging(false);
                 is_dragging = false;
             }
         });
-    }, [bar_ref.current])
+    }, [])
 
     return (
         <div
@@ -64,10 +65,10 @@ export const ScrollBarVertical = (props: {
             style={{
                 ...{
                     userSelect: "none",
-                    height: (!Number.isNaN(bar_height) ? bar_height : 0),
-                    top: (scroll + 0.5) * (!Number.isNaN(bar_move_area) ? bar_move_area : 0),
+                    height: (!Number.isNaN(bar_height) ? bar_height.current : 0),
+                    top: (scroll + 0.5) * (!Number.isNaN(bar_move_area.current) ? bar_move_area.current : 0),
                 },
-                ...( bar_move_area <= 0 ? {
+                ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
                 ...(is_dragging ? { backgroundColor: "#0008" } : {})
@@ -85,15 +86,16 @@ export const ScrollBarHorizontal = (props: {
 
     let [is_dragging, set_dragging] = useState(false);
 
-    let bar_width = props.area_width * (props.area_width / (props.canvas_width * (zoom + 1)));
-    let bar_move_area = props.area_width * (1 - props.area_width / (props.canvas_width * (zoom + 1)));
+    const bar_width = useRef(0);
+    bar_width.current = props.area_width * (props.area_width / (props.canvas_width * (zoom + 1)));
+    const bar_move_area = useRef(0);
+    bar_move_area.current = props.area_width * (1 - props.area_width / (props.canvas_width * (zoom + 1)));
 
     const bar_ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const bar = bar_ref.current;
         if (!bar) return;
-        if (props.area_width == 0) return;
         let start_bar = 0;
         let start_ptr_x = 0;
         bar.addEventListener("mousedown", e => {
@@ -106,19 +108,19 @@ export const ScrollBarHorizontal = (props: {
         });
         document.addEventListener("mousemove", e => {
             if (is_dragging) {
-                const v = Math.max(-0.5, Math.min(0.5, (e.pageX - start_ptr_x) / bar_move_area + start_bar));
+                const v = Math.max(-0.5, Math.min(0.5, (e.pageX - start_ptr_x) / bar_move_area.current + start_bar));
                 set_scroll(v);
             }
         });
         document.addEventListener("mouseup", e => {
             if (is_dragging) {
-                const v = Math.max(-0.5, Math.min(0.5, (e.pageX - start_ptr_x) / bar_move_area + start_bar));
+                const v = Math.max(-0.5, Math.min(0.5, (e.pageX - start_ptr_x) / bar_move_area.current + start_bar));
                 set_scroll(v);
                 set_dragging(false);
                 is_dragging = false;
             }
         });
-    }, [bar_ref.current])
+    }, [])
 
     return (
         <div
@@ -127,11 +129,11 @@ export const ScrollBarHorizontal = (props: {
             className="canvas_scroll_bar"
             style={{
                 ...{
-                    width: (!Number.isNaN(bar_width) ? bar_width : 0),
-                    left: (scroll + 0.5) * (!Number.isNaN(bar_move_area) ? bar_move_area : 0),
+                    width: (!Number.isNaN(bar_width.current) ? bar_width.current : 0),
+                    left: (scroll + 0.5) * (!Number.isNaN(bar_move_area.current) ? bar_move_area.current : 0),
                     userSelect: "none"
                 },
-                ...( bar_move_area <= 0 ? {
+                ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
                 ...(is_dragging ? { backgroundColor: "#0008" } : {})
