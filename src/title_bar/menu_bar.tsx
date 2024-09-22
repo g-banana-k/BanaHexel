@@ -3,7 +3,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { canvas_size_state, is_loading_state, layer_arr_state, load_file, opening_file_state_path } from "../App";
-import { open_file, save_file_new, save_file_with_path } from "../data";
+import { open_file, save_file_new, save_file_with_path } from "../file";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);

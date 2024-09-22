@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import "./App.css";
 import { LayerList } from "./layer_list";
 import { WorkSpace } from "./workspace";
-import { binary_to_bitmap, data_fileT, Layer, open_file_from_path } from "./data";
 import { TitleBar } from "./title_bar";
 import { appWindow } from "@tauri-apps/api/window";
 import settings from "./setting.json"
 import { Result, UnRequired } from "./utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { Layer } from "./data";
+import { binary_to_bitmap, data_fileT, open_file_from_path } from "./file";
 
 export const window_size_state = atom({
     key: "window_size_state",
