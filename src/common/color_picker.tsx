@@ -71,6 +71,9 @@ export const ColorPicker = ({
         document.addEventListener("mousedown", e => {
             if (!container.contains(e.target as unknown as Node)) {
                 is_opening.set(false);
+                const input = input_ref.current;
+                if (!input) return;
+                set_color(rgba_to_code(...code_to_rgba(input.value)))
             }
         })
     }, [])
@@ -103,7 +106,9 @@ export const ColorPicker = ({
                         ref={input_ref}
                         type="text"
                         className="common_color_picker_box"
-                        onBlur={e => set_color(rgba_to_code(...code_to_rgba((e.target as unknown as HTMLInputElement).value)))}
+                        onBlur={e => {
+                            set_color(rgba_to_code(...code_to_rgba((e.target as unknown as HTMLInputElement).value)))
+                        }}
                     ></input>
                 </div>
                 : ""}

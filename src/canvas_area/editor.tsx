@@ -81,6 +81,7 @@ export const CanvasEditor = ({
             layers_arr,
             current_layer
         });
+        let fm = false;
         document.addEventListener("mousemove", e => {
             if (!is_mouse_down) return;
             const canvas_rect = canvas.getBoundingClientRect();
@@ -88,10 +89,11 @@ export const CanvasEditor = ({
 
             const fn = fn_data[selected_tool.current];
             if (fn.tool_move) fn.tool_move(x, y);
-            else if (fn.move) fn.move(x, y);
+            else if (fn.move) { fn.move(x, y); fm = true; };
         });
         div.addEventListener("mousemove", e => {
             if (is_mouse_down) return;
+            if (fm) return;
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
 

@@ -27,6 +27,7 @@ export const rect_tools = ({
         },
         "up": (x, y, was_down) => {
             if (!was_down) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             const color = brush_color.val_global();
             ctx.fillStyle = color;
             const w = x - b_x + (b_x <= x ? 1 : 0);

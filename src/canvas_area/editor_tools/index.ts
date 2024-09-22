@@ -5,6 +5,7 @@ import { brush_tools } from "./brush_tool";
 import { eraser_tools } from "./eraser_tool";
 import { line_tools } from "./line_tool";
 import { rect_tools } from "./rect_tool";
+import { select_tools } from "./select_tool";
 
 export type toolT = {
     "down"?: (x: number, y: number) => void,
@@ -56,7 +57,7 @@ export const editor_tools = ({
         "line_tool": line_tools(packed),
         "eraser_tool": eraser_tools(packed),
         "bucket_tool": {},
-        "select_tool": {},
+        "select_tool": select_tools(packed),
         "rect_tool": rect_tools(packed),
         "circle_tool": {},
     }
