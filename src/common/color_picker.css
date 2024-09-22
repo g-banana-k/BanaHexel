@@ -1,0 +1,39 @@
+.common_color_picker_thumbnail {
+    border-radius: 4px;
+    position: relative;
+}
+
+.common_color_picker_main {
+    background-color: #444;
+    border-radius: 4px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+}
+
+.common_color_picker_mode {
+    width: 80%;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 4px;
+    background-color: #333;
+    margin: 0px 10% 6px 10%;
+    color: #fff;
+}
+
+.common_color_picker_box {
+    background-color: #fff1;
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    color: #fff;
+    height: 20px;
+    width: 150px;
+}
+
+.common_color_picker_box:focus {
+    background-color: #fff2;
+    border: none;
+    border-radius: 2px;
+}

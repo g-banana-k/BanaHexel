@@ -7,9 +7,9 @@ import { Window } from "./window";
 const root = createRoot(document.getElementById("root") as Element);
 
 root.render(
-    <StrictMode>
+    // <StrictMode>
         <RecoilRoot>
             <Window />
         </RecoilRoot>
-    </StrictMode>
+    // </StrictMode>
 );

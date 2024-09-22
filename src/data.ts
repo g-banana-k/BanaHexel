@@ -1,10 +1,8 @@
-import { invoke } from "@tauri-apps/api";
-import { Option, Result } from "./utils";
-
 export class Layer{
     body: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     preview: HTMLCanvasElement;
+    uuid: string;
     constructor(bitmap: CanvasImageSource | undefined, canvas_size: { width: number, height: number }) {
         const canvas = document.createElement("canvas");
         canvas.width = canvas_size.width;
@@ -23,6 +21,7 @@ export class Layer{
         this.body = canvas;
         this.ctx = ctx;
         this.preview = preview;
+        this.uuid = crypto.randomUUID();
     }
     preview_update() {
         const preview_ctx = this.preview.getContext("2d")!;

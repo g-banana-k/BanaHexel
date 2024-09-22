@@ -35,14 +35,13 @@ export const Slider = ({
         knob.addEventListener("mousedown", e => {
             if (!is_dragging) {
                 start_ptr_x = e.clientX;
-                setter(_ => { start_v = _; return _; })
+                setter(_ => { start_v = Math.min(max, Math.max(min, _)); return _; })
                 set_dragging(true);
                 is_dragging = true;
             }
         });
         document.addEventListener("mousemove", e => {
             if (is_dragging) {
-                console.log((e.clientX - start_ptr_x) / width * max + start_v)
                 const v = Math.min(max, Math.max(min, (e.clientX - start_ptr_x) / width * max + start_v));
                 setter(Math.floor(v));
             }
@@ -57,17 +56,19 @@ export const Slider = ({
         });
     }, []);
 
-    return (<div className="tool_menu_slider" style={{
+    return (<div className="common_slider" style={{
         width: width,
         height: height,
         background: background,
     }}>
-        <div ref={knob_ref} className="tool_menu_slider_knob" style={{
-            left: val / max * width - 5,
-            top: -3,
-            width: 10,
-            height: height + 6
-        }} ></div>
+        <div className="common_slider_inner">
+            <div ref={knob_ref} className="common_slider_knob" style={{
+                left: val / max * width - 5,
+                top: -3,
+                width: 10,
+                height: height + 6
+            }} ></div>
+        </div>
     </div>)
 }
 
@@ -98,7 +99,9 @@ export const SliderWithBox = ({
         box.value = `${Math.min(max, Math.max(min, val))}`;
     }, [val]);
 
-    return (<div className="tool_menu_slider_with_box_outer">
+    return (<div className="common_slider_with_box_outer" style={{
+        width: width + box_width + 15
+    }}>
         <Slider
             setter={setter}
             val={val}
@@ -108,8 +111,8 @@ export const SliderWithBox = ({
             height={height}
             background={background}
         />
-        <input ref={box_ref} type="number" className="tool_menu_slider_with_box_box" style={{
-            left: width + 5,
+        <input ref={box_ref} type="number" className="common_slider_with_box_box" style={{
+            left: width + 10,
             height: height,
             width: box_width
         }} onInput={(e) => {

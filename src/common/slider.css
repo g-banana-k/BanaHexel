@@ -1,47 +1,51 @@
-.commonslider {
-    position: relative;
+.common_slider {
     background-color: #666;
     border-radius: 4px;
     user-select: none;
+    margin: 3px 5px;
 }
 
-.commonslider_knob {
+.common_slider_inner {
+    position: relative;
+}
+
+.common_slider_knob {
     position: absolute;
     background-color: #fff4;
     border-radius: 2px;
     user-select: none;
 }
 
-.commonslider_knob:hover {
+.common_slider_knob:hover {
     position: absolute;
     background-color: #fff6;
 }
 
-.commonslider_with_box_outer {
+.common_slider_with_box_outer {
     position: relative;
     display: flex;
     flex-direction: row;
 }
 
-.commonslider_with_box_box {
-    top: -1px;
+.common_slider_with_box_box {
+    top: 1px;
     position: absolute;
     font-family: inherit;
     appearance: textfield;
-    background-color: #4444;
+    background-color: #fff1;
     border: none;
     border-radius: 2px;
     outline: none;
     color: #fff;
 }
 
-.commonslider_with_box_box::-webkit-inner-spin-button,
-.commonslider_with_box_box::-webkit-outer-spin-button {
+.common_slider_with_box_box::-webkit-inner-spin-button,
+.common_slider_with_box_box::-webkit-outer-spin-button {
     appearance: none;
 }
 
-.commonslider_with_box_box:focus {
-    background-color: #444b;
+.common_slider_with_box_box:focus {
+    background-color: #fff2;
     border: none;
     border-radius: 2px;
 }

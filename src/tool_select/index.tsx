@@ -15,12 +15,12 @@ export const ToolSelect = () => {
         <div id="tool_select_outer">
             <div id="tool_select">
                 <ToolIcon nth={0} selected={selected_id} set_selected={set_selected_id} id="brush_tool_icon" ><Brush size="26px" /></ToolIcon>
-                <ToolIcon nth={1} selected={selected_id} set_selected={set_selected_id} id="eraser_tool_icon"><Eraser size="26px" /></ToolIcon>
-                <ToolIcon nth={2} selected={selected_id} set_selected={set_selected_id} id="bucket_tool_icon"><PaintBucket size="26px" /></ToolIcon>
-                <ToolIcon nth={3} selected={selected_id} set_selected={set_selected_id} id="select_tool_icon"><SquareDashedMousePointer size="26px" /></ToolIcon>
-                <ToolIcon nth={4} selected={selected_id} set_selected={set_selected_id} id="rect_tool_icon"  ><Square size="26px" /></ToolIcon>
-                <ToolIcon nth={5} selected={selected_id} set_selected={set_selected_id} id="circle_tool_icon"><Circle size="26px" /></ToolIcon>
-                <ToolIcon nth={6} selected={selected_id} set_selected={set_selected_id} id="line_tool_icon"  ><Slash size="26px" /></ToolIcon>
+                <ToolIcon nth={1} selected={selected_id} set_selected={set_selected_id} id="line_tool_icon"  ><Slash size="26px" /></ToolIcon>
+                <ToolIcon nth={2} selected={selected_id} set_selected={set_selected_id} id="eraser_tool_icon"><Eraser size="26px" /></ToolIcon>
+                <ToolIcon nth={3} selected={selected_id} set_selected={set_selected_id} id="bucket_tool_icon"><PaintBucket size="26px" /></ToolIcon>
+                <ToolIcon nth={4} selected={selected_id} set_selected={set_selected_id} id="select_tool_icon"><SquareDashedMousePointer size="26px" /></ToolIcon>
+                <ToolIcon nth={5} selected={selected_id} set_selected={set_selected_id} id="rect_tool_icon"  ><Square size="26px" /></ToolIcon>
+                <ToolIcon nth={6} selected={selected_id} set_selected={set_selected_id} id="circle_tool_icon"><Circle size="26px" /></ToolIcon>
             </div>
         </div>
     )

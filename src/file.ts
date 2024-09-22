@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Option, Result } from "./utils";
+import { Option, Result } from "./common/utils"
 
 export type data_fileT = {
     layers: string[],

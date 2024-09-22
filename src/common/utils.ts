@@ -90,7 +90,7 @@ export class Option<T> {
         }
     }
     public static from_nullable<T>(v: T | null): Option<T> {
-        if( v !== null) {
+        if (v !== null) {
             return Option.Some<T>(v);
         } else {
             return Option.None();
@@ -99,3 +99,28 @@ export class Option<T> {
 }
 
 export type UnRequired<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export class State<T> {
+    private set_state: (updater: ((prev: T) => T) | T) => void;
+    private cache: T
+    constructor([initial, set_state]: [T, (updater: ((prev: T) => T) | T) => void]) {
+        this.set_state = set_state;
+        this.cache = initial;
+    }
+    val_local() {
+        return this.cache;
+    }
+    val_global() {
+        this.set_state(_ => { this.cache = _; return _ });
+        return this.cache;
+    }
+    set(updater: ((prev: T) => T) | T) {
+        this.set_state((prev) => {
+            const new_v = typeof updater === "function"
+                ? (updater as (prev: T) => T)(prev)
+                : updater;
+            this.cache = new_v;
+            return new_v;
+        });
+    }
+}

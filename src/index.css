@@ -16,3 +16,8 @@ html, body, #root, #window {
     display: flex;
     flex-direction: row;
 }
+
+div, canvas {
+    user-select: none;
+    -webkit-user-drag: none;
+}

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { LayerList } from "./layer_list";
+import { LayerArea } from "./layer_area";
 import { WorkSpace } from "./workspace";
 import settings from "./setting.json"
-import { Result, UnRequired } from "./utils";
+import { Result, UnRequired } from "./common/utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
@@ -71,7 +71,7 @@ export const App = () => {
     return (
         !is_loading ? (
             <div id="app">
-                <LayerList />
+                <LayerArea />
                 <WorkSpace />
             </div>
         ) : (<ProjectLoading />)

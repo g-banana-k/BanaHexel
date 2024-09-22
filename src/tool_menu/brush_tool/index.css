@@ -1,8 +1,0 @@
-#brush_tool_menu_flex_1 {
-    height: 100%;
-    flex-direction: column;
-}
-
-#brush_tool_menu_flex_1 .common_slider_with_box_outer {
-    margin: 6px;
-}

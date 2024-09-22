@@ -16,6 +16,7 @@
 #canvas_body_div canvas,
 #canvas_background_div canvas {
     image-rendering: pixelated;
+    user-select: none,
 }
 
 #canvas_scroll_bar_vertical {

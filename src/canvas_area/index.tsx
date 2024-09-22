@@ -126,10 +126,10 @@ export const CanvasArea = () => {
 export const canvas_tools = [
     "none",
     "brush_tool",
+    "line_tool",
     "eraser_tool",
     "bucket_tool",
     "select_tool",
     "rect_tool",
     "circle_tool",
-    "line_tool",
 ] as const;

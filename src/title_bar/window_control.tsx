@@ -5,7 +5,6 @@ import { useRecoilValue } from "recoil";
 
 export const WindowControl = () => {
     const window_size = useRecoilValue(window_size_state);
-    console.log(window_size)
     return (
         <div id="title_bar_window_control">
             <div
