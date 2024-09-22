@@ -1,4 +1,4 @@
-div#work_space {
+#work_space {
     flex-grow: 1;
     background-color: #222;
     padding: 15px;
@@ -6,26 +6,26 @@ div#work_space {
     flex-direction: column;
 }
 
-div#work_space_row_flex_1 {
+#work_space_row_flex_1 {
     height: 100px;
     margin: 0 0 20px 0;
     border-bottom: dashed #333;
 }
 
-div#work_space_row_flex_2 {
+#work_space_row_flex_2 {
     flex-grow: 1;
     margin: 0;
     display: flex;
     flex-direction: row;
 }
 
-div#work_space_row_flex_3 {
+#work_space_row_flex_3 {
     height: 36px;
     margin: 10px 0 0 0;
     display: flex;
     flex-direction: row;
 }
 
-div.work_space_flex_space {
+.work_space_flex_space {
     flex-grow: 1;
 }

@@ -1,4 +1,4 @@
-div#tool_select_outer {
+#tool_select_outer {
     width: 130px;
     height: 100%;
     position: relative;
@@ -7,11 +7,11 @@ div#tool_select_outer {
     scrollbar-color: #555 #0000;
 }
 
-div#tool_select {
+#tool_select {
     position: absolute;
 }
 
-div.tool_icon {
+.tool_icon {
     height: 32px;
     width: 32px;
     padding: 4px;
@@ -21,19 +21,19 @@ div.tool_icon {
     display: inline-block;
 }
 
-div.tool_icon:nth-child(2n) {
+.tool_icon:nth-child(2n) {
     margin-right: 0;
 }
 
-div.tool_icon:hover {
+.tool_icon:hover {
     background-color: #5fe07544;
 }
 
-div.tool_icon.selected_tool_icon {
+.tool_icon.selected_tool_icon {
     background-color: #5fe07566;
 }
 
-div.tool_icon svg {
+.tool_icon svg {
     position: absolute;
     color: #fff;
     top: 0;

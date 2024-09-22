@@ -1,5 +1,5 @@
 import { atom, useRecoilState } from "recoil";
-import { SliderWithBox } from "../common"
+import { SliderWithBox } from "../../common/slider";
 
 export const brush_tool_color_state = atom({
     key: "brush_tool_color_state",

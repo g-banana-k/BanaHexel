@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import "./common.css";
+import "./slider.css";
 
 export const Slider = ({
     setter,

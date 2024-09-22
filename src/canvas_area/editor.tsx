@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { selected_tool_id_state } from "../tool_select";
 import { canvas_tools } from ".";
-import { current_layer_state, layer_arr_state } from "../App";
+import { current_layer_state, layer_arr_state } from "../app";
 import { Layer } from "../data";
 import { brush_tool_color_state } from "../tool_menu/brush_tool/color_picker";
 

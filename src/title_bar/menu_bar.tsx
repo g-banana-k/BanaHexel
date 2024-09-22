@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { canvas_size_state, is_loading_state, layer_arr_state, load_file, opening_file_state_path } from "../App";
+import { canvas_size_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state } from "../app";
 import { open_file, save_file_new, save_file_with_path } from "../file";
 
 export const MenuBar = () => {
@@ -14,7 +14,7 @@ export const MenuBar = () => {
     const set_loading = useSetRecoilState(is_loading_state);
     const set_layer_arr = useSetRecoilState(layer_arr_state);
     const set_canvas_size = useSetRecoilState(canvas_size_state);
-    const [opening_file_path, set_opening_file_path] = useRecoilState(opening_file_state_path);
+    const [opening_file_path, set_opening_file_path] = useRecoilState(opening_file_path_state);
 
     document.addEventListener("mousedown", e => {
         if (!menu_bar_ref.current) return;

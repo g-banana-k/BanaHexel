@@ -1,25 +1,12 @@
 import { useEffect } from "react";
-import "./App.css";
 import { LayerList } from "./layer_list";
 import { WorkSpace } from "./workspace";
-import { TitleBar } from "./title_bar";
-import { appWindow } from "@tauri-apps/api/window";
 import settings from "./setting.json"
 import { Result, UnRequired } from "./utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
 import { binary_to_bitmap, data_fileT, open_file_from_path } from "./file";
-
-export const window_size_state = atom({
-    key: "window_size_state",
-    default: { w: window.innerWidth, h: window.innerHeight },
-})
-
-export const is_window_maximized_state = atom({
-    key: "is_window_maximized_state",
-    default: false,
-})
 
 export const layer_arr_state = atom<Layer[] | undefined>({
     key: "layer_arr_state",
@@ -41,8 +28,8 @@ export const is_loading_state = atom<boolean>({
     default: true,
 })
 
-export const opening_file_state_path = atom<string | undefined>({
-    key: "opening_file_state_path",
+export const opening_file_path_state = atom<string | undefined>({
+    key: "opening_file_path_state",
     default: undefined,
 })
 
@@ -67,12 +54,11 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     setters.set_loading(false);
 }
 
-
 export const App = () => {
     const [is_loading, set_loading] = useRecoilState(is_loading_state);
     const set_layer_arr = useSetRecoilState(layer_arr_state);
     const set_canvas_size = useSetRecoilState(canvas_size_state);
-    const set_opening_file_path = useSetRecoilState(opening_file_state_path);
+    const set_opening_file_path = useSetRecoilState(opening_file_path_state);
     useEffect(() => {
         (async () => {
             const data = (await open_file_from_path(settings.default_project)).unwrap();
@@ -82,28 +68,14 @@ export const App = () => {
         })()
     }, [])
 
-    const set_window_size = useSetRecoilState(window_size_state);
-    const set_maximized = useSetRecoilState(is_window_maximized_state);
-
-    useEffect(() => {
-        (async () => set_maximized(await appWindow.isMaximized()))();
-        appWindow.onResized(async (_) => {
-            set_window_size({ w: window.innerWidth, h: window.innerHeight });
-            set_maximized(await appWindow.isMaximized());
-        })
-    }, [])
-
     return (
-        <div id="app">
-            <TitleBar is_loading={is_loading} />
-            {!is_loading ? (<div id="main">
+        !is_loading ? (
+            <div id="app">
                 <LayerList />
                 <WorkSpace />
-            </div>) : <ProjectLoading />}
-        </div>
+            </div>
+        ) : (<ProjectLoading />)
     );
 }
 
 export default App;
-
-export type window_sizeT = { w: number, h: number };

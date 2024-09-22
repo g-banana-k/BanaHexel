@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import "./index.css"
 import { useRecoilState } from "recoil"
-import { current_layer_state, layer_arr_state } from "../App"
+import { current_layer_state, layer_arr_state } from "../app"
 
 export const LayerList = () => {
     const [layer_arr, set_layer_arr] =useRecoilState(layer_arr_state);

@@ -4,8 +4,9 @@ import { background_image } from "./background";
 import { SetterOrUpdater, useRecoilState, useRecoilValue } from "recoil";
 import { zoom_state } from "../zoom_in_out";
 import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
-import { canvas_size_state, current_layer_state, layer_arr_state, window_size_state } from "../App";
+import { canvas_size_state, current_layer_state, layer_arr_state} from "../app";
 import { CanvasEditor } from "./editor";
+import { window_size_state } from "../window";
 
 export const CanvasArea = () => {
     const [current_layer, _set_current_layer] = useRecoilState(current_layer_state);

@@ -1,19 +1,18 @@
-html, body, div#root, div#app {
+html, body, #root, #window {
     margin: 0;
     width: 100%;
     height: 100%;
 }
 
-div#app {
+#window {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-div#main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: row;
+#app {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: row;
 }
-

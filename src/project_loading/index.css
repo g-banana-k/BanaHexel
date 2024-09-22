@@ -1,4 +1,4 @@
-div#loading_background {
+#loading_background {
     background-color: #333;
     width: 100%;
     flex-grow: 1;

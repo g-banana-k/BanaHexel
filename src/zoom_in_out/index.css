@@ -1,10 +1,10 @@
-div#zoom_in_out {
+#zoom_in_out {
     display: flex;
     flex-direction: row;
     color: #fff;
 }
 
-div#zoom_in_out_button_outer {
+#zoom_in_out_button_outer {
     background-color: #222;
     display: flex;
     flex-direction: row;
@@ -12,13 +12,13 @@ div#zoom_in_out_button_outer {
     height: 36px;
 }
 
-div#zoom_ratio_outer {
+#zoom_ratio_outer {
     display: table;
     width: 70px;
     height: 36px;
 }
 
-div#zoom_ratio_inner {
+#zoom_ratio_inner {
     display: table-cell;
     vertical-align: middle;
     user-select: none;
@@ -50,7 +50,7 @@ input#zoom_text_box:focus {
     border-radius: 2px;
 }
 
-div.zoom_in_out_button {
+.zoom_in_out_button {
     height: 36px;
     width: 36px;
     position: relative;
@@ -58,15 +58,15 @@ div.zoom_in_out_button {
     border-radius: 4px;
 }
 
-div.zoom_in_out_button:hover {
+.zoom_in_out_button:hover {
     background-color: #5fe07522;
 }
 
-div.zoom_in_out_button:active {
+.zoom_in_out_button:active {
     background-color: #5fe07544;
 }
 
-div.zoom_in_out_button svg {
+.zoom_in_out_button svg {
     position: absolute;
     color: #fff;
     top: 0;

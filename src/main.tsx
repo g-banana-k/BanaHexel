@@ -1,12 +1,15 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import { App } from "./App";
 import { RecoilRoot } from "recoil";
+import { Window } from "./window";
 
 const root = createRoot(document.getElementById("root") as Element);
 
 root.render(
-    <RecoilRoot>
-        <App />
-    </RecoilRoot>
+    <StrictMode>
+        <RecoilRoot>
+            <Window />
+        </RecoilRoot>
+    </StrictMode>
 );
