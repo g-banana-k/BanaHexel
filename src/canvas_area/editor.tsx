@@ -52,18 +52,29 @@ export const CanvasEditor = ({
     const eraser_thickness = new State(useRecoilState(eraser_tool_thickness_state));
 
     const zoom = useRef(z);
-    const fn_data =new State(useState(Option.None<ReturnType<typeof editor_tools>>()));
+    const fn_data = new State(useState(Option.None<ReturnType<typeof editor_tools>>()));
 
     useEffect(() => { zoom.current = z }, [z]);
 
     useEffect(() => {
-        const b_t = selected_tool.current;
+        const b_tool = selected_tool.current;
+        const n_tool = selected_tool_id;
         selected_tool.current = selected_tool_id;
         fn_data.val_local().on_some(fn_data => {
-            const f = fn_data[b_t].on_end;
-            if (f) f();
+            const on_end = fn_data[b_tool].on_end;
+            const on_start = fn_data[n_tool].on_start;
+            if (on_end) on_end({ new_tool: n_tool });
+            if (on_start) on_start({ old_tool: b_tool });
         })
     }, [selected_tool_id]);
+
+    useEffect(() => {
+        fn_data.val_local().on_some(fn_data => {
+            const on_canvas_change = fn_data[selected_tool_id].on_canvas_change;
+            if (on_canvas_change) on_canvas_change({});
+        })
+    }, [layers_arr.val_global()![current_layer.val_global()].uuid])
+
     useEffect(() => {
         const canvas = canvas_ref.current;
         if (!canvas) return;
@@ -94,7 +105,6 @@ export const CanvasEditor = ({
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
             const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, }
-
             const fn = fn_data.val_local().unwrap()[selected_tool.current];
             if (is_mouse_down) {
                 if (fn.tool_move) fn.tool_move(packed);

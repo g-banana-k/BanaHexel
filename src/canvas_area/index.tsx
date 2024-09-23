@@ -129,7 +129,7 @@ export const canvas_tools = [
     "line_tool",
     "eraser_tool",
     "bucket_tool",
-    "text_tool",
+    "stamp_tool",
     "select_tool",
     "rect_tool",
 ] as const;

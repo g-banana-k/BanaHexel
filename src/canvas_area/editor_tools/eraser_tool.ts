@@ -46,5 +46,8 @@ export const eraser_tool = ({
             ctx.fillStyle = "#fff4";
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
         },
+        "on_end": () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 };

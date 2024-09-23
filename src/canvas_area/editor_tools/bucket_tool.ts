@@ -42,6 +42,9 @@ export const bucket_tool = ({
             ctx.fillStyle = color;
             ctx.fillRect(x, y, 1, 1);
         },
+        "on_end": () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 };
 

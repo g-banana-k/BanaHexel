@@ -1,4 +1,4 @@
-import { Brush, Circle, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer, Type } from "lucide-react";
+import { Brush, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer, Stamp, Type } from "lucide-react";
 import "./index.css";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
@@ -19,7 +19,7 @@ export const ToolSelect = () => {
                 <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="line_tool"  ><Slash size="26px" /></ToolIcon>
                 <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="eraser_tool"><Eraser size="26px" /></ToolIcon>
                 <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="bucket_tool"><PaintBucket size="26px" /></ToolIcon>
-                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="text_tool"><Type size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="stamp_tool"><Stamp size="26px" /></ToolIcon>
                 <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="select_tool"><SquareDashedMousePointer size="26px" /></ToolIcon>
                 <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="rect_tool"  ><Square size="26px" /></ToolIcon>
             </div>

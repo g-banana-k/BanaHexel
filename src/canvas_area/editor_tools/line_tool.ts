@@ -50,5 +50,8 @@ export const line_tool = ({
             ctx.fillStyle = color;
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
         },
+        "on_end": () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 };

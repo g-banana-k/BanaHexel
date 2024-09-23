@@ -7,13 +7,16 @@ import { eraser_tool } from "./eraser_tool";
 import { line_tool } from "./line_tool";
 import { rect_tool } from "./rect_tool";
 import { select_tool } from "./select_tool";
+import { stamp_tool } from "./stamp_tool";
 
 export type toolT = {
     "down"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean }) => void,
     "up"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean, was_down: boolean }) => void,
     "move"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean }) => void,
     "tool_move"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean }) => void,
-    "on_end"?: () => void,
+    "on_end"?: (args: { new_tool: string }) => void,
+    "on_start"?: (args: { old_tool: string }) => void,
+    "on_canvas_change"?: (args: {}) => void,
 };
 
 export type argsT = {
@@ -58,7 +61,7 @@ export const editor_tools = ({
         "line_tool": line_tool(packed),
         "eraser_tool": eraser_tool(packed),
         "bucket_tool": bucket_tool(packed),
-        "text_tool": {},
+        "stamp_tool": stamp_tool(packed),
         "select_tool": select_tool(packed),
         "rect_tool": rect_tool(packed),
     }

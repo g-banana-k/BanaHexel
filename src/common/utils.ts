@@ -101,8 +101,8 @@ export class Option<T> {
 export type UnRequired<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export class State<T> {
-    private set_state: (updater: ((prev: T) => T) | T) => void;
-    private cache: T
+    protected set_state: (updater: ((prev: T) => T) | T) => void;
+    protected cache: T
     constructor([initial, set_state]: [T, (updater: ((prev: T) => T) | T) => void]) {
         this.set_state = set_state;
         this.cache = initial;
@@ -115,6 +115,32 @@ export class State<T> {
         return this.cache;
     }
     set(updater: ((prev: T) => T) | T) {
+        this.set_state((prev) => {
+            const new_v = typeof updater === "function"
+                ? (updater as (prev: T) => T)(prev)
+                : updater;
+            this.cache = new_v;
+            return new_v;
+        });
+    }
+}
+
+export class StateWithHistory<T> extends State<T> {
+    protected prev: Option<T>;
+    constructor([initial, set_state]: [T, (updater: ((prev: T) => T) | T) => void]) {
+        super([initial, set_state])
+        this.prev = Option.None();
+    }
+    val_local() {
+        return this.cache;
+    }
+    val_global() {
+        this.prev = Option.Some(this.cache);
+        this.set_state(_ => { this.cache = _; return _ });
+        return this.cache;
+    }
+    set(updater: ((prev: T) => T) | T) {
+        this.prev = Option.Some(this.cache);
         this.set_state((prev) => {
             const new_v = typeof updater === "function"
                 ? (updater as (prev: T) => T)(prev)

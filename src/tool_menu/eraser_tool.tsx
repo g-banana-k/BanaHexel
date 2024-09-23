@@ -5,7 +5,6 @@ import { ColorPicker } from "../common/color_picker";
 import { brush_tool_color_state, eraser_tool_thickness_state } from ".";
 
 export const EraserToolMenu = () => {
-    console.log("lol");
     const [brush_color, set_brush_color] = useRecoilState(brush_tool_color_state);
     const [eraser_thickness, set_eraser_thickness] = useRecoilState(eraser_tool_thickness_state);
     return (<div className="tool_menu_brush">

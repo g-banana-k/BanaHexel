@@ -9,6 +9,7 @@ export const select_tool = ({
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
+    let prev_layer_i = Option.None<number>();
     let clipping = Option.None<{
         x: number,
         y: number,
@@ -102,12 +103,25 @@ export const select_tool = ({
             ctx.fillRect(x, y, 1, 1);
         },
         "on_end": () => {
-            clipping.on_some(() => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const cl = clipping.unwrap();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            clipping.on_some(cl => {
                 const layer = layers_arr.val_global()![current_layer.val_global()];
                 layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
                 layer.preview_update();
+                layers_arr.set([...layers_arr.val_local()!]);
+                clipping = Option.None();
+            });
+            prev_layer_i = Option.Some(current_layer.val_local());
+        },
+        "on_start": () => {
+            prev_layer_i = Option.Some(current_layer.val_local());
+        },
+        "on_canvas_change": () => {
+            const prev_layer = layers_arr.val_global()![prev_layer_i.unwrap()];
+            clipping.on_some(cl => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                prev_layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                prev_layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 clipping = Option.None();
             });
