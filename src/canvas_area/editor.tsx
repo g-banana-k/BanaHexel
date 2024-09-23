@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { selected_tool_id_state } from "../tool_select";
-import { canvas_tools } from ".";
+import { canvas_toolsT } from ".";
 import { current_layer_state, layer_arr_state } from "../app";
 import { brush_tool_color_state, brush_tool_thickness_state, eraser_tool_thickness_state } from "../tool_menu"
-import { State } from "../common/utils";
+import { Option, State } from "../common/utils";
 import { editor_tools } from "./editor_tools";
 
 type canvas_editor_propsT = {
@@ -46,22 +46,31 @@ export const CanvasEditor = ({
     const canvas_ref = useRef<HTMLCanvasElement>(null);
 
     const selected_tool_id = useRecoilValue(selected_tool_id_state);
-    const selected_tool = useRef<typeof canvas_tools[number]>("none");
+    const selected_tool = useRef<canvas_toolsT>("none");
     const brush_color = new State(useRecoilState(brush_tool_color_state));
     const brush_thickness = new State(useRecoilState(brush_tool_thickness_state));
     const eraser_thickness = new State(useRecoilState(eraser_tool_thickness_state));
 
     const zoom = useRef(z);
+    const fn_data =new State(useState(Option.None<ReturnType<typeof editor_tools>>()));
+
     useEffect(() => { zoom.current = z }, [z]);
+
     useEffect(() => {
-        selected_tool.current = canvas_tools[selected_tool_id + 1];
+        const b_t = selected_tool.current;
+        selected_tool.current = selected_tool_id;
+        fn_data.val_local().on_some(fn_data => {
+            const f = fn_data[b_t].on_end;
+            if (f) f();
+        })
     }, [selected_tool_id]);
     useEffect(() => {
         const canvas = canvas_ref.current;
         if (!canvas) return;
         canvas.width = canvas_width;
         canvas.height = canvas_height;
-    }, [canvas_width, canvas_height])
+    }, [canvas_width, canvas_height]);
+
     useEffect(() => {
         const div = div_ref.current;
         const canvas = canvas_ref.current;
@@ -72,7 +81,7 @@ export const CanvasEditor = ({
         const ctx = canvas.getContext("2d")!;
         set_once(false);
         once = false;
-        const fn_data = editor_tools({
+        fn_data.set(Option.Some(editor_tools({
             canvas,
             ctx,
             brush_color,
@@ -80,43 +89,41 @@ export const CanvasEditor = ({
             eraser_thickness,
             layers_arr,
             current_layer
-        });
-        let fm = false;
+        })));
         document.addEventListener("mousemove", e => {
-            if (!is_mouse_down) return;
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
+            const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, }
 
-            const fn = fn_data[selected_tool.current];
-            if (fn.tool_move) fn.tool_move(x, y);
-            else if (fn.move) { fn.move(x, y); fm = true; };
-        });
-        div.addEventListener("mousemove", e => {
-            if (is_mouse_down) return;
-            if (fm) return;
-            const canvas_rect = canvas.getBoundingClientRect();
-            const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
-
-            const fn = fn_data[selected_tool.current];
-            if (fn.move) fn.move(x, y);
+            const fn = fn_data.val_local().unwrap()[selected_tool.current];
+            if (is_mouse_down) {
+                if (fn.tool_move) fn.tool_move(packed);
+            } else if (div.contains(e.target as Node | null)) {
+                if (fn.move) fn.move(packed);
+            }
         });
         div.addEventListener("mousedown", e => {
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
 
-            const fn = fn_data[selected_tool.current];
-            if (fn.down) fn.down(x, y);
+            const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, }
+
+            const fn = fn_data.val_local().unwrap()[selected_tool.current];
+            if (fn.down) fn.down(packed);
             set_mouse_down(true);
         });
         document.addEventListener("mouseup", e => {
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
 
-            const fn = fn_data[selected_tool.current];
-            if (fn.up) fn.up(x, y, is_mouse_down);
+            const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, was_down: is_mouse_down }
+
+            const fn = fn_data.val_local().unwrap()[selected_tool.current];
+            if (fn.up) fn.up(packed);
             set_mouse_down(false);
         });
     }, []);
+
     return (
         <div ref={div_ref} style={{
             position: "absolute",

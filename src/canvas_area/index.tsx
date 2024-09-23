@@ -129,7 +129,9 @@ export const canvas_tools = [
     "line_tool",
     "eraser_tool",
     "bucket_tool",
+    "text_tool",
     "select_tool",
     "rect_tool",
-    "circle_tool",
 ] as const;
+
+export type canvas_toolsT = typeof canvas_tools[number]

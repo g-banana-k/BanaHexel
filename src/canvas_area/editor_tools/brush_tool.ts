@@ -1,6 +1,6 @@
 import { argsT, bresenham, toolT } from ".";
 
-export const brush_tools = ({
+export const brush_tool = ({
     canvas,
     ctx,
     brush_color,
@@ -11,7 +11,7 @@ export const brush_tools = ({
     let b_x = 0;
     let b_y = 0;
     return {
-        "down": (x, y) => {
+        "down": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const color = brush_color.val_global();
             const thickness = brush_thickness.val_global();
@@ -21,7 +21,7 @@ export const brush_tools = ({
             b_x = x;
             b_y = y;
         },
-        "tool_move": (x, y) => {
+        "tool_move": ({ x, y }) => {
             const color = brush_color.val_global();
             const thickness = brush_thickness.val_global();
             const shift = Math.floor((thickness) / 2);
@@ -32,7 +32,7 @@ export const brush_tools = ({
             b_x = x;
             b_y = y;
         },
-        "up": (_x, _y, was_down) => {
+        "up": ({ was_down }) => {
             if (!was_down) return;
             const layer = layers_arr.val_global()![current_layer.val_global()];
             layer.ctx.drawImage(canvas, 0, 0);
@@ -40,7 +40,8 @@ export const brush_tools = ({
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
         },
-        "move": (x, y) => {
+        "move": ({ x, y }) => {
+            console.log("gotchard")
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const color = brush_color.val_global();
             const thickness = brush_thickness.val_global();

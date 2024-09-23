@@ -1,18 +1,19 @@
-import { canvas_tools } from "..";
+import { canvas_toolsT } from "..";
 import { State } from "../../common/utils";
 import { Layer } from "../../data";
-import { brush_tools } from "./brush_tool";
-import { eraser_tools } from "./eraser_tool";
-import { line_tools } from "./line_tool";
-import { rect_tools } from "./rect_tool";
-import { select_tools } from "./select_tool";
+import { brush_tool } from "./brush_tool";
+import { bucket_tool } from "./bucket_tool";
+import { eraser_tool } from "./eraser_tool";
+import { line_tool } from "./line_tool";
+import { rect_tool } from "./rect_tool";
+import { select_tool } from "./select_tool";
 
 export type toolT = {
-    "down"?: (x: number, y: number) => void,
-    "up"?: (x: number, y: number, was_down: boolean) => void,
-    "move"?: (x: number, y: number) => void,
-    "tool_move"?: (x: number, y: number) => void,
-
+    "down"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean }) => void,
+    "up"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean, was_down: boolean }) => void,
+    "move"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean }) => void,
+    "tool_move"?: (args: { x: number, y: number, shift: boolean, ctrl: boolean }) => void,
+    "on_end"?: () => void,
 };
 
 export type argsT = {
@@ -33,7 +34,7 @@ export const editor_tools = ({
     eraser_thickness,
     layers_arr,
     current_layer
-}: argsT): { [key in typeof canvas_tools[number]]: toolT } => {
+}: argsT): { [key in canvas_toolsT]: toolT } => {
     const packed = {
         canvas,
         ctx,
@@ -46,20 +47,20 @@ export const editor_tools = ({
     return {
         "none": (() => {
             return {
-                "move": (x, y) => {
+                "move": ({ x, y }) => {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.fillStyle = "#fff4";
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
         })(),
-        "brush_tool": brush_tools(packed),
-        "line_tool": line_tools(packed),
-        "eraser_tool": eraser_tools(packed),
-        "bucket_tool": {},
-        "select_tool": select_tools(packed),
-        "rect_tool": rect_tools(packed),
-        "circle_tool": {},
+        "brush_tool": brush_tool(packed),
+        "line_tool": line_tool(packed),
+        "eraser_tool": eraser_tool(packed),
+        "bucket_tool": bucket_tool(packed),
+        "text_tool": {},
+        "select_tool": select_tool(packed),
+        "rect_tool": rect_tool(packed),
     }
 };
 

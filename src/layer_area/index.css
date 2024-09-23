@@ -46,15 +46,18 @@
 
 .layer_thumbnail_preview_container {
     border-radius: 10px;
-    outline: solid #2228;
+    outline: 3px solid #2228;
+    overflow: hidden;
+    width: 100px;
+    height: 100px;
 }
 
 .layer_thumbnail_preview_container:hover {
-    outline: solid #5fe07588;
+    outline: 3px solid #5fe07588;
 }
 
 .layer_thumbnail_preview_container.layer_thumbnail_selected {
-    outline: solid #5fe075;
+    outline: 3px solid #5fe075;
 }
 
 .layer_thumbnail_preview {

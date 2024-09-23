@@ -1,11 +1,9 @@
-import { atom, useRecoilState, useRecoilValue } from "recoil";
+import { atom, useRecoilValue } from "recoil";
 import "./index.css";
 import { BrushToolMenu } from "./brush_tool";
 import { selected_tool_id_state } from "../tool_select";
 import { EraserToolMenu } from "./eraser_tool";
-import { LineToolMenu } from "./line_tool";
-import { canvas_tools } from "../canvas_area";
-import { RectToolMenu } from "./rect_tool";
+import { canvas_toolsT } from "../canvas_area";
 
 export const brush_tool_color_state = atom({
     key: "brush_tool_color_state",
@@ -23,16 +21,13 @@ export const eraser_tool_thickness_state = atom({
 })
 
 export const ToolMenu = () => {
-    const tool_id_raw = useRecoilValue(selected_tool_id_state);
-    const tool_id = canvas_tools[tool_id_raw + 1];
+    const tool_id = useRecoilValue(selected_tool_id_state);
     return (<div id="tool_menu">
-        {{
+        {({
             "none": "",
             "brush_tool": < BrushToolMenu />,
-            "line_tool": <LineToolMenu />,
-            "eraser_tool": <EraserToolMenu />,
-            "rect_tool": <RectToolMenu />
-        }[tool_id] ?? ""}
+            "eraser_tool": <EraserToolMenu />
+        } as Partial<{ [key in canvas_toolsT]: JSX.Element | string }>)[tool_id] ?? <BrushToolMenu />}
     </div>
     )
 }

@@ -1,7 +1,7 @@
 import { argsT, toolT } from ".";
 import { Option } from "../../common/utils";
 
-export const select_tools = ({
+export const select_tool = ({
     canvas,
     ctx,
     layers_arr,
@@ -20,11 +20,18 @@ export const select_tools = ({
         ctx: CanvasRenderingContext2D,
     }>();
     return {
-        "down": (x, y) => {
+        "down": ({ x, y }) => {
+            b_x = x;
+            b_y = y;
             if (clipping.is_some()
                 && clipping.unwrap().x <= x && x <= clipping.unwrap().x + clipping.unwrap().rb_x - clipping.unwrap().lt_x
                 && clipping.unwrap().y <= y && y <= clipping.unwrap().y + clipping.unwrap().rb_y - clipping.unwrap().lt_y
             ) {
+                const cl = clipping.unwrap();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(cl.canvas, cl.x + x - b_x, cl.y + y - b_y);
+                ctx.strokeStyle = "#5fe07544";
+                ctx.strokeRect(cl.x + x - b_x + 0.5, cl.y + y - b_y + 0.5, cl.rb_x - cl.lt_x, cl.rb_y - cl.lt_y);
             } else if (clipping.is_some()) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const cl = clipping.unwrap();
@@ -33,41 +40,35 @@ export const select_tools = ({
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 clipping = Option.None();
-            } else {
-            }
-            b_x = x;
-            b_y = y;
-            console.log(b_x, b_y);
+            } else { }
         },
-        "tool_move": (x, y) => {
+        "tool_move": ({ x, y }) => {
             if (clipping.is_some()) {
                 const cl = clipping.unwrap();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(cl.canvas, cl.x + x - b_x, cl.y + y - b_y);
-                ctx.strokeStyle = "#5fe07588";
-                ctx.strokeRect(cl.x + x - b_x, cl.y + y - b_y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+                ctx.strokeStyle = "#5fe07544";
+                ctx.strokeRect(cl.x + x - b_x + 0.5, cl.y + y - b_y + 0.5, cl.rb_x - cl.lt_x, cl.rb_y - cl.lt_y);
             } else {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#fff4";
+                ctx.fillStyle = "#5fe07566";
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
                 ctx.fillRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
             }
         },
-        "up": (x, y, was_down) => {
+        "up": ({ x, y, was_down }) => {
             if (!was_down) return;
             if (clipping.is_some()) {
                 const cl = clipping.unwrap();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(cl.canvas, cl.x + x - b_x, cl.y + y - b_y);
                 clipping = Option.Some({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y });
-                ctx.strokeStyle = "#5fe07588";
-                ctx.strokeRect(cl.x + x - b_x, cl.y + y - b_y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+                ctx.fillStyle = "#5fe07544";
+                ctx.fillRect(cl.x + x - b_x, cl.y + y - b_y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
             } else {
-                ctx.fillStyle = "#fff4";
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
-                ctx.fillRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
                 const layer = layers_arr.val_global()![current_layer.val_global()];
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const cl_canvas = document.createElement("canvas");
@@ -87,18 +88,29 @@ export const select_tools = ({
                 });
                 const cl = clipping.unwrap();
                 ctx.drawImage(cl.canvas, cl.x, cl.y);
-                ctx.strokeStyle = "#5fe07588";
-                ctx.strokeRect(cl.x + x - b_x, cl.y + y - b_y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+                ctx.fillStyle = "#5fe07544";
+                ctx.fillRect(cl.x, cl.y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
                 layer.ctx.clearRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
             }
         },
-        "move": (x, y) => {
+        "move": ({ x, y }) => {
             if (clipping.is_some()) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#fff4";
+            ctx.fillStyle = "#5fe07544";
             ctx.fillRect(x, y, 1, 1);
         },
+        "on_end": () => {
+            clipping.on_some(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const cl = clipping.unwrap();
+                const layer = layers_arr.val_global()![current_layer.val_global()];
+                layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                layer.preview_update();
+                layers_arr.set([...layers_arr.val_local()!]);
+                clipping = Option.None();
+            });
+        }
     }
 };

@@ -1,6 +1,6 @@
 import { argsT, bresenham, toolT } from ".";
 
-export const eraser_tools = ({
+export const eraser_tool = ({
     canvas,
     ctx,
     eraser_thickness,
@@ -10,7 +10,7 @@ export const eraser_tools = ({
     let b_x = 0;
     let b_y = 0;
     return {
-        "down": (x, y) => {
+        "down": ({x, y}) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const thickness = eraser_thickness.val_global();
@@ -19,7 +19,7 @@ export const eraser_tools = ({
             b_x = x;
             b_y = y;
         },
-        "tool_move": (x, y) => {
+        "tool_move": ({x, y}) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const layer = layers_arr.val_global()![current_layer.val_local()];
             const thickness = eraser_thickness.val_global();
@@ -30,7 +30,7 @@ export const eraser_tools = ({
             b_x = x;
             b_y = y;
         },
-        "up": (x, y) => {
+        "up": ({x, y}) => {
             const layer = layers_arr.val_global()![current_layer.val_local()];
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
@@ -39,7 +39,7 @@ export const eraser_tools = ({
             ctx.fillStyle = "#fff4";
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
         },
-        "move": (x, y) => {
+        "move": ({x, y}) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const thickness = eraser_thickness.val_global();
             const shift = Math.floor((thickness) / 2);

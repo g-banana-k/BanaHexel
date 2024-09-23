@@ -1,14 +1,7 @@
 import "./index.css";
-import { Hexagon, Maximize, Minimize, Minus, X } from "lucide-react";
+import { Hexagon } from "lucide-react";
 import { MenuBar } from "./menu_bar";
-import { appWindow } from "@tauri-apps/api/window";
 import { WindowControl } from "./window_control";
-
-const window_close = () => { appWindow.close() };
-
-const window_maximize = () => { appWindow.maximize() };
-const window_unmaximize = () => { appWindow.unmaximize() };
-const window_minimize = () => { appWindow.minimize() };
 
 export const TitleBar = (props: { is_loading?: boolean }) => {
     return (

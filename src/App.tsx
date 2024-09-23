@@ -37,6 +37,7 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     set_layer_arr: (arg0: Layer[]) => void,
     set_canvas_size: (arg0: { width: number, height: number }) => void,
     set_loading: (arg0: boolean) => void,
+    set_current_layer: (arg0: number | ((arg0: number) => number)) => void,
 }) => {
     const promises: Promise<Result<CanvasImageSource, unknown>>[] = [];
     if (data.layers !== undefined) data.layers.forEach((a) => promises.push(binary_to_bitmap(a)))
@@ -52,10 +53,12 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     setters.set_layer_arr(layers);
     setters.set_canvas_size(data.meta_data.canvas_size);
     setters.set_loading(false);
+    setters.set_current_layer(_ => Math.min(_, layers.length - 1))
 }
 
 export const App = () => {
     const [is_loading, set_loading] = useRecoilState(is_loading_state);
+    const set_current_layer = useSetRecoilState(current_layer_state);
     const set_layer_arr = useSetRecoilState(layer_arr_state);
     const set_canvas_size = useSetRecoilState(canvas_size_state);
     const set_opening_file_path = useSetRecoilState(opening_file_path_state);
@@ -64,7 +67,7 @@ export const App = () => {
             const data = (await open_file_from_path(settings.default_project)).unwrap();
             set_opening_file_path(settings.default_project);
             set_loading(true);
-            await load_file(data, { set_canvas_size, set_layer_arr, set_loading });
+            await load_file(data, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
         })()
     }, [])
 

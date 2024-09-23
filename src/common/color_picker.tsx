@@ -109,12 +109,12 @@ export const ColorPicker = ({
                         onBlur={e => {
                             set_color(rgba_to_code(...code_to_rgba((e.target as unknown as HTMLInputElement).value)))
                         }}
+                        defaultValue={color}
                     ></input>
                 </div>
                 : ""}
         </div>
     )
-
 }
 
 // const color_models = ["RGBA", "HSVA", "HSLA"] as const;
@@ -123,10 +123,10 @@ const color_models = ["RGBA"] as const;
 const to_hx = (n: number) => n.toString(16);
 const from_hx = (s: string) => parseInt(s, 16);
 
-const rgba_to_code = (r: number, g: number, b: number, a: number): string =>
+export const rgba_to_code = (r: number, g: number, b: number, a: number): string =>
     `#${('00' + to_hx(r)).slice(-2)}${('00' + to_hx(g)).slice(-2)}${('00' + to_hx(b)).slice(-2)}${('00' + to_hx(a)).slice(-2)}`
 
-const code_to_rgba = (c: string): [number, number, number, number] => {
+export const code_to_rgba = (c: string): [number, number, number, number] => {
     let d = c[0] === "#" ? c.substring(1, c.length) : c;
     while (d.length < 3) d = `0${d}`;
     if (d.length == 3) {

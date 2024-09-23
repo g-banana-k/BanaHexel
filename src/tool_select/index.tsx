@@ -1,12 +1,13 @@
-import { Brush, Circle, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer } from "lucide-react";
+import { Brush, Circle, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer, Type } from "lucide-react";
 import "./index.css";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { is_mouse_down_in_editor_state } from "../canvas_area/editor";
+import { canvas_toolsT } from "../canvas_area";
 
-export const selected_tool_id_state = atom({
+export const selected_tool_id_state = atom<canvas_toolsT>({
     key: "selected_tool_state",
-    default: -1
+    default: "none",
 })
 
 export const ToolSelect = () => {
@@ -14,27 +15,27 @@ export const ToolSelect = () => {
     return (
         <div id="tool_select_outer">
             <div id="tool_select">
-                <ToolIcon nth={0} selected={selected_id} set_selected={set_selected_id} id="brush_tool_icon" ><Brush size="26px" /></ToolIcon>
-                <ToolIcon nth={1} selected={selected_id} set_selected={set_selected_id} id="line_tool_icon"  ><Slash size="26px" /></ToolIcon>
-                <ToolIcon nth={2} selected={selected_id} set_selected={set_selected_id} id="eraser_tool_icon"><Eraser size="26px" /></ToolIcon>
-                <ToolIcon nth={3} selected={selected_id} set_selected={set_selected_id} id="bucket_tool_icon"><PaintBucket size="26px" /></ToolIcon>
-                <ToolIcon nth={4} selected={selected_id} set_selected={set_selected_id} id="select_tool_icon"><SquareDashedMousePointer size="26px" /></ToolIcon>
-                <ToolIcon nth={5} selected={selected_id} set_selected={set_selected_id} id="rect_tool_icon"  ><Square size="26px" /></ToolIcon>
-                <ToolIcon nth={6} selected={selected_id} set_selected={set_selected_id} id="circle_tool_icon"><Circle size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="brush_tool" ><Brush size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="line_tool"  ><Slash size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="eraser_tool"><Eraser size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="bucket_tool"><PaintBucket size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="text_tool"><Type size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="select_tool"><SquareDashedMousePointer size="26px" /></ToolIcon>
+                <ToolIcon selected={selected_id} set_selected={set_selected_id} tool_id="rect_tool"  ><Square size="26px" /></ToolIcon>
             </div>
         </div>
     )
 }
 
-const ToolIcon = (props: { id: string, children: ReactNode, nth: number, selected: number, set_selected: Dispatch<SetStateAction<number>> }) => {
+const ToolIcon = (props: { tool_id: canvas_toolsT, children: ReactNode, selected: canvas_toolsT, set_selected: Dispatch<SetStateAction<canvas_toolsT>> }) => {
     const is_mouse_down_in_editor = useRecoilValue(is_mouse_down_in_editor_state);
     return (
         <div
-            className={`tool_icon ${props.selected == props.nth ? "selected_tool_icon" : ""}`}
-            id={props.id}
+            className={`tool_icon ${props.selected == props.tool_id ? "selected_tool_icon" : ""}`}
+            id={`${props.tool_id}_icon`}
             onClick={() => {
                 if (is_mouse_down_in_editor) return;
-                if (props.nth == props.selected) { props.set_selected(-1) } else { props.set_selected(props.nth) }
+                if (props.tool_id == props.selected) { props.set_selected("none") } else { props.set_selected(props.tool_id) }
             }}
         >{props.children}
         </div>

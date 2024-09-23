@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { canvas_size_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state } from "../app";
+import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state } from "../app";
 import { open_file, save_file_new, save_file_with_path } from "../file";
 
 export const MenuBar = () => {
@@ -14,6 +14,7 @@ export const MenuBar = () => {
     const set_loading = useSetRecoilState(is_loading_state);
     const set_layer_arr = useSetRecoilState(layer_arr_state);
     const set_canvas_size = useSetRecoilState(canvas_size_state);
+    const set_current_layer = useSetRecoilState(current_layer_state);
     const [opening_file_path, set_opening_file_path] = useRecoilState(opening_file_path_state);
 
     document.addEventListener("mousedown", e => {
@@ -31,7 +32,7 @@ export const MenuBar = () => {
                     const canvas_w = !Number.isNaN(w) ? w : 64;
                     const canvas_h = !Number.isNaN(h) ? h : 64;
                     load_file({ meta_data: { canvas_size: { width: canvas_w, height: canvas_h } } }, {
-                        set_layer_arr, set_canvas_size, set_loading
+                        set_layer_arr, set_canvas_size, set_loading, set_current_layer
                     })
                 }} >新規作成</MenuContent>
                 <MenuContent on_click={() => {
@@ -52,7 +53,7 @@ export const MenuBar = () => {
                     new_data.on_some(v => {
                         set_loading(true);
                         set_opening_file_path(v[0]);
-                        load_file(v[1], { set_loading, set_layer_arr, set_canvas_size });
+                        load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer });
                     })
                 }} >開く</MenuContent>
 
