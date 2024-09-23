@@ -24,7 +24,6 @@ export const ToolMenu = () => {
     const tool_id = useRecoilValue(selected_tool_id_state);
     return (<div id="tool_menu">
         {({
-            "none": "",
             "brush_tool": < BrushToolMenu />,
             "eraser_tool": <EraserToolMenu />
         } as Partial<{ [key in canvas_toolsT]: JSX.Element | string }>)[tool_id] ?? <BrushToolMenu />}
