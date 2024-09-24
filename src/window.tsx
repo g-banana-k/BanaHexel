@@ -32,7 +32,9 @@ export const Window = () => {
     }, [])
 
     return (
-        <div id="window">
+        <div id="window" onContextMenu={e=> {
+            
+        }}>
             <TitleBar />
             <App />
         </div>

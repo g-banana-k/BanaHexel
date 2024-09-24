@@ -3,6 +3,7 @@ import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
 import { State } from "./utils";
 import "./color_picker.css"
+import { Palette, Plus } from "lucide-react";
 
 export const ColorPicker = ({
     color: c,
@@ -77,6 +78,10 @@ export const ColorPicker = ({
             }
         })
     }, [])
+
+    const is_palette_opening = new State(useState(false));
+    const palette_colors = new State(useState<{ code: string, uuid: string }[]>([]));
+
     return (
         <div className="common_color_picker_container" ref={container_ref}>
             <div
@@ -91,11 +96,19 @@ export const ColorPicker = ({
                 }}
             />
             {is_opening.val_local() ?
-                <div className="common_color_picker_main">
-                    <div className="common_color_picker_mode" onClick={() => {
-                        // model.set(({ "RGBA": "HSVA", "HSVA": "HSLA", "HSLA": "RGBA", } as const)[model.val()])
-                        model.set(({ "RGBA": "RGBA", } as const)[model.val_local()])
-                    }}>{model.val_local()}</div>
+                <div className="common_color_picker_main" style={{ top: height, }}>
+                    <div className="common_color_picker_flex">
+                        <div className="common_color_picker_mode" onClick={() => {
+                            // model.set(({ "RGBA": "HSVA", "HSVA": "HSLA", "HSLA": "RGBA", } as const)[model.val()])
+                            model.set(({ "RGBA": "RGBA", } as const)[model.val_local()])
+                        }}>{model.val_local()}</div>
+                        <div
+                            className="common_color_picker_palette_icon"
+                            onClick={() => { is_palette_opening.set(_ => !_); }}
+                        >
+                            <Palette size={24} />
+                        </div>
+                    </div>
                     <div className="common_color_picker_sliders">
                         <SliderWithBox setter={set_rgba_r} val={rgba_r} background={`linear-gradient(to right, ${rgba_to_code(0, rgba_g, rgba_b, rgba_a)}, ${rgba_to_code(255, rgba_g, rgba_b, rgba_a)})`} max={255} box_width={40} />
                         <SliderWithBox setter={set_rgba_g} val={rgba_g} background={`linear-gradient(to right, ${rgba_to_code(rgba_r, 0, rgba_b, rgba_a)}, ${rgba_to_code(rgba_r, 255, rgba_b, rgba_a)})`} max={255} box_width={40} />
@@ -113,7 +126,31 @@ export const ColorPicker = ({
                     ></input>
                 </div>
                 : ""}
-        </div>
+            {is_palette_opening.val_local() ?
+                <div className="common_color_picker_palette" style={{ top: height }}>
+                    {palette_colors.val_local().map(({ code, uuid }) => {
+                        return (<div
+                            key={uuid}
+                            className="common_color_picker_palette_color_button"
+                            style={{
+                                backgroundColor: code,
+                            }} 
+                            onContextMenu={e => {
+                                e.preventDefault()
+                                console.log("lol");
+                            }}
+                            />)
+                    })}
+                    <div
+                        className="common_color_picker_palette_add_button"
+                        onClick={() => palette_colors.set(colors => {
+                            colors.push({ code: color, uuid: crypto.randomUUID() });
+                            return [...colors];
+                        })}
+                    ><Plus size={24} /></div>
+                </div> : ""
+            }
+        </div >
     )
 }
 
