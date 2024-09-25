@@ -1,10 +1,11 @@
 import "./index.css"
 
-import { atom, useRecoilState } from "recoil";
+import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { TitleBar } from "./title_bar";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { appWindow } from "@tauri-apps/api/window";
 import App from "./app";
+import { context_menu_contents_state, context_menu_position_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
 
 
 export const window_size_state = atom({
@@ -31,12 +32,26 @@ export const Window = () => {
         })
     }, [])
 
+    const set_context_menu_open = useSetRecoilState(is_context_menu_open_state);
+    const set_context_menu_position = useSetRecoilState(context_menu_position_state);
+    const set_context_menu_contents = useSetRecoilState(context_menu_contents_state);
+
+    const context_menu_ref = useRef<HTMLDivElement>(null);
     return (
-        <div id="window" onContextMenu={e=> {
-            
+        <div id="window" onContextMenu={e => {
+            if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;
+            e.preventDefault();
+            if (context_menu_ref && context_menu_ref.current!.contains(e.target as Node)) return;
+            set_context_menu_open(_ => !_);
+            set_context_menu_position({ x: e.clientX, y: e.clientY });
+            set_context_menu_contents([
+                <div className="context_menu_content">知らぬが仏</div>,
+                <div className="context_menu_content">知らぬが仏</div>
+            ]);
         }}>
             <TitleBar />
             <App />
+            <ContextMenu container_ref={context_menu_ref} />
         </div>
     )
 }

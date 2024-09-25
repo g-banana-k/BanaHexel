@@ -131,13 +131,13 @@ export const ColorPicker = ({
                     {palette_colors.val_local().map(({ code, uuid }) => {
                         return (<div
                             key={uuid}
-                            className="common_color_picker_palette_color_button"
+                            className="common_color_picker_palette_color_button has_own_context_menu"
                             style={{
                                 backgroundColor: code,
                             }} 
                             onContextMenu={e => {
-                                e.preventDefault()
-                                console.log("lol");
+                                if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;
+                                
                             }}
                             />)
                     })}
