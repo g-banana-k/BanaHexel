@@ -17,6 +17,10 @@ export type toolT = {
     "on_end"?: (args: { new_tool: string }) => void,
     "on_start"?: (args: { old_tool: string }) => void,
     "on_canvas_change"?: (args: {}) => void,
+    "on_ctrl_a"?: (args: {}) => void,
+    "on_ctrl_c"?: (args: {}) => void,
+    "on_ctrl_v"?: (args: {}) => void,
+    "on_ctrl_x"?: (args: {}) => void,
 };
 
 export type argsT = {

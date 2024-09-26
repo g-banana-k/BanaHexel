@@ -1,9 +1,10 @@
-import { SetterOrUpdater } from "recoil";
+import { SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
 import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
 import { State } from "./utils";
 import "./color_picker.css"
 import { Palette, Plus } from "lucide-react";
+import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, is_context_menu_open_state } from "../context_menu";
 
 export const ColorPicker = ({
     color: c,
@@ -70,17 +71,24 @@ export const ColorPicker = ({
         const container = container_ref.current;
         if (!container) return;
         document.addEventListener("mousedown", e => {
-            if (!container.contains(e.target as unknown as Node)) {
-                is_opening.set(false);
-                const input = input_ref.current;
-                if (!input) return;
-                set_color(rgba_to_code(...code_to_rgba(input.value)))
-            }
+            if (container.contains(e.target as Node)) return;
+            if (context_menu_ref?.current?.contains(e.target as Node)) return;
+            is_opening.set(false);
+            is_palette_opening.set(false);
+            const input = input_ref.current;
+            if (!input) return;
+            set_color(rgba_to_code(...code_to_rgba(input.value)))
         })
     }, [])
 
     const is_palette_opening = new State(useState(false));
     const palette_colors = new State(useState<{ code: string, uuid: string }[]>([]));
+
+    const set_context_menu_open = useSetRecoilState(is_context_menu_open_state);
+    const set_context_menu_position = useSetRecoilState(context_menu_position_state);
+    const set_context_menu_contents = useSetRecoilState(context_menu_contents_state);
+
+    const [context_menu_ref, set_context_menu_ref] = useRecoilState(context_menu_ref_state);
 
     return (
         <div className="common_color_picker_container" ref={container_ref}>
@@ -88,6 +96,7 @@ export const ColorPicker = ({
                 className="common_color_picker_thumbnail"
                 onClick={() => {
                     is_opening.set(b => !b);
+                    is_palette_opening.set(false);
                 }}
                 style={{
                     backgroundColor: color,
@@ -134,12 +143,22 @@ export const ColorPicker = ({
                             className="common_color_picker_palette_color_button has_own_context_menu"
                             style={{
                                 backgroundColor: code,
-                            }} 
+                            }}
                             onContextMenu={e => {
                                 if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;
-                                
+                                e.preventDefault();
+                                if (context_menu_ref && context_menu_ref.current!.contains(e.target as Node)) return;
+                                set_context_menu_open(_ => !_);
+                                set_context_menu_position({ x: e.clientX, y: e.clientY });
+                                set_context_menu_contents([
+                                    <div className="context_menu_content" onClick={() => {
+                                        palette_colors.set(palette_colors.val_local().filter(
+                                            ({ uuid: uuid2 }) => uuid2 != uuid
+                                        ));
+                                    }}>削除</div>,
+                                ]);
                             }}
-                            />)
+                        />)
                     })}
                     <div
                         className="common_color_picker_palette_add_button"

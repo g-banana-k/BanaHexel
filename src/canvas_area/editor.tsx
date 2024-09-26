@@ -45,7 +45,7 @@ export const CanvasEditor = ({
     const div_ref = useRef<HTMLDivElement>(null);
     const canvas_ref = useRef<HTMLCanvasElement>(null);
 
-    const selected_tool_id = useRecoilValue(selected_tool_id_state);
+    const [selected_tool_id, set_selected_tool_id] = useRecoilState(selected_tool_id_state);
     const selected_tool = useRef<canvas_toolsT>("none");
     const brush_color = new State(useRecoilState(brush_tool_color_state));
     const brush_thickness = new State(useRecoilState(brush_tool_thickness_state));
@@ -113,6 +113,7 @@ export const CanvasEditor = ({
             }
         });
         div.addEventListener("mousedown", e => {
+            if (e.button !== 0) return;
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
 
@@ -132,17 +133,45 @@ export const CanvasEditor = ({
             if (fn.up) fn.up(packed);
             set_mouse_down(false);
         });
+        document.addEventListener('keydown', e => {
+            if (!e.ctrlKey) return;
+            if (!(e.key === "a" || e.key === "c" || e.key === "v" || e.key === "x")) return;
+            set_selected_tool_id("select_tool");
+            const fns = fn_data.val_local().unwrap();
+            if (e.key === "a") {
+                e.preventDefault();
+                const fn = fns.select_tool.on_ctrl_a;
+                if (fn) fn({});
+            } else if (e.key === "c") {
+                e.preventDefault();
+                const fn = fns.select_tool.on_ctrl_c;
+                if (fn) fn({});
+            } else if (e.key === "v") {
+                e.preventDefault();
+                const fn = fns.select_tool.on_ctrl_v;
+                if (fn) fn({});
+            } else if (e.key === "x") {
+                e.preventDefault();
+                const fn = fns.select_tool.on_ctrl_x;
+                if (fn) fn({});
+            }
+        });
     }, []);
 
     return (
-        <div ref={div_ref} style={{
-            position: "absolute",
-            margin: 0,
-            width: "100%",
-            height: "100%",
-            userSelect: "none",
-        }}>
-            <canvas ref={canvas_ref}
+        <div
+            ref={div_ref}
+            style={{
+                position: "absolute",
+                margin: 0,
+                width: "100%",
+                height: "100%",
+                userSelect: "none",
+            }}>
+            <canvas
+                ref={canvas_ref}
+                className="has_own_context_menu"
+                onContextMenu={e => { e.preventDefault() }}
                 style={{
                     position: "absolute",
                     left: (-0.5 * canvas_width * z) + (0.5 * area_width) - (scroll_horizontal * canvas_width * z),

@@ -1,5 +1,5 @@
 import { argsT, toolT } from ".";
-import { Option } from "../../common/utils";
+import { Option, Result } from "../../common/utils";
 
 export const select_tool = ({
     canvas,
@@ -125,6 +125,59 @@ export const select_tool = ({
                 layers_arr.set([...layers_arr.val_local()!]);
                 clipping = Option.None();
             });
-        }
+        },
+        "on_ctrl_a": () => {
+            if (clipping.is_some()) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const cl = clipping.unwrap();
+                const layer = layers_arr.val_global()![current_layer.val_global()];
+                layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                layer.preview_update();
+                layers_arr.set([...layers_arr.val_local()!]);
+                clipping = Option.None();
+            }
+            const layer = layers_arr.val_global()![current_layer.val_global()];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cl_canvas = document.createElement("canvas");
+            cl_canvas.width = canvas.width;
+            cl_canvas.height = canvas.height;
+            const cl_ctx = cl_canvas.getContext("2d")!;
+            cl_ctx.drawImage(layer.body, 0, 0,);
+            clipping = Option.Some({
+                x: 0,
+                y: 0,
+                lt_x: 0,
+                rb_x: canvas.width - 1,
+                lt_y: 0,
+                rb_y: canvas.height - 1,
+                canvas: cl_canvas,
+                ctx: cl_ctx
+            });
+            const cl = clipping.unwrap();
+            ctx.drawImage(cl.canvas, cl.x, cl.y);
+            ctx.fillStyle = "#5fe07544";
+            ctx.fillRect(cl.x, cl.y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+            layer.ctx.clearRect(0, 0, layer.body.width, layer.body.height);
+            layer.preview_update();
+            layers_arr.set([...layers_arr.val_local()!]);
+
+        },
+        "on_ctrl_c": async () => {
+            if (!clipping.is_some()) return;
+            const cl = clipping.unwrap();
+            const data_url = cl.canvas.toDataURL('image/png');
+
+            const blob = await (await fetch(data_url)).blob();
+
+            // Clipboardに画像をコピー
+            const clipboard_item = new ClipboardItem({
+                [blob.type]: blob
+            });
+
+            const result = await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
+            result.on_err(console.log);
+        },
+        "on_ctrl_v": () => { },
+        "on_ctrl_x": () => { },
     }
 };

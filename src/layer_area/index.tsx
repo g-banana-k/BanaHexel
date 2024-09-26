@@ -33,29 +33,31 @@ export const LayerArea = () => {
 
     return (
         <div id="layer_area">
-            {layer_arr?.map((l, i) => (
-                <div key={l.uuid} className="layer_thumbnail" >
-                    <div
-                        ref={(el) => (div_refs.current[i] = el)}
-                        className="layer_thumbnail_preview_container"
-                        onClick={() => set_current_layer(i)}
-                    />
-                    <div
-                        className="layer_thumbnail_delete_button"
-                        onClick={
-                            () => {
-                                set_layer_arr(_ => _!.filter((_, j) => j !== i))
-                                if (layer_arr.length - 1 <= current_layer) set_current_layer(_ => _ - 1);
+            <div id="layer_list">
+                {layer_arr?.map((l, i) => (
+                    <div key={l.uuid} className="layer_thumbnail" >
+                        <div
+                            ref={(el) => (div_refs.current[i] = el)}
+                            className="layer_thumbnail_preview_container"
+                            onClick={() => set_current_layer(i)}
+                        />
+                        <div
+                            className="layer_thumbnail_delete_button"
+                            onClick={
+                                () => {
+                                    set_layer_arr(_ => _!.filter((_, j) => j !== i))
+                                    if (layer_arr.length - 1 <= current_layer) set_current_layer(_ => _ - 1);
+                                }
                             }
-                        }
-                        style={{
-                            display: layer_arr.length !== 1 ? "block" : "none",
-                        }}
-                    >
-                        <X size={16} />
+                            style={{
+                                display: layer_arr.length !== 1 ? "block" : "none",
+                            }}
+                        >
+                            <X size={16} />
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
             <div
                 id="layer_add_button"
                 onClick={() => {
