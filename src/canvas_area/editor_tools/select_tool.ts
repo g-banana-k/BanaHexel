@@ -117,7 +117,7 @@ export const select_tool = ({
             prev_layer_i = Option.Some(current_layer.val_local());
         },
         "on_canvas_change": () => {
-            const prev_layer = layers_arr.val_global()![prev_layer_i.unwrap()];
+            const prev_layer = layers_arr.val_global()![prev_layer_i.unwrap_or(0)];
             clipping.on_some(cl => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 prev_layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
@@ -177,7 +177,68 @@ export const select_tool = ({
             const result = await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
             result.on_err(console.log);
         },
-        "on_ctrl_v": () => { },
-        "on_ctrl_x": () => { },
+        "on_ctrl_v": async () => {
+            if (clipping.is_some()) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const cl = clipping.unwrap();
+                const layer = layers_arr.val_global()![current_layer.val_global()];
+                layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                layer.preview_update();
+                layers_arr.set([...layers_arr.val_local()!]);
+                clipping = Option.None();
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const items_res = await Result.from_try_catch_async(async () => await navigator.clipboard.read());
+            if (!items_res.is_ok()) return;
+            const items = items_res.unwrap()
+            for (const item of items) {
+                const types = item.types;
+
+                if (types.includes('image/png') || types.includes('image/jpeg')) {
+                    const blob_res = await Result.from_try_catch_async(async () => await item.getType('image/png')); await item.getType('image/png');
+                    if (!blob_res.is_ok()) return;
+                    const blob = blob_res.unwrap();
+                    const image = await createImageBitmap(blob);
+
+                    const cl_canvas = document.createElement("canvas");
+                    cl_canvas.width = image.width;
+                    cl_canvas.height = image.height;
+                    const cl_ctx = cl_canvas.getContext("2d")!;
+                    cl_ctx.drawImage(image, 0, 0);
+                    clipping = Option.Some({
+                        x: 0,
+                        y: 0,
+                        lt_x: 0,
+                        rb_x: image.width - 1,
+                        lt_y: 0,
+                        rb_y: image.height - 1,
+                        canvas: cl_canvas,
+                        ctx: cl_ctx
+                    });
+                    const cl = clipping.unwrap();
+                    ctx.drawImage(cl.canvas, cl.x, cl.y);
+                    ctx.fillStyle = "#5fe07544";
+                    ctx.fillRect(cl.x, cl.y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+                    break;
+                }
+            }
+        },
+        "on_ctrl_x": async () => {
+            if (!clipping.is_some()) return;
+            const cl = clipping.unwrap();
+            const data_url = cl.canvas.toDataURL('image/png');
+
+            const blob = await (await fetch(data_url)).blob();
+
+            const clipboard_item = new ClipboardItem({
+                [blob.type]: blob
+            });
+
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            clipping = Option.None();
+
+            const result = await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
+            result.on_err(console.log);
+        },
     }
 };

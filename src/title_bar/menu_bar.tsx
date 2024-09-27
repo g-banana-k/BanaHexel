@@ -61,6 +61,7 @@ export const MenuBar = () => {
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
                 <MenuContent ><a href="https://bananahexagon.github.io" target="_blank">ホームページ</a></MenuContent>
                 <MenuContent on_click={() => { invoke("open_devtools", { window: appWindow }) }} >開発者ツール</MenuContent>
+                <MenuContent on_click={() => { }} >バージョン情報</MenuContent>
             </MenuButton>
         </div >
     )

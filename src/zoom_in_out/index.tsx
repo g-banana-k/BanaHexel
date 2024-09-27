@@ -1,8 +1,7 @@
 import { Equal, ZoomIn, ZoomOut } from "lucide-react"
 import "./index.css"
 import { useEffect, useRef } from "react";
-import { RefObject } from "react";
-import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { scroll_horizontal_state, scroll_vertical_state } from "../canvas_area/scroll_bar";
 
 export const zoom_state = atom({
@@ -10,7 +9,7 @@ export const zoom_state = atom({
     default: 1,
 })
 
-export const ZoomInOut = (props: { zoom_reset_button_ref: RefObject<HTMLDivElement> }) => {
+export const ZoomInOut = () => {
     const [zoom, set_zoom] = useRecoilState(zoom_state);
     const set_scroll_vertical =   useSetRecoilState(scroll_vertical_state);
     const set_scroll_horizontal = useSetRecoilState(scroll_horizontal_state);
