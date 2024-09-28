@@ -45,7 +45,6 @@ export const CanvasArea = () => {
                 set_zoom(_ => { z = _; return _; })
                 set_canvas_size(_ => { c_w = _.width; return _; });
                 set_scroll_horizontal(s => Math.max(-0.5, Math.min(0.5, s + Math.sign(e.deltaY) / (c_w / 20 * z))))
-
             } else if (e.deltaY != 0 && e.ctrlKey) {
                 set_zoom(v => Math.max(0.5, v / ((2 ** (1 / 8)) ** Math.sign(e.deltaY))));
             }
@@ -70,8 +69,8 @@ export const CanvasArea = () => {
             height: new_layer.body.height,
             width: new_layer.body.width,
         })
-        new_layer.body.style.height = "100%"
-        new_layer.body.style.width = "100%"
+        new_layer.body.style.height = "100%";
+        new_layer.body.style.width = "100%";
 
         if (div_back.hasChildNodes()) div_back.removeChild(div_back.firstChild!);
         div_back.appendChild(background);

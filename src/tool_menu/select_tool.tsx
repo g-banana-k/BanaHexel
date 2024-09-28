@@ -43,7 +43,3 @@ declare global {
         "select_area_event": CustomEvent<"flip_vertical" | "flip_horizontal" | "rotate_l90" | "rotate_r90" | "trash">;
     }
 }
-
-interface SelectAreaEvent extends Event {
-    kind: "flip_vertical" | "flip_horizontal" | "rotate_l90" | "rotate_r90" | "trash"
-}

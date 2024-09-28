@@ -31,13 +31,18 @@ export const Window = () => {
                 minimized: await appWindow.isMinimized(),
             })
         })
+        document.addEventListener("keydown", e => {
+            if (e.key === "F12") {
+                e.preventDefault();
+            }
+        })
     }, [])
 
     const set_context_menu_open = useSetRecoilState(is_context_menu_open_state);
     const set_context_menu_position = useSetRecoilState(context_menu_position_state);
     const set_context_menu_contents = useSetRecoilState(context_menu_contents_state);
 
-    const [context_menu_ref,set_context_menu_ref] = useRecoilState(context_menu_ref_state)
+    const [context_menu_ref, set_context_menu_ref] = useRecoilState(context_menu_ref_state)
     return (
         <div id="window" onContextMenu={e => {
             if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;

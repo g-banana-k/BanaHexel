@@ -27,10 +27,20 @@ export const Modal = () => {
         <div id="modal_root" style={{ display: !is_modal_open ? "none" : "block" }}>
             <div id="modal_container" style={{ width: modal_size.w, height: modal_size.h }}>
                 {typeof modal_contents === "string" ? modal_contents : modal_contents}
-                <div id="modal_close_button" onClick={() => set_modal_open(false)}>
+                <div id="modal_close_button" onClick={() => {
+                    const e = new CustomEvent("modal_close", {detail: "default"});
+                    document.dispatchEvent(e)
+                    set_modal_open(false);
+                }}>
                     <X size={16} />
                 </div>
             </div>
         </div>
     )
+}
+
+declare global {
+    interface DocumentEventMap {
+        "modal_close": CustomEvent<string>;
+    }
 }

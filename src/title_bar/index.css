@@ -111,3 +111,63 @@ a {
     color: #fff;
     text-decoration: none;
 }
+
+.new_project_modal_text_box::-webkit-inner-spin-button,
+.new_project_modal_text_box::-webkit-outer-spin-button {
+    appearance: none;
+}
+
+
+.new_project_modal_text_box {
+    display: block;
+    height: 28px;
+    font-size: 16px;
+    font-family: inherit;
+    margin-top: 1px;
+    appearance: textfield;
+    background-color: #444;
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    color: #fff;
+    padding-left: 5px;
+    font-size:16px;
+}
+
+.new_project_modal_confirm {
+    background-color: #5fe075dd;
+    border-radius: 2px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 16px;
+    margin: 0 10px 10px 10px;
+    padding-left: 5px;
+}
+
+.new_project_modal_confirm:hover {
+    background-color: #5fe075;
+}
+
+.new_project_modal_canvas_size {
+    display: flex;
+    flex-direction: row;
+}
+
+.new_project_modal_canvas_size_part {
+    flex-grow: 1;
+    margin: 10px;
+}
+
+.new_project_modal_canvas_size_part_title {
+    padding-left: 5px;
+    font-size:16px;
+    height: 28px;
+    line-height: 28px;
+}
+
+.new_project_modal_title {
+    font-size: 32px;
+    line-height: 48px;
+    height: 48px;
+    text-align: center;
+}

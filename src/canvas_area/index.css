@@ -13,8 +13,9 @@
     padding: 0;
 }
 
-#canvas_body_div canvas,
-#canvas_background_div canvas {
+#canvas_body_div>canvas,
+#canvas_background_div>canvas {
+    position:absolute;
     image-rendering: pixelated;
     user-select: none,
 }

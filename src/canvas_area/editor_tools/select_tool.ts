@@ -21,7 +21,6 @@ export const select_tool = ({
 
     document.addEventListener("select_area_event", async e => {
         if (!clipping.is_some()) return;
-        console.log(e.detail)
         const cl = clipping.unwrap()
         if (e.detail === "flip_vertical") {
             const img = await createImageBitmap(cl.canvas);

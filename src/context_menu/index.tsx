@@ -36,7 +36,6 @@ export const ContextMenu = () => {
 
     useEffect(() => {
         const div = ref?.current;
-        console.log(div);
         if (!div) return;
         document.addEventListener("mousedown", e => {
             if (!div.contains(e.target as Node)) set_open(false);

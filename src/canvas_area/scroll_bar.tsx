@@ -66,7 +66,7 @@ export const ScrollBarVertical = (props: {
             ref={bar_ref}
             id="canvas_scroll_bar_vertical"
             className="canvas_scroll_bar has_own_context_menu"
-            onContextMenu={e=>{e.preventDefault()}}
+            onContextMenu={e => { e.preventDefault() }}
             style={{
                 ...{
                     userSelect: "none",
@@ -136,7 +136,7 @@ export const ScrollBarHorizontal = (props: {
             ref={bar_ref}
             id="canvas_scroll_bar_horizontal"
             className="canvas_scroll_bar has_own_context_menu"
-            onContextMenu={e=>{e.preventDefault()}}
+            onContextMenu={e => { e.preventDefault() }}
             style={{
                 ...{
                     width: (!Number.isNaN(bar_width.current) ? bar_width.current : 0),

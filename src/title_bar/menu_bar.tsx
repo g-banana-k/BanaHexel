@@ -8,6 +8,7 @@ import { is_modal_open_state, modal_contents_state, modal_size_state } from "../
 import { Info } from "lucide-react";
 import { dirname } from "@tauri-apps/api/path";
 import { getTauriVersion } from "@tauri-apps/api/app";
+import { Option, PromiseWithResolvers } from "../common/utils";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
@@ -33,15 +34,44 @@ export const MenuBar = () => {
     return (
         <div ref={menu_bar_ref} id="title_bar_menu_bar">
             <MenuButton label="ファイル" id="title_bar_menu_file_button" nth={0} selected={selected} set_selected={set_selected}>
-                <MenuContent on_click={() => {
+                <MenuContent on_click={async () => {
                     set_selected(-1);
-                    const w = Number.parseInt(window.prompt("new canvas: width")!);
-                    const h = Number.parseInt(window.prompt("new canvas: height")!);
-                    const canvas_w = !Number.isNaN(w) ? w : 64;
-                    const canvas_h = !Number.isNaN(h) ? h : 64;
-                    load_file({ meta_data: { canvas_size: { width: canvas_w, height: canvas_h } } }, {
-                        set_layer_arr, set_canvas_size, set_loading, set_current_layer
-                    })
+                    const { promise, resolve } = PromiseWithResolvers<Option<{ w: number, h: number }>>();
+                    const dispatch = (s: string) => document.dispatchEvent(new CustomEvent(s));
+                    let [w, h] = [NaN, NaN];
+                    set_modal_open(true);
+                    set_modal_size({ w: 500, h: 200 });
+                    set_modal_contents([<div className="new_project_modal">
+                        <div className="new_project_modal_title">
+                            新規作成
+                        </div>
+                        <div className="new_project_modal_canvas_size">
+                            <div className="new_project_modal_canvas_size_part">
+                                <div className="new_project_modal_canvas_size_part_title">縦幅</div>
+                                <input className="new_project_modal_text_box" type="number" min={1}
+                                    onInput={e => { h = Number.parseInt(e.currentTarget.value!) }} />
+                            </div>
+                            <div className="new_project_modal_canvas_size_part">
+                                <div className="new_project_modal_canvas_size_part_title">横幅</div>
+                                <input className="new_project_modal_text_box" type="number" min={1}
+                                    onInput={e => { w = Number.parseInt(e.currentTarget.value!) }} />
+                            </div>
+                        </div>
+                        <div className="new_project_modal_confirm" onClick={() => {
+                            resolve(Option.Some({ w, h }));
+                            set_modal_open(false);
+                        }} >作成</div>
+                    </div>]);
+                    document.addEventListener("modal_close", _ => {
+                        resolve(Option.None())
+                    }, { once: true });
+                    (await promise).on_some(({ w, h }) => {
+                        const canvas_w = !Number.isNaN(w) ? w : 64;
+                        const canvas_h = !Number.isNaN(h) ? h : 64;
+                        load_file({ meta_data: { canvas_size: { width: canvas_w, height: canvas_h } } }, {
+                            set_layer_arr, set_canvas_size, set_loading, set_current_layer
+                        })
+                    });
                 }} >新規作成</MenuContent>
                 <MenuContent on_click={() => {
                     set_selected(-1);
@@ -64,7 +94,6 @@ export const MenuBar = () => {
                         load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer });
                     })
                 }} >開く</MenuContent>
-
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
                 <a href="https://bananahexagon.github.io" target="_blank"><MenuContent on_click={() => {
