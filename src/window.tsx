@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { appWindow } from "@tauri-apps/api/window";
 import App from "./app";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
+import { Modal } from "./modal";
 
 
 export const window_size_state = atom({
@@ -51,6 +52,7 @@ export const Window = () => {
             <TitleBar />
             <App />
             <ContextMenu />
+            <Modal />
         </div>
     )
 }

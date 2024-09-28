@@ -17,6 +17,7 @@
                 "open": true
             },
             "window": {
+                "all": true,
                 "maximize": true,
                 "minimize": true,
                 "hide": true,
@@ -25,9 +26,6 @@
                 "show": true,
                 "unmaximize": true,
                 "unminimize": true
-            },
-            "fs": {
-                "all": true
             },
             "dialog": {
                 "all": true

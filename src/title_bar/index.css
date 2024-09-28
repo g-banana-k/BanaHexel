@@ -107,7 +107,7 @@
     border-radius: 4px;
 }
 
-.title_bar_menu_content a {
+a {
     color: #fff;
     text-decoration: none;
 }

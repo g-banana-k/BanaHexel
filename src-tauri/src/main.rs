@@ -7,7 +7,7 @@ use std::{
     path::Path,
 };
 
-use tauri::{api::dialog::blocking::FileDialogBuilder, command, Manager};
+use tauri::{api::dialog::blocking::FileDialogBuilder, command, Manager, WindowBuilder};
 use window_shadows::set_shadow;
 use zip::{write::FileOptions, ZipArchive, ZipWriter};
 
@@ -67,7 +67,8 @@ fn save_file_with_path(path: String, layers: Vec<String>, meta_data: String) -> 
         .read(true)
         .write(true)
         .create(true)
-        .open(path).map_err(|e| e.to_string())?;
+        .open(path)
+        .map_err(|e| e.to_string())?;
     let mut zip = ZipWriter::new(file);
 
     let opts: FileOptions<'_, ()> =
@@ -170,6 +171,7 @@ fn main() {
             let window = app.get_window("main").unwrap();
             #[cfg(any(windows, target_os = "macos"))]
             set_shadow(window, true).unwrap();
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

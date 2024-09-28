@@ -1,9 +1,13 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { appWindow } from "@tauri-apps/api/window";
-import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
+import { appWindow, WebviewWindow } from "@tauri-apps/api/window";
+import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state } from "../app";
 import { open_file, save_file_new, save_file_with_path } from "../file";
+import { is_modal_open_state, modal_contents_state, modal_size_state } from "../modal";
+import { Info } from "lucide-react";
+import { dirname } from "@tauri-apps/api/path";
+import { getTauriVersion } from "@tauri-apps/api/app";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
@@ -16,6 +20,10 @@ export const MenuBar = () => {
     const set_canvas_size = useSetRecoilState(canvas_size_state);
     const set_current_layer = useSetRecoilState(current_layer_state);
     const [opening_file_path, set_opening_file_path] = useRecoilState(opening_file_path_state);
+
+    const set_modal_open = useSetRecoilState(is_modal_open_state);
+    const set_modal_contents = useSetRecoilState(modal_contents_state);
+    const set_modal_size = useSetRecoilState(modal_size_state);
 
     document.addEventListener("mousedown", e => {
         if (!menu_bar_ref.current) return;
@@ -59,9 +67,56 @@ export const MenuBar = () => {
 
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
-                <MenuContent ><a href="https://bananahexagon.github.io" target="_blank">ホームページ</a></MenuContent>
-                <MenuContent on_click={() => { invoke("open_devtools", { window: appWindow }) }} >開発者ツール</MenuContent>
-                <MenuContent on_click={() => { }} >バージョン情報</MenuContent>
+                <a href="https://bananahexagon.github.io" target="_blank"><MenuContent on_click={() => {
+                    set_selected(-1);
+                }}>ホームページ</MenuContent></a>
+                <MenuContent on_click={() => {
+                    set_selected(-1);
+                    invoke("open_devtools", { window: appWindow })
+                }} >開発者ツール</MenuContent>
+                <MenuContent on_click={async () => {
+                    set_selected(-1);
+                    set_modal_open(true);
+                    set_modal_size({ w: 500, h: 250 })
+                    set_modal_contents([
+                        <div style={{
+                            marginTop: 25,
+                            display: "flex",
+                            flexDirection: "row",
+                            fontSize: 13,
+                            lineHeight: "26px",
+                        }}><div style={{
+                            marginRight: 20,
+                            display: "block",
+                        }}>
+                                <Info size={50} style={{
+                                }} />
+                            </div>
+                            <div style={{
+                                flexGrow: 1,
+                                marginRight: 20,
+                            }}>
+                                <div
+                                    style={{
+                                        height: 50,
+                                        lineHeight: "50px",
+                                        fontSize: 23,
+                                    }}>
+                                    BanaHexel
+                                </div>
+                                <div>
+                                    React: {React.version}
+                                </div>
+                                <div>
+                                    Tauri: {await getTauriVersion()}
+                                </div>
+                                <div>
+                                    WebView: {navigator.userAgent}
+                                </div>
+                            </div>
+                        </div>
+                    ])
+                }} >バージョン情報</MenuContent>
             </MenuButton>
         </div >
     )
