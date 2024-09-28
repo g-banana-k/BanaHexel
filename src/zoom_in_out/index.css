@@ -1,7 +1,7 @@
 #zoom_in_out {
     display: flex;
     flex-direction: row;
-    color: #fff;
+    
 }
 
 #zoom_in_out_button_outer {
@@ -68,7 +68,6 @@ input#zoom_text_box:focus {
 
 .zoom_in_out_button svg {
     position: absolute;
-    color: #fff;
     top: 0;
     right: 0;
     bottom: 0;

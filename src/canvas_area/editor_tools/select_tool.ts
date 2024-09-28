@@ -13,26 +13,108 @@ export const select_tool = ({
     let clipping = Option.None<{
         x: number,
         y: number,
-        lt_x: number,
-        rb_x: number,
-        lt_y: number,
-        rb_y: number,
+        w: number,
+        h: number
         canvas: HTMLCanvasElement,
         ctx: CanvasRenderingContext2D,
     }>();
+
+    document.addEventListener("select_area_event", async e => {
+        if (!clipping.is_some()) return;
+        console.log(e.detail)
+        const cl = clipping.unwrap()
+        if (e.detail === "flip_vertical") {
+            const img = await createImageBitmap(cl.canvas);
+            cl.ctx.clearRect(0, 0, cl.canvas.width, cl.canvas.height);
+            cl.ctx.save();
+            cl.ctx.scale(-1, 1)
+            cl.ctx.drawImage(img, -cl.canvas.width, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(cl.canvas, cl.x, cl.y);
+            ctx.fillStyle = "#5fe07544";
+            ctx.fillRect(cl.x, cl.y, cl.w, cl.h);
+            cl.ctx.restore();
+        }
+        else if (e.detail === "flip_horizontal") {
+            const img = await createImageBitmap(cl.canvas);
+            cl.ctx.clearRect(0, 0, cl.canvas.width, cl.canvas.height);
+            cl.ctx.save();
+            cl.ctx.scale(1, -1)
+            cl.ctx.drawImage(img, 0, -cl.canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(cl.canvas, cl.x, cl.y);
+            ctx.fillStyle = "#5fe07544";
+            ctx.fillRect(cl.x, cl.y, cl.w, cl.h);
+            cl.ctx.restore();
+        }
+        else if (e.detail === "rotate_r90") {
+            const new_canvas = document.createElement("canvas");
+            new_canvas.width = cl.h;
+            new_canvas.height = cl.w;
+            const new_ctx = new_canvas.getContext("2d")!;
+            new_ctx.save();
+            new_ctx.rotate(Math.PI / 2);
+            new_ctx.drawImage(cl.canvas, 0, -cl.h);
+            new_ctx.restore();
+            const center_x = cl.x + Math.floor(cl.w / 2);
+            const center_y = cl.y + Math.floor(cl.h / 2);
+            clipping = Option.Some({
+                x: center_x - Math.floor(cl.h / 2),
+                y: center_y - Math.floor(cl.w / 2),
+                w: cl.h,
+                h: cl.w,
+                canvas: new_canvas,
+                ctx: new_ctx,
+            });
+            const d = clipping.unwrap();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(d.canvas, d.x, d.y);
+            ctx.fillStyle = "#5fe07544";
+            ctx.fillRect(d.x, d.y, d.w, d.h);
+        }
+        else if (e.detail === "rotate_l90") {
+            const new_canvas = document.createElement("canvas");
+            new_canvas.width = cl.h;
+            new_canvas.height = cl.w;
+            const new_ctx = new_canvas.getContext("2d")!;
+            new_ctx.save();
+            new_ctx.rotate(-Math.PI / 2);
+            new_ctx.drawImage(cl.canvas, -cl.w, 0);
+            new_ctx.restore();
+            const center_x = cl.x + Math.floor(cl.w / 2);
+            const center_y = cl.y + Math.floor(cl.h / 2);
+            clipping = Option.Some({
+                x: center_x - Math.floor(cl.h / 2),
+                y: center_y - Math.floor(cl.w / 2),
+                w: cl.h,
+                h: cl.w,
+                canvas: new_canvas,
+                ctx: new_ctx,
+            });
+            const d = clipping.unwrap();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(d.canvas, d.x, d.y);
+            ctx.fillStyle = "#5fe07544";
+            ctx.fillRect(d.x, d.y, d.w, d.h);
+        }
+        else if (e.detail === "trash") {
+            clipping = Option.None();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    })
     return {
         "down": ({ x, y }) => {
             b_x = x;
             b_y = y;
             if (clipping.is_some()
-                && clipping.unwrap().x <= x && x <= clipping.unwrap().x + clipping.unwrap().rb_x - clipping.unwrap().lt_x
-                && clipping.unwrap().y <= y && y <= clipping.unwrap().y + clipping.unwrap().rb_y - clipping.unwrap().lt_y
+                && clipping.unwrap().x <= x && x <= clipping.unwrap().x + clipping.unwrap().w - 1
+                && clipping.unwrap().y <= y && y <= clipping.unwrap().y + clipping.unwrap().h - 1
             ) {
                 const cl = clipping.unwrap();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(cl.canvas, cl.x + x - b_x, cl.y + y - b_y);
                 ctx.strokeStyle = "#5fe07544";
-                ctx.strokeRect(cl.x + x - b_x + 0.5, cl.y + y - b_y + 0.5, cl.rb_x - cl.lt_x, cl.rb_y - cl.lt_y);
+                ctx.strokeRect(cl.x + x - b_x + 0.5, cl.y + y - b_y + 0.5, cl.w - 1, cl.h - 1);
             } else if (clipping.is_some()) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const cl = clipping.unwrap();
@@ -49,7 +131,7 @@ export const select_tool = ({
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(cl.canvas, cl.x + x - b_x, cl.y + y - b_y);
                 ctx.strokeStyle = "#5fe07544";
-                ctx.strokeRect(cl.x + x - b_x + 0.5, cl.y + y - b_y + 0.5, cl.rb_x - cl.lt_x, cl.rb_y - cl.lt_y);
+                ctx.strokeRect(cl.x + x - b_x + 0.5, cl.y + y - b_y + 0.5, cl.w - 1, cl.h - 1);
             } else {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#5fe07566";
@@ -66,7 +148,7 @@ export const select_tool = ({
                 ctx.drawImage(cl.canvas, cl.x + x - b_x, cl.y + y - b_y);
                 clipping = Option.Some({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y });
                 ctx.fillStyle = "#5fe07544";
-                ctx.fillRect(cl.x + x - b_x, cl.y + y - b_y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+                ctx.fillRect(cl.x + x - b_x, cl.y + y - b_y, cl.w, cl.h)
             } else {
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
@@ -80,17 +162,15 @@ export const select_tool = ({
                 clipping = Option.Some({
                     x: lt_x,
                     y: lt_y,
-                    lt_x,
-                    rb_x,
-                    lt_y,
-                    rb_y,
+                    w: rb_x - lt_x + 1,
+                    h: rb_y - lt_y + 1,
                     canvas: cl_canvas,
                     ctx: cl_ctx
                 });
                 const cl = clipping.unwrap();
                 ctx.drawImage(cl.canvas, cl.x, cl.y);
                 ctx.fillStyle = "#5fe07544";
-                ctx.fillRect(cl.x, cl.y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+                ctx.fillRect(cl.x, cl.y, cl.w, cl.h)
                 layer.ctx.clearRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
@@ -146,17 +226,15 @@ export const select_tool = ({
             clipping = Option.Some({
                 x: 0,
                 y: 0,
-                lt_x: 0,
-                rb_x: canvas.width - 1,
-                lt_y: 0,
-                rb_y: canvas.height - 1,
+                w: canvas.width,
+                h: canvas.height,
                 canvas: cl_canvas,
                 ctx: cl_ctx
             });
             const cl = clipping.unwrap();
             ctx.drawImage(cl.canvas, cl.x, cl.y);
             ctx.fillStyle = "#5fe07544";
-            ctx.fillRect(cl.x, cl.y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+            ctx.fillRect(cl.x, cl.y, cl.w, cl.h)
             layer.ctx.clearRect(0, 0, layer.body.width, layer.body.height);
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
@@ -208,17 +286,15 @@ export const select_tool = ({
                     clipping = Option.Some({
                         x: 0,
                         y: 0,
-                        lt_x: 0,
-                        rb_x: image.width - 1,
-                        lt_y: 0,
-                        rb_y: image.height - 1,
+                        w: image.width,
+                        h: image.height,
                         canvas: cl_canvas,
                         ctx: cl_ctx
                     });
                     const cl = clipping.unwrap();
                     ctx.drawImage(cl.canvas, cl.x, cl.y);
                     ctx.fillStyle = "#5fe07544";
-                    ctx.fillRect(cl.x, cl.y, cl.rb_x - cl.lt_x + 1, cl.rb_y - cl.lt_y + 1)
+                    ctx.fillRect(cl.x, cl.y, cl.w, cl.h)
                     break;
                 }
             }
@@ -234,7 +310,7 @@ export const select_tool = ({
                 [blob.type]: blob
             });
 
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             clipping = Option.None();
 
             const result = await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));

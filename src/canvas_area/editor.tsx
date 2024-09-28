@@ -133,7 +133,7 @@ export const CanvasEditor = ({
             if (fn.up) fn.up(packed);
             set_mouse_down(false);
         });
-        document.addEventListener('keydown', e => {
+        document.addEventListener("keydown", e => {
             if (!e.ctrlKey) return;
             if (!(e.key === "a" || e.key === "c" || e.key === "v" || e.key === "x")) return;
             set_selected_tool_id("select_tool");

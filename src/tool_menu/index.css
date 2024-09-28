@@ -1,8 +1,9 @@
-.tool_menu_brush_color {
+.tool_menu_brush_color,
+.tool_menu_eraser_color {
     height: 100%;
     display: flex;
     flex-direction: row;
-    color: #fff;
+
 }
 
 .tool_menu_brush_color_text {
@@ -13,4 +14,32 @@
 .tool_menu_brush_thickness,
 .tool_menu_eraser_thickness {
     margin-top: 5px;
+}
+
+.tool_menu_select_brush_part {
+    display: flex;
+    flex-direction: column;
+}
+
+.tool_menu_select {
+    display: flex;
+    flex-direction: row;
+}
+
+.tool_menu_select_edit_button {
+    position: relative;
+    width:  40px;
+    height: 40px;
+    border-radius: 4px;
+    margin: 25px 5px;
+}
+
+.tool_menu_select_edit_button>svg {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+}
+
+.tool_menu_select_edit_button:hover {
+    background-color: #5fe07544;
 }
