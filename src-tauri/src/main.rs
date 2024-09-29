@@ -58,7 +58,6 @@ fn save_file_new(layers: Vec<String>, meta_data: String) -> Result<Option<String
     zip.finish().map_err(|e| e.to_string())?;
 
     let path_string = path.to_str().unwrap().to_string();
-    println!("{}", path_string);
 
     Ok(Some(path_string))
 }
@@ -177,10 +176,9 @@ fn main() {
             Ok(())
         })
         .on_window_event(|event| {
-            println!("{:?}", event.event());
             if let tauri::WindowEvent::CloseRequested { api, .. } = event.event() {
                 api.prevent_close();
-                
+
                 event.window().emit("confirm-close", {}).unwrap();
             }
         })

@@ -191,7 +191,6 @@ export const select_tool = ({
                     canvas: cl_canvas,
                     ctx: cl_ctx
                 });
-                console.log("hehehe")
                 const cl = clipping.unwrap();
                 ctx.drawImage(cl.canvas, cl.x, cl.y);
                 ctx.fillStyle = "#5fe07544";
@@ -290,7 +289,6 @@ export const select_tool = ({
             });
 
             const result = await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
-            result.on_err(console.log);
         },
         "on_ctrl_v": async () => {
             if (clipping.is_some()) {
@@ -309,7 +307,6 @@ export const select_tool = ({
                 const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
-                console.log(clipping);
                 clipping = Option.None();
                 undo_stack.push({ i, u, r });
                 file_state.set(_ => ({ saving: _.saving, saved: false }));
@@ -368,7 +365,6 @@ export const select_tool = ({
             clipping = Option.None();
 
             const result = await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
-            result.on_err(console.log);
 
             const layer = layers_arr.val_global()![current_layer.val_global()];
 
