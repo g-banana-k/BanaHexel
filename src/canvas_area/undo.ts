@@ -22,10 +22,15 @@ export const createUndoStack = ({ stack_size }: { stack_size: number }): UndoSta
             stack.shift();
         }
     }
+    const clear = () => {
+        stack = [];
+        sub_stack = [];
+    }
     return {
         undo,
         redo,
         push,
+        clear,
     }
 }
 
@@ -33,6 +38,7 @@ export type UndoStack = {
     undo: () => Option<Cache>,
     redo: () => Option<Cache>,
     push: (c: Cache) => void,
+    clear: () => void,
 }
 
 export type Cache = { i: number, u: CanvasPart, r: CanvasPart };
@@ -65,3 +71,5 @@ export const clone_canvas = (c: HTMLCanvasElement) => {
     ctx?.drawImage(c, 0, 0);
     return canvas;
 }
+
+export const undo_stack = createUndoStack({ stack_size: 100 })

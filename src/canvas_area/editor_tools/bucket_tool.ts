@@ -10,7 +10,8 @@ export const bucket_tool = ({
     brush_color,
     layers_arr,
     current_layer,
-    undo_stack
+    undo_stack,
+    file_state
 }: argsT): toolT => {
     return {
         "down": ({ x, y, shift }) => {
@@ -18,6 +19,7 @@ export const bucket_tool = ({
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const fn = fill({ brush_color, layer, x, y, shift });
             fn.on_some(fn => {
+                file_state.set(_ => ({ saving: _.saving, saved: false }));
                 const u = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 const i = current_layer.val_local();
                 fn();
@@ -31,6 +33,7 @@ export const bucket_tool = ({
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const fn = fill({ brush_color, layer, x, y, shift });
             fn.on_some(fn => {
+                file_state.set(_ => ({ saving: _.saving, saved: false }));
                 const u = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 const i = current_layer.val_local();
                 fn();

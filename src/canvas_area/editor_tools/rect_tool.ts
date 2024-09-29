@@ -8,6 +8,7 @@ export const rect_tool = ({
     layers_arr,
     current_layer,
     undo_stack,
+    file_state
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
@@ -32,10 +33,10 @@ export const rect_tool = ({
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const color = brush_color.val_global();
             ctx.fillStyle = color;
-            const s_x = Math.max(0, Math.min(x, b_x));
-            const s_y = Math.max(0, Math.min(y, b_y));
-            const w = Math.max(canvas.width, Math.min(x, b_x)) - s_x + 1;
-            const h = Math.max(canvas.height, Math.min(y, b_y)) - s_y + 1;
+            const w = Math.abs(x - b_x) + 1;
+            const h = Math.abs(y - b_y) + 1;
+            const s_x = Math.min(x, b_x);
+            const s_y = Math.min(y, b_y);
             ctx.fillRect(s_x, s_y, w, h);
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const i = current_layer.val_local();
@@ -46,6 +47,7 @@ export const rect_tool = ({
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
             undo_stack.push({ i, u, r });
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
         "move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

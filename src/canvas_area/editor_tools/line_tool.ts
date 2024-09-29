@@ -9,6 +9,7 @@ export const line_tool = ({
     layers_arr,
     current_layer,
     undo_stack,
+    file_state
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
@@ -51,6 +52,7 @@ export const line_tool = ({
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
             undo_stack.push({ i, u, r })
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
         "move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

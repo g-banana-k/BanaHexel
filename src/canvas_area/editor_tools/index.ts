@@ -34,7 +34,11 @@ export type argsT = {
     eraser_thickness: State<number>,
     layers_arr: State<Layer[] | undefined>,
     current_layer: State<number>,
-    undo_stack:UndoStack,
+    undo_stack: UndoStack,
+    file_state: State<{
+        saving: boolean,
+        saved: boolean,
+    }>
 };
 
 export const editor_tools = ({
@@ -45,7 +49,8 @@ export const editor_tools = ({
     eraser_thickness,
     layers_arr,
     current_layer,
-    undo_stack
+    undo_stack,
+    file_state
 }: argsT): { [key in canvas_toolsT]: toolT } => {
     const packed = {
         canvas,
@@ -55,7 +60,8 @@ export const editor_tools = ({
         eraser_thickness,
         layers_arr,
         current_layer,
-        undo_stack
+        undo_stack,
+        file_state
     };
     return {
         "none": (() => {

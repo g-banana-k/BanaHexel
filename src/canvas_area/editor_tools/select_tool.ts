@@ -7,7 +7,8 @@ export const select_tool = ({
     ctx,
     layers_arr,
     current_layer,
-    undo_stack
+    undo_stack,
+    file_state
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
@@ -138,9 +139,8 @@ export const select_tool = ({
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 undo_stack.push({ i, u, r });
-                console.log("DDD")
                 clipping = Option.None();
-                console.log(clipping);
+                file_state.set(_ => ({ saving: _.saving, saved: false }));
             } else { }
         },
         "tool_move": ({ x, y }) => {
@@ -167,7 +167,8 @@ export const select_tool = ({
                 ctx.drawImage(cl.canvas, cl.x + x - b_x, cl.y + y - b_y);
                 clipping = Option.Some({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y });
                 ctx.fillStyle = "#5fe07544";
-                ctx.fillRect(cl.x + x - b_x, cl.y + y - b_y, cl.w, cl.h)
+                ctx.fillRect(cl.x + x - b_x, cl.y + y - b_y, cl.w, cl.h);
+                file_state.set(_ => ({ saving: _.saving, saved: false }));
             } else if (is_try_clipping) {
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
@@ -200,6 +201,7 @@ export const select_tool = ({
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 is_try_clipping = false;
+                file_state.set(_ => ({ saving: _.saving, saved: false }));
             }
         },
         "move": ({ x, y }) => {
@@ -274,6 +276,7 @@ export const select_tool = ({
             layer.ctx.clearRect(0, 0, layer.body.width, layer.body.height);
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
         "on_ctrl_c": async () => {
             if (!clipping.is_some()) return;
@@ -282,7 +285,6 @@ export const select_tool = ({
 
             const blob = await (await fetch(data_url)).blob();
 
-            // Clipboardに画像をコピー
             const clipboard_item = new ClipboardItem({
                 [blob.type]: blob
             });
@@ -310,7 +312,7 @@ export const select_tool = ({
                 console.log(clipping);
                 clipping = Option.None();
                 undo_stack.push({ i, u, r });
-                console.log("VVV")
+                file_state.set(_ => ({ saving: _.saving, saved: false }));
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const items_res = await Result.from_try_catch_async(async () => await navigator.clipboard.read());
@@ -375,7 +377,7 @@ export const select_tool = ({
             const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
             const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
             undo_stack.push({ i, u, r });
-            console.log("XXX")
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
     }
 };

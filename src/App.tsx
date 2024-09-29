@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { LayerArea } from "./layer_area";
 import { WorkSpace } from "./workspace";
 import settings from "./setting.json"
-import { Result, UnRequired } from "./common/utils";
+import { Option, Result, UnRequired } from "./common/utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
@@ -28,9 +28,9 @@ export const is_loading_state = atom<boolean>({
     default: true,
 })
 
-export const opening_file_path_state = atom<string | undefined>({
+export const opening_file_path_state = atom<Option<string>>({
     key: "opening_file_path_state",
-    default: undefined,
+    default: Option.None(),
 })
 
 export const load_file = async (data: UnRequired<data_fileT, "layers">, setters: {
@@ -65,7 +65,7 @@ export const App = () => {
     useEffect(() => {
         (async () => {
             const data = (await open_file_from_path(settings.default_project)).unwrap();
-            set_opening_file_path(settings.default_project);
+            set_opening_file_path(Option.Some(settings.default_project));
             set_loading(true);
             await load_file(data, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
         })()

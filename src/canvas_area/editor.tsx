@@ -6,7 +6,8 @@ import { current_layer_state, layer_arr_state } from "../app";
 import { brush_tool_color_state, brush_tool_thickness_state, eraser_tool_thickness_state } from "../tool_menu"
 import { Option, State } from "../common/utils";
 import { editor_tools } from "./editor_tools";
-import { createUndoStack } from "./undo";
+import { createUndoStack, undo_stack } from "./undo";
+import { file_save_state } from "../title_bar";
 
 type canvas_editor_propsT = {
     canvas_width: number,
@@ -51,6 +52,7 @@ export const CanvasEditor = ({
     const brush_color = new State(useRecoilState(brush_tool_color_state));
     const brush_thickness = new State(useRecoilState(brush_tool_thickness_state));
     const eraser_thickness = new State(useRecoilState(eraser_tool_thickness_state));
+    const file_state = new State(useRecoilState(file_save_state));
 
     const zoom = useRef(z);
     const fn_data = new State(useState(Option.None<ReturnType<typeof editor_tools>>()));
@@ -93,7 +95,6 @@ export const CanvasEditor = ({
         const ctx = canvas.getContext("2d")!;
         set_once(false);
         once = false;
-        const undo_stack = createUndoStack({ stack_size: 100 });
         fn_data.set(Option.Some(editor_tools({
             canvas,
             ctx,
@@ -102,7 +103,8 @@ export const CanvasEditor = ({
             eraser_thickness,
             layers_arr,
             current_layer,
-            undo_stack
+            undo_stack,
+            file_state
         })));
         document.addEventListener("mousemove", e => {
             const canvas_rect = canvas.getBoundingClientRect();
@@ -140,6 +142,7 @@ export const CanvasEditor = ({
             if ((e.target as HTMLElement | undefined)?.tagName === "INPUT") return;
             if (!e.ctrlKey) return;
             if (!("acvxyz".includes(e.key))) return;
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
             if ("acvx".includes(e.key)) set_selected_tool_id("select_tool");
             const fns = fn_data.val_local().unwrap();
             if (e.key === "a") {

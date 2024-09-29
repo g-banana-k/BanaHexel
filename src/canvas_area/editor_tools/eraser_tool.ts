@@ -8,7 +8,8 @@ export const eraser_tool = ({
     eraser_thickness,
     layers_arr,
     current_layer,
-    undo_stack
+    undo_stack,
+    file_state
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
@@ -31,6 +32,7 @@ export const eraser_tool = ({
             rb_x = x;
             rb_y = y;
             layer.ctx.clearRect(x - shift, y - shift, thickness, thickness);
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
         "tool_move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -46,6 +48,7 @@ export const eraser_tool = ({
             lt_y = Math.min(lt_y, y);
             rb_x = Math.max(rb_x, x);
             rb_y = Math.max(rb_y, y);
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
         "up": ({ x, y, was_down }) => {
             if (!was_down) return;
@@ -65,6 +68,7 @@ export const eraser_tool = ({
             ctx.fillStyle = "#fff4";
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
             down_canvas = Option.None();
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
         "move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

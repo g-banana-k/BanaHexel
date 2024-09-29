@@ -1,4 +1,5 @@
 import { argsT, toolT } from ".";
+import { CanvasPart } from "../undo";
 
 export const stamp_tool = ({
     canvas,
@@ -6,7 +7,9 @@ export const stamp_tool = ({
     brush_color,
     brush_thickness,
     layers_arr,
-    current_layer
+    current_layer,
+    undo_stack,
+    file_state
 }: argsT): toolT => {
     return {
         "down": ({ x, y }) => {
@@ -16,9 +19,14 @@ export const stamp_tool = ({
             const shift = Math.floor((thickness) / 2);
             const layer = layers_arr.val_global()![current_layer.val_global()];
             layer.ctx.fillStyle = color;
+            const i = current_layer.val_local();
+            const u = new CanvasPart(x - shift, y - shift, thickness, thickness, layer.body);
             layer.ctx.fillRect(x - shift, y - shift, thickness, thickness);
+            const r = new CanvasPart(x - shift, y - shift, thickness, thickness, layer.body);
+            undo_stack.push({ i, u, r })
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
+            file_state.set(_ => ({ saving: _.saving, saved: false }));
         },
         "tool_move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -171,3 +171,9 @@ a {
     height: 48px;
     text-align: center;
 }
+
+#title_bar_save_state {
+    text-align: center;
+    line-height: 36px;
+    font-size: 13px;
+}
