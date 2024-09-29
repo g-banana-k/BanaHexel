@@ -32,7 +32,7 @@ export const WindowControl = () => {
     )
 }
 
-const close = () => { appWindow.close() };
+const close = () => { document.dispatchEvent(new Event("close_requested")) };
 const maximize = () => { appWindow.maximize() };
 const unmaximize = () => { appWindow.unmaximize() };
 const minimize = () => { appWindow.minimize() };

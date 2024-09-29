@@ -82,7 +82,8 @@ export const MenuBar = () => {
                 <MenuContent on_click={async () => {
                     set_selected(-1);
                     file_state.set({ saving: true, saved: false })
-                    await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
+                    const p = await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
+                    set_opening_file_path(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!))
                     file_state.set({ saving: false, saved: true })
                 }} >名前を付けて保存</MenuContent>
                 <MenuContent on_click={async () => {
@@ -91,7 +92,8 @@ export const MenuBar = () => {
                     if (opening_file_path.is_some()) {
                         await save_file_with_path(opening_file_path.unwrap(), { layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
                     } else {
-                        await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
+                        const p = await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
+                        set_opening_file_path(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!))
                     }
                     file_state.set({ saving: false, saved: true })
                 }} >上書き保存</MenuContent>

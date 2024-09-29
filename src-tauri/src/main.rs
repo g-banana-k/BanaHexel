@@ -7,7 +7,9 @@ use std::{
     path::Path,
 };
 
-use tauri::{api::dialog::blocking::FileDialogBuilder, command, Manager, WindowBuilder};
+use tauri::{
+    api::dialog::blocking::FileDialogBuilder, command, Manager, WindowBuilder, WindowEvent,
+};
 use window_shadows::set_shadow;
 use zip::{write::FileOptions, ZipArchive, ZipWriter};
 
@@ -173,6 +175,14 @@ fn main() {
             set_shadow(window, true).unwrap();
 
             Ok(())
+        })
+        .on_window_event(|event| {
+            println!("{:?}", event.event());
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event.event() {
+                api.prevent_close();
+                
+                event.window().emit("confirm-close", {}).unwrap();
+            }
         })
         .invoke_handler(tauri::generate_handler![
             open_devtools,

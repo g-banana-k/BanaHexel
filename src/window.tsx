@@ -1,13 +1,19 @@
 import "./index.css"
 
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
-import { TitleBar } from "./title_bar";
+import { file_save_state, TitleBar } from "./title_bar";
 import { useEffect, useRef } from "react";
 import { appWindow } from "@tauri-apps/api/window";
 import App from "./app";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
-import { Modal } from "./modal";
+import { is_modal_open_state, Modal, modal_contents_state, modal_size_state } from "./modal";
+import { listen } from "@tauri-apps/api/event";
+import { State } from "./common/utils";
+import { dialog } from "@tauri-apps/api";
 
+listen("confirm_close", () => {
+    document.dispatchEvent(new Event("close_requested"))
+})
 
 export const window_size_state = atom({
     key: "window_size_state",
@@ -21,6 +27,7 @@ export const window_size_state = atom({
 
 export const Window = () => {
     const [window_size, set_window_size] = useRecoilState(window_size_state);
+    const file_state = new State(useRecoilState(file_save_state));
 
     useEffect(() => {
         appWindow.onResized(async (_) => {
@@ -35,6 +42,17 @@ export const Window = () => {
             if (e.key === "F12") {
                 e.preventDefault();
             }
+        })
+        document.addEventListener("close_requested", async () => {
+            if (!file_state.val_global().saved) {
+                const b = await dialog.confirm("本当に離れていいですか？\n保存していない変更は失われます。", {
+                    "okLabel": "離れる",
+                    "cancelLabel": "戻る",
+                    "type": "warning",
+                })
+                if (!b) return;
+            }
+            appWindow.close()
         })
     }, [])
 

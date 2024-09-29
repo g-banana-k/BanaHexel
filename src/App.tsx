@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { LayerArea } from "./layer_area";
 import { WorkSpace } from "./workspace";
-import settings from "./setting.json"
-import { Option, Result, UnRequired } from "./common/utils";
+import { Option, Result, State, UnRequired } from "./common/utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
 import { binary_to_bitmap, data_fileT, open_file_from_path } from "./file";
+import { file_save_state } from "./title_bar";
 
 export const layer_arr_state = atom<Layer[] | undefined>({
     key: "layer_arr_state",
@@ -62,12 +62,20 @@ export const App = () => {
     const set_layer_arr = useSetRecoilState(layer_arr_state);
     const set_canvas_size = useSetRecoilState(canvas_size_state);
     const set_opening_file_path = useSetRecoilState(opening_file_path_state);
+    const file_state = new State(useRecoilState(file_save_state));
     useEffect(() => {
         (async () => {
-            const data = (await open_file_from_path(settings.default_project)).unwrap();
-            set_opening_file_path(Option.Some(settings.default_project));
+            set_opening_file_path(Option.None());
             set_loading(true);
-            await load_file(data, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
+            await load_file({
+                meta_data: {
+                    canvas_size: {
+                        width: 64,
+                        height: 64,
+                    },
+                },
+            }, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
+            file_state.set({ saving: false, saved: false })
         })()
     }, [])
 

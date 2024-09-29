@@ -24,7 +24,7 @@ export const TitleBar = (props: { is_loading?: boolean }) => {
             <div id="title_bar_app_icon" ><Hexagon size="16" /></div>
             {props.is_loading ? "" : <MenuBar />}
             <div data-tauri-drag-region className="title_bar_flex_space">
-                <div id="title_bar_save_state">
+                <div data-tauri-drag-region  id="title_bar_save_state">
                     {opening_file_path.unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)} - {
                         file_state.val_global().saving ? "保存中" :
                             file_state.val_local().saved ? "保存済み" :
