@@ -1,23 +1,21 @@
 import { argsT, toolT } from ".";
 import { Option, Result } from "../../common/utils";
+import { CanvasPart, clone_canvas } from "../undo";
 
 export const select_tool = ({
     canvas,
     ctx,
     layers_arr,
-    current_layer
+    current_layer,
+    undo_stack
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
     let prev_layer_i = Option.None<number>();
-    let clipping = Option.None<{
-        x: number,
-        y: number,
-        w: number,
-        h: number
-        canvas: HTMLCanvasElement,
-        ctx: CanvasRenderingContext2D,
-    }>();
+    let clipping = Option.None<Clip>();
+    let is_try_clipping = false;
+
+    let o_u = Option.None<HTMLCanvasElement>();
 
     document.addEventListener("select_area_event", async e => {
         if (!clipping.is_some()) return;
@@ -58,6 +56,10 @@ export const select_tool = ({
             const center_x = cl.x + Math.floor(cl.w / 2);
             const center_y = cl.y + Math.floor(cl.h / 2);
             clipping = Option.Some({
+                lt_x: cl.lt_x,
+                lt_y: cl.lt_y,
+                rb_x: cl.rb_x,
+                rb_y: cl.rb_y,
                 x: center_x - Math.floor(cl.h / 2),
                 y: center_y - Math.floor(cl.w / 2),
                 w: cl.h,
@@ -83,6 +85,10 @@ export const select_tool = ({
             const center_x = cl.x + Math.floor(cl.w / 2);
             const center_y = cl.y + Math.floor(cl.h / 2);
             clipping = Option.Some({
+                lt_x: cl.lt_x,
+                lt_y: cl.lt_y,
+                rb_x: cl.rb_x,
+                rb_y: cl.rb_y,
                 x: center_x - Math.floor(cl.h / 2),
                 y: center_y - Math.floor(cl.w / 2),
                 w: cl.h,
@@ -97,7 +103,13 @@ export const select_tool = ({
             ctx.fillRect(d.x, d.y, d.w, d.h);
         }
         else if (e.detail === "trash") {
+            const layer = layers_arr.val_global()![current_layer.val_global()];
+            const { lt_x, lt_y, w, h } = cl_to_pos(cl, canvas);
+            const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
+            const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
+            const i = current_layer.val_local();
             clipping = Option.None();
+            undo_stack.push({ i, u, r });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     })
@@ -118,10 +130,17 @@ export const select_tool = ({
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const cl = clipping.unwrap();
                 const layer = layers_arr.val_global()![current_layer.val_global()];
+                const i = current_layer.val_local();
+                const { lt_x, lt_y, w, h } = cl_to_pos(cl, canvas);
+                const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
                 layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
+                undo_stack.push({ i, u, r });
+                console.log("DDD")
                 clipping = Option.None();
+                console.log(clipping);
             } else { }
         },
         "tool_move": ({ x, y }) => {
@@ -137,6 +156,7 @@ export const select_tool = ({
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
                 ctx.fillRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
+                is_try_clipping = true;
             }
         },
         "up": ({ x, y, was_down }) => {
@@ -148,7 +168,7 @@ export const select_tool = ({
                 clipping = Option.Some({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y });
                 ctx.fillStyle = "#5fe07544";
                 ctx.fillRect(cl.x + x - b_x, cl.y + y - b_y, cl.w, cl.h)
-            } else {
+            } else if (is_try_clipping) {
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
                 const layer = layers_arr.val_global()![current_layer.val_global()];
@@ -157,8 +177,12 @@ export const select_tool = ({
                 cl_canvas.width = rb_x - lt_x + 1;
                 cl_canvas.height = rb_y - lt_y + 1;
                 const cl_ctx = cl_canvas.getContext("2d")!;
-                cl_ctx.drawImage(layer.body, lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1, 0, 0, rb_x - lt_x + 1, rb_y - lt_y + 1,);
+                cl_ctx.drawImage(layer.body, -lt_x, -lt_y);
                 clipping = Option.Some({
+                    lt_x: lt_x,
+                    lt_y: lt_y,
+                    rb_x: rb_x,
+                    rb_y: rb_y,
                     x: lt_x,
                     y: lt_y,
                     w: rb_x - lt_x + 1,
@@ -166,13 +190,16 @@ export const select_tool = ({
                     canvas: cl_canvas,
                     ctx: cl_ctx
                 });
+                console.log("hehehe")
                 const cl = clipping.unwrap();
                 ctx.drawImage(cl.canvas, cl.x, cl.y);
                 ctx.fillStyle = "#5fe07544";
                 ctx.fillRect(cl.x, cl.y, cl.w, cl.h)
+                o_u = Option.Some(clone_canvas(layer.body));
                 layer.ctx.clearRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
+                is_try_clipping = false;
             }
         },
         "move": ({ x, y }) => {
@@ -185,10 +212,15 @@ export const select_tool = ({
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             clipping.on_some(cl => {
                 const layer = layers_arr.val_global()![current_layer.val_global()];
+                const { lt_x, lt_y, w, h } = cl_to_pos(cl, canvas);
+                const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
                 layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
+                const i = current_layer.val_local();
+                clipping = Option.None();
+                undo_stack.push({ i, u, r });
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
-                clipping = Option.None();
             });
             prev_layer_i = Option.Some(current_layer.val_local());
         },
@@ -223,6 +255,10 @@ export const select_tool = ({
             const cl_ctx = cl_canvas.getContext("2d")!;
             cl_ctx.drawImage(layer.body, 0, 0,);
             clipping = Option.Some({
+                lt_x: 0,
+                lt_y: 0,
+                rb_x: 0,
+                rb_y: 0,
                 x: 0,
                 y: 0,
                 w: canvas.width,
@@ -234,10 +270,10 @@ export const select_tool = ({
             ctx.drawImage(cl.canvas, cl.x, cl.y);
             ctx.fillStyle = "#5fe07544";
             ctx.fillRect(cl.x, cl.y, cl.w, cl.h)
+            o_u = Option.Some(clone_canvas(layer.body));
             layer.ctx.clearRect(0, 0, layer.body.width, layer.body.height);
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
-
         },
         "on_ctrl_c": async () => {
             if (!clipping.is_some()) return;
@@ -259,10 +295,22 @@ export const select_tool = ({
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const cl = clipping.unwrap();
                 const layer = layers_arr.val_global()![current_layer.val_global()];
+                const lt_x = Math.max(0, Math.min(cl.lt_x, cl.x));
+                const lt_y = Math.max(0, Math.min(cl.lt_y, cl.y));
+                const rb_x = Math.min(Math.max(cl.rb_x, cl.x + cl.w), canvas.width,);
+                const rb_y = Math.min(Math.max(cl.rb_y, cl.y + cl.h), canvas.height);
+                const w = rb_x - lt_x + 1;
+                const h = rb_y - lt_y + 1;
+                const i = current_layer.val_local();
+                const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
                 layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
+                console.log(clipping);
                 clipping = Option.None();
+                undo_stack.push({ i, u, r });
+                console.log("VVV")
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const items_res = await Result.from_try_catch_async(async () => await navigator.clipboard.read());
@@ -270,7 +318,6 @@ export const select_tool = ({
             const items = items_res.unwrap()
             for (const item of items) {
                 const types = item.types;
-
                 if (types.includes('image/png') || types.includes('image/jpeg')) {
                     const blob_res = await Result.from_try_catch_async(async () => await item.getType('image/png')); await item.getType('image/png');
                     if (!blob_res.is_ok()) return;
@@ -283,6 +330,10 @@ export const select_tool = ({
                     const cl_ctx = cl_canvas.getContext("2d")!;
                     cl_ctx.drawImage(image, 0, 0);
                     clipping = Option.Some({
+                        lt_x: 0,
+                        lt_y: 0,
+                        rb_x: 0,
+                        rb_y: 0,
                         x: 0,
                         y: 0,
                         w: image.width,
@@ -290,6 +341,8 @@ export const select_tool = ({
                         canvas: cl_canvas,
                         ctx: cl_ctx
                     });
+                    const layer = layers_arr.val_global()![current_layer.val_global()];
+                    o_u = Option.Some(clone_canvas(layer.body));
                     const cl = clipping.unwrap();
                     ctx.drawImage(cl.canvas, cl.x, cl.y);
                     ctx.fillStyle = "#5fe07544";
@@ -314,6 +367,46 @@ export const select_tool = ({
 
             const result = await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
             result.on_err(console.log);
+
+            const layer = layers_arr.val_global()![current_layer.val_global()];
+
+            const { lt_x, lt_y, w, h } = cl_to_pos(cl, canvas);
+            const i = current_layer.val_local();
+            const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
+            const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
+            undo_stack.push({ i, u, r });
+            console.log("XXX")
         },
     }
 };
+
+const cl_to_pos = (cl: Clip, canvas: HTMLCanvasElement) => {
+
+    const lt_x = Math.max(0, Math.min(cl.lt_x, cl.x));
+    const lt_y = Math.max(0, Math.min(cl.lt_y, cl.y));
+    const rb_x = Math.min(Math.max(cl.rb_x, cl.x + cl.w), canvas.width,);
+    const rb_y = Math.min(Math.max(cl.rb_y, cl.y + cl.h), canvas.height);
+    const w = rb_x - lt_x + 1;
+    const h = rb_y - lt_y + 1;
+    return {
+        lt_x,
+        lt_y,
+        rb_x,
+        rb_y,
+        w,
+        h,
+    }
+}
+
+type Clip = {
+    lt_x: number,
+    lt_y: number,
+    rb_x: number,
+    rb_y: number,
+    x: number,
+    y: number,
+    w: number,
+    h: number
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D,
+}

@@ -1,6 +1,7 @@
 import { canvas_toolsT } from "..";
-import { State } from "../../common/utils";
+import { Option, State } from "../../common/utils";
 import { Layer } from "../../data";
+import { Cache, UndoStack } from "../undo";
 import { brush_tool } from "./brush_tool";
 import { bucket_tool } from "./bucket_tool";
 import { eraser_tool } from "./eraser_tool";
@@ -21,6 +22,8 @@ export type toolT = {
     "on_ctrl_c"?: (args: {}) => void,
     "on_ctrl_v"?: (args: {}) => void,
     "on_ctrl_x"?: (args: {}) => void,
+    "on_ctrl_y"?: (args: {}) => boolean,
+    "on_ctrl_z"?: (args: {}) => boolean,
 };
 
 export type argsT = {
@@ -31,6 +34,7 @@ export type argsT = {
     eraser_thickness: State<number>,
     layers_arr: State<Layer[] | undefined>,
     current_layer: State<number>,
+    undo_stack:UndoStack,
 };
 
 export const editor_tools = ({
@@ -40,7 +44,8 @@ export const editor_tools = ({
     brush_thickness,
     eraser_thickness,
     layers_arr,
-    current_layer
+    current_layer,
+    undo_stack
 }: argsT): { [key in canvas_toolsT]: toolT } => {
     const packed = {
         canvas,
@@ -49,7 +54,8 @@ export const editor_tools = ({
         brush_thickness,
         eraser_thickness,
         layers_arr,
-        current_layer
+        current_layer,
+        undo_stack
     };
     return {
         "none": (() => {

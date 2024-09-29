@@ -89,6 +89,14 @@ export class Option<T> {
             return Option.None()
         }
     }
+    public on_none(f: () => void): Option<T> {
+        if (this.is_some()) {
+            return this;
+        } else {
+            f();
+            return Option.None();
+        }
+    }
     public static from_nullable<T>(v: T | null): Option<T> {
         if (v !== null) {
             return Option.Some<T>(v);

@@ -6,6 +6,7 @@ import { current_layer_state, layer_arr_state } from "../app";
 import { brush_tool_color_state, brush_tool_thickness_state, eraser_tool_thickness_state } from "../tool_menu"
 import { Option, State } from "../common/utils";
 import { editor_tools } from "./editor_tools";
+import { createUndoStack } from "./undo";
 
 type canvas_editor_propsT = {
     canvas_width: number,
@@ -92,6 +93,7 @@ export const CanvasEditor = ({
         const ctx = canvas.getContext("2d")!;
         set_once(false);
         once = false;
+        const undo_stack = createUndoStack({ stack_size: 100 });
         fn_data.set(Option.Some(editor_tools({
             canvas,
             ctx,
@@ -99,7 +101,8 @@ export const CanvasEditor = ({
             brush_thickness,
             eraser_thickness,
             layers_arr,
-            current_layer
+            current_layer,
+            undo_stack
         })));
         document.addEventListener("mousemove", e => {
             const canvas_rect = canvas.getBoundingClientRect();
@@ -134,9 +137,10 @@ export const CanvasEditor = ({
             set_mouse_down(false);
         });
         document.addEventListener("keydown", e => {
+            if ((e.target as HTMLElement | undefined)?.tagName === "INPUT") return;
             if (!e.ctrlKey) return;
-            if (!(e.key === "a" || e.key === "c" || e.key === "v" || e.key === "x")) return;
-            set_selected_tool_id("select_tool");
+            if (!("acvxyz".includes(e.key))) return;
+            if ("acvx".includes(e.key)) set_selected_tool_id("select_tool");
             const fns = fn_data.val_local().unwrap();
             if (e.key === "a") {
                 e.preventDefault();
@@ -154,6 +158,32 @@ export const CanvasEditor = ({
                 e.preventDefault();
                 const fn = fns.select_tool.on_ctrl_x;
                 if (fn) fn({});
+            } else if (e.key === "y") {
+                e.preventDefault();
+                const fn = fns[selected_tool.current].on_ctrl_y;
+                const f = fn ? fn({}) : true;
+                if (f) undo_stack.redo().on_some(({ i, r }) => {
+                    const layers = layers_arr.val_global()!;
+                    const layer = layers[i];
+                    const ctx = layer.ctx;
+                    ctx.clearRect(r.x, r.y, r.area.width, r.area.height);
+                    ctx.drawImage(r.area, r.x, r.y);
+                    layer.preview_update();
+                    layers_arr.set([...layers]);
+                });
+            } else if (e.key === "z") {
+                e.preventDefault();
+                const fn = fns[selected_tool.current].on_ctrl_z;
+                const f = fn ? fn({}) : true;
+                if (f) undo_stack.undo().on_some(({ i, u }) => {
+                    const layers = layers_arr.val_global()!;
+                    const layer = layers[i];
+                    const ctx = layer.ctx;
+                    ctx.clearRect(u.x, u.y, u.area.width, u.area.height);
+                    ctx.drawImage(u.area, u.x, u.y);
+                    layer.preview_update();
+                    layers_arr.set([...layers]);
+                });
             }
         });
     }, []);
