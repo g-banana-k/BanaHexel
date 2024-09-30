@@ -2,14 +2,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    fs::{File, OpenOptions},
+    fs::{create_dir_all, File, OpenOptions},
     io::{BufReader, Read, Write},
-    path::Path,
+    path::{self, Path},
 };
 
-use tauri::{
-    api::dialog::blocking::FileDialogBuilder, command, Manager, WindowBuilder, WindowEvent,
-};
+use tauri::{api::dialog::blocking::FileDialogBuilder, command, Manager};
 use window_shadows::set_shadow;
 use zip::{write::FileOptions, ZipArchive, ZipWriter};
 
@@ -166,6 +164,29 @@ fn open_file() -> Result<Option<(String, DataFileT)>, String> {
     Ok(Some((path_string, (json_res, img_vec_res))))
 }
 
+#[command]
+fn write_user_data(dir: String, path: String, data: String) -> Result<(), String> {
+    let path = Path::new(&path);
+    create_dir_all(dir).map_err(|e| e.to_string())?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .open(path)
+        .map_err(|e| e.to_string())?;
+    file.write_all(data.as_bytes()).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[command]
+fn read_user_data(path: String) -> Result<String, String> {
+    let path = Path::new(&path);
+    let mut file = File::open(path).map_err(|e| e.to_string())?;
+    let mut buffer = String::new();
+    file.read_to_string(&mut buffer)
+        .map_err(|e| e.to_string())?;
+    Ok(buffer)
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -188,6 +209,8 @@ fn main() {
             open_file,
             save_file_new,
             save_file_with_path,
+            write_user_data,
+            read_user_data
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -26,7 +26,7 @@ export const stamp_tool = ({
             undo_stack.push({ i, u, r })
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
-            file_state.set(_ => ({ saving: _.saving, saved: false }));
+            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
         },
         "tool_move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -38,6 +38,7 @@ export type argsT = {
     file_state: State<{
         saving: boolean,
         saved: boolean,
+        has_file: boolean,
     }>
 };
 

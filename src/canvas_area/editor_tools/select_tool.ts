@@ -140,7 +140,7 @@ export const select_tool = ({
                 layers_arr.set([...layers_arr.val_local()!]);
                 undo_stack.push({ i, u, r });
                 clipping = Option.None();
-                file_state.set(_ => ({ saving: _.saving, saved: false }));
+                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
             } else { }
         },
         "tool_move": ({ x, y }) => {
@@ -168,7 +168,7 @@ export const select_tool = ({
                 clipping = Option.Some({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y });
                 ctx.fillStyle = "#5fe07544";
                 ctx.fillRect(cl.x + x - b_x, cl.y + y - b_y, cl.w, cl.h);
-                file_state.set(_ => ({ saving: _.saving, saved: false }));
+                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
             } else if (is_try_clipping) {
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
@@ -200,7 +200,7 @@ export const select_tool = ({
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 is_try_clipping = false;
-                file_state.set(_ => ({ saving: _.saving, saved: false }));
+                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
             }
         },
         "move": ({ x, y }) => {
@@ -275,7 +275,7 @@ export const select_tool = ({
             layer.ctx.clearRect(0, 0, layer.body.width, layer.body.height);
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
-            file_state.set(_ => ({ saving: _.saving, saved: false }));
+            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
         },
         "on_ctrl_c": async () => {
             if (!clipping.is_some()) return;
@@ -309,7 +309,7 @@ export const select_tool = ({
                 layers_arr.set([...layers_arr.val_local()!]);
                 clipping = Option.None();
                 undo_stack.push({ i, u, r });
-                file_state.set(_ => ({ saving: _.saving, saved: false }));
+                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const items_res = await Result.from_try_catch_async(async () => await navigator.clipboard.read());
@@ -373,7 +373,7 @@ export const select_tool = ({
             const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
             const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
             undo_stack.push({ i, u, r });
-            file_state.set(_ => ({ saving: _.saving, saved: false }));
+            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
         },
     }
 };

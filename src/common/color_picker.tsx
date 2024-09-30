@@ -1,10 +1,12 @@
-import { SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
+import { atom, SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
 import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
 import { State } from "./utils";
 import "./color_picker.css"
 import { Palette, Plus } from "lucide-react";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, is_context_menu_open_state } from "../context_menu";
+import { user_data_state } from "../app";
+import { write_user_data } from "../file";
 
 export const ColorPicker = ({
     color: c,
@@ -82,7 +84,7 @@ export const ColorPicker = ({
     }, [])
 
     const is_palette_opening = new State(useState(false));
-    const palette_colors = new State(useState<{ code: string, uuid: string }[]>([]));
+    const user_data = new State(useRecoilState(user_data_state));
 
     const set_context_menu_open = useSetRecoilState(is_context_menu_open_state);
     const set_context_menu_position = useSetRecoilState(context_menu_position_state);
@@ -137,7 +139,7 @@ export const ColorPicker = ({
                 : ""}
             {is_palette_opening.val_local() ?
                 <div className="common_color_picker_palette" style={{ top: height }}>
-                    {palette_colors.val_local().map(({ code, uuid }) => {
+                    {user_data.val_local().palette.map(({ code, uuid }) => {
                         return (<div
                             key={uuid}
                             className="common_color_picker_palette_color_button has_own_context_menu"
@@ -152,9 +154,12 @@ export const ColorPicker = ({
                                 set_context_menu_position({ x: e.clientX, y: e.clientY });
                                 set_context_menu_contents([
                                     <div className="context_menu_content" onClick={() => {
-                                        palette_colors.set(palette_colors.val_local().filter(
-                                            ({ uuid: uuid2 }) => uuid2 != uuid
-                                        ));
+                                        user_data.set({
+                                            palette: user_data.val_local().palette.filter(
+                                                ({ uuid: uuid2 }) => uuid2 != uuid
+                                            )
+                                        });
+                                        write_user_data({ user_data: user_data.val_local() });
                                     }}>削除</div>,
                                 ]);
                             }}
@@ -162,10 +167,12 @@ export const ColorPicker = ({
                     })}
                     <div
                         className="common_color_picker_palette_add_button"
-                        onClick={() => palette_colors.set(colors => {
-                            colors.push({ code: color, uuid: crypto.randomUUID() });
-                            return [...colors];
-                        })}
+                        onClick={() => {
+                            user_data.set(user_data => ({
+                                palette: [...user_data.palette, { code: color, uuid: crypto.randomUUID() }]
+                            }));
+                            write_user_data({ user_data: user_data.val_local() });
+                        }}
                     ><Plus size={24} /></div>
                 </div> : ""
             }

@@ -1,5 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { Option, Result } from "./common/utils"
+import { appDataDir, join } from "@tauri-apps/api/path";
+import { createDir, exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 
 export type data_fileT = {
     layers: string[],
@@ -88,3 +90,21 @@ export const canvas_to_binary = (canvas: HTMLCanvasElement): string => {
 //     const image_bitmap = await createImageBitmap(blob);
 //     return image_bitmap
 // })
+
+export type user_dataT = {
+    palette: { code: string, uuid: string }[]
+}
+
+export const write_user_data = async ({ user_data }: { user_data: user_dataT }) => {
+    const dir = await appDataDir();
+    const path = await join(dir, "user_data.json");
+    console.log("lol");
+    await invoke("write_user_data", { dir: dir, path: path, data: JSON.stringify(user_data) })
+}
+
+export const user_data: user_dataT = await (async (): Promise<user_dataT> => {
+    const dir = await appDataDir();
+    const path = await join(dir, "user_data.json");
+    console.log("wow");
+    return (await exists(path)) ? JSON.parse(await invoke("read_user_data", { path })) : { palette: [] };
+})()

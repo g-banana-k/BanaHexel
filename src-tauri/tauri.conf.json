@@ -13,11 +13,9 @@
         "allowlist": {
             "all": false,
             "shell": {
-                "all": false,
                 "open": true
             },
             "window": {
-                "all": true,
                 "maximize": true,
                 "minimize": true,
                 "hide": true,
@@ -25,9 +23,27 @@
                 "startDragging": true,
                 "show": true,
                 "unmaximize": true,
-                "unminimize": true
+                "unminimize": true,
+                "setTitle": true
             },
             "dialog": {
+                "all": true
+            },
+            "fs":{
+                "all": false,
+                "copyFile": false,
+                "createDir": true,
+                "exists": true,
+                "readDir": false,
+                "readFile": true,
+                "removeDir": false,
+                "removeFile": false,
+                "renameFile": false,
+                "scope": [
+                    "$APPDATA/*"
+                ],
+                "writeFile": true
+            },"path": {
                 "all": true
             }
         },

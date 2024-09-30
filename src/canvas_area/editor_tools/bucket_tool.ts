@@ -19,7 +19,7 @@ export const bucket_tool = ({
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const fn = fill({ brush_color, layer, x, y, shift });
             fn.on_some(fn => {
-                file_state.set(_ => ({ saving: _.saving, saved: false }));
+            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
                 const u = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 const i = current_layer.val_local();
                 fn();
@@ -33,7 +33,7 @@ export const bucket_tool = ({
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const fn = fill({ brush_color, layer, x, y, shift });
             fn.on_some(fn => {
-                file_state.set(_ => ({ saving: _.saving, saved: false }));
+            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
                 const u = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 const i = current_layer.val_local();
                 fn();

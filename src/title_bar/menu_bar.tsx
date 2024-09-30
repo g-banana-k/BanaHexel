@@ -76,26 +76,26 @@ export const MenuBar = () => {
                             set_layer_arr, set_canvas_size, set_loading, set_current_layer
                         });
                         set_loading(false)
-                        file_state.set({ saving: false, saved: false })
+                        file_state.set({ saving: false, saved: false, has_file: false })
                     });
                 }} >新規作成</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
-                    file_state.set({ saving: true, saved: false })
+                    file_state.set({ saving: true, saved: false, has_file: true })
                     const p = await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
                     set_opening_file_path(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!))
-                    file_state.set({ saving: false, saved: true })
+                    file_state.set({ saving: false, saved: true, has_file: true })
                 }} >名前を付けて保存</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
-                    file_state.set({ saving: true, saved: false })
+                    file_state.set({ saving: true, saved: false, has_file: true })
                     if (opening_file_path.is_some()) {
                         await save_file_with_path(opening_file_path.unwrap(), { layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
                     } else {
                         const p = await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
                         set_opening_file_path(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!))
                     }
-                    file_state.set({ saving: false, saved: true })
+                    file_state.set({ saving: false, saved: true, has_file: true })
                 }} >上書き保存</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
@@ -106,7 +106,7 @@ export const MenuBar = () => {
                         set_opening_file_path(Option.Some(v[0]));
                         await load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer });
                         set_loading(false);
-                        file_state.set({ saving: false, saved: true })
+                        file_state.set({ saving: false, saved: true, has_file: true })
                     })
                 }} >開く</MenuContent>
             </MenuButton>

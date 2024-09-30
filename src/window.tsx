@@ -39,12 +39,12 @@ export const Window = () => {
             })
         })
         document.addEventListener("keydown", e => {
-            if (e.key === "F12") {
+            if (e.key === "F12" ) {
                 e.preventDefault();
             }
         })
         document.addEventListener("close_requested", async () => {
-            if (!file_state.val_global().saved) {
+            if (!file_state.val_global().saved && file_state.val_local().has_file) {
                 const b = await dialog.confirm("本当に離れていいですか？\n保存していない変更は失われます。", {
                     "okLabel": "離れる",
                     "cancelLabel": "戻る",
