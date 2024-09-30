@@ -29,21 +29,13 @@
             "dialog": {
                 "all": true
             },
-            "fs":{
-                "all": false,
-                "copyFile": false,
-                "createDir": true,
+            "fs": {
                 "exists": true,
-                "readDir": false,
-                "readFile": true,
-                "removeDir": false,
-                "removeFile": false,
-                "renameFile": false,
                 "scope": [
                     "$APPDATA/*"
-                ],
-                "writeFile": true
-            },"path": {
+                ]
+            },
+            "path": {
                 "all": true
             }
         },
@@ -71,7 +63,12 @@
                 "icons/128x128@2x.png",
                 "icons/icon.icns",
                 "icons/icon.ico"
-            ]
+            ],
+            "windows": {
+                "wix":{
+                    "language": "ja-JP"
+                }
+            }
         }
     }
 }
