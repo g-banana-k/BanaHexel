@@ -142,7 +142,7 @@ export const CanvasEditor = ({
             if ((e.target as HTMLElement | undefined)?.tagName === "INPUT") return;
             if (!e.ctrlKey) return;
             if (!("acvxyz".includes(e.key))) return;
-            file_state.set(_ => ({ saving: _.saving, saved: false }));
+            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
             if ("acvx".includes(e.key)) set_selected_tool_id("select_tool");
             const fns = fn_data.val_local().unwrap();
             if (e.key === "a") {
