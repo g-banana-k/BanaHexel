@@ -5,12 +5,12 @@ import { Option, Result, State, UnRequired } from "./common/utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
-import { binary_to_bitmap, data_fileT, open_file_from_path, user_data } from "./file";
+import { binary_to_bitmap, data_fileT, open_file_from_path, user_dataT } from "./file";
 import { file_save_state } from "./title_bar";
 
 export const user_data_state = atom({
     key: "user_data_state",
-    default: user_data
+    default: Option.None<user_dataT>()
 })
 
 export const layer_arr_state = atom<Layer[] | undefined>({

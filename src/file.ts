@@ -102,9 +102,9 @@ export const write_user_data = async ({ user_data }: { user_data: user_dataT }) 
     await invoke("write_user_data", { dir: dir, path: path, data: JSON.stringify(user_data) })
 }
 
-export const user_data: user_dataT = await (async (): Promise<user_dataT> => {
+export const read_user_data= async (): Promise<user_dataT> => {
     const dir = await appDataDir();
     const path = await join(dir, "user_data.json");
     console.log("wow");
     return (await exists(path)) ? JSON.parse(await invoke("read_user_data", { path })) : { palette: [] };
-})()
+}

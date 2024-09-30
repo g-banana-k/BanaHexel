@@ -4,12 +4,13 @@ import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { file_save_state, TitleBar } from "./title_bar";
 import { useEffect, useRef } from "react";
 import { appWindow } from "@tauri-apps/api/window";
-import App from "./app";
+import App, { user_data_state } from "./app";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
 import { is_modal_open_state, Modal, modal_contents_state, modal_size_state } from "./modal";
 import { listen } from "@tauri-apps/api/event";
-import { State } from "./common/utils";
+import { Option, State } from "./common/utils";
 import { dialog } from "@tauri-apps/api";
+import { read_user_data } from "./file";
 
 listen("confirm_close", () => {
     document.dispatchEvent(new Event("close_requested"))
@@ -28,6 +29,7 @@ export const window_size_state = atom({
 export const Window = () => {
     const [window_size, set_window_size] = useRecoilState(window_size_state);
     const file_state = new State(useRecoilState(file_save_state));
+    const set_user_data = useSetRecoilState(user_data_state);
 
     useEffect(() => {
         appWindow.onResized(async (_) => {
@@ -37,12 +39,12 @@ export const Window = () => {
                 maximized: await appWindow.isMaximized(),
                 minimized: await appWindow.isMinimized(),
             })
-        })
+        });
         document.addEventListener("keydown", e => {
-            if (e.key === "F12" ) {
+            if (e.key === "F12") {
                 e.preventDefault();
             }
-        })
+        });
         document.addEventListener("close_requested", async () => {
             if (!file_state.val_global().saved && file_state.val_local().has_file) {
                 const b = await dialog.confirm("本当に離れていいですか？\n保存していない変更は失われます。", {
@@ -53,7 +55,10 @@ export const Window = () => {
                 if (!b) return;
             }
             appWindow.close()
-        })
+        });
+            (async () => {
+                set_user_data(Option.Some(await read_user_data()));
+            })()
     }, [])
 
     const set_context_menu_open = useSetRecoilState(is_context_menu_open_state);

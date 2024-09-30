@@ -1,7 +1,7 @@
 import { atom, SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
 import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
-import { State } from "./utils";
+import { Option, State } from "./utils";
 import "./color_picker.css"
 import { Palette, Plus } from "lucide-react";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, is_context_menu_open_state } from "../context_menu";
@@ -139,7 +139,7 @@ export const ColorPicker = ({
                 : ""}
             {is_palette_opening.val_local() ?
                 <div className="common_color_picker_palette" style={{ top: height }}>
-                    {user_data.val_local().palette.map(({ code, uuid }) => {
+                    {user_data.val_local().unwrap().palette.map(({ code, uuid }) => {
                         return (<div
                             key={uuid}
                             className="common_color_picker_palette_color_button has_own_context_menu"
@@ -154,12 +154,12 @@ export const ColorPicker = ({
                                 set_context_menu_position({ x: e.clientX, y: e.clientY });
                                 set_context_menu_contents([
                                     <div className="context_menu_content" onClick={() => {
-                                        user_data.set({
-                                            palette: user_data.val_local().palette.filter(
+                                        user_data.set(Option.Some({
+                                            palette: user_data.val_local().unwrap().palette.filter(
                                                 ({ uuid: uuid2 }) => uuid2 != uuid
                                             )
-                                        });
-                                        write_user_data({ user_data: user_data.val_local() });
+                                        }));
+                                        write_user_data({ user_data: user_data.val_local().unwrap() });
                                     }}>削除</div>,
                                 ]);
                             }}
@@ -168,10 +168,10 @@ export const ColorPicker = ({
                     <div
                         className="common_color_picker_palette_add_button"
                         onClick={() => {
-                            user_data.set(user_data => ({
-                                palette: [...user_data.palette, { code: color, uuid: crypto.randomUUID() }]
+                            user_data.set(user_data => Option.Some({
+                                palette: [...user_data.unwrap().palette, { code: color, uuid: crypto.randomUUID() }]
                             }));
-                            write_user_data({ user_data: user_data.val_local() });
+                            write_user_data({ user_data: user_data.val_local().unwrap() });
                         }}
                     ><Plus size={24} /></div>
                 </div> : ""
