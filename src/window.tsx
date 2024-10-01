@@ -1,16 +1,16 @@
 import "./index.css"
 
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { file_save_state, TitleBar } from "./title_bar";
 import { useEffect, useRef } from "react";
 import { appWindow } from "@tauri-apps/api/window";
-import App, { user_data_state } from "./app";
+import App, { canvas_size_state, layer_arr_state, opening_file_path_state, user_data_state } from "./app";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
 import { is_modal_open_state, Modal, modal_contents_state, modal_size_state } from "./modal";
 import { listen } from "@tauri-apps/api/event";
 import { Option, State } from "./common/utils";
 import { dialog } from "@tauri-apps/api";
-import { read_user_data } from "./file";
+import { read_user_data, save_file_with_path, write_user_data } from "./file";
 
 listen("confirm_close", () => {
     document.dispatchEvent(new Event("close_requested"))
@@ -29,7 +29,10 @@ export const window_size_state = atom({
 export const Window = () => {
     const [window_size, set_window_size] = useRecoilState(window_size_state);
     const file_state = new State(useRecoilState(file_save_state));
-    const set_user_data = useSetRecoilState(user_data_state);
+    const user_data = new State(useRecoilState(user_data_state));
+    const opening_file_path = new State(useRecoilState(opening_file_path_state));
+    const layer_arr = new State(useRecoilState(layer_arr_state));
+    const canvas_size = new State(useRecoilState(canvas_size_state));
 
     useEffect(() => {
         appWindow.onResized(async (_) => {
@@ -40,9 +43,15 @@ export const Window = () => {
                 minimized: await appWindow.isMinimized(),
             })
         });
-        document.addEventListener("keydown", e => {
+        document.addEventListener("keydown", async e => {
             if (e.key === "F12") {
                 e.preventDefault();
+            }
+            if (e.key === "s" && e.ctrlKey) {
+                e.preventDefault();
+                if (layer_arr.val_global() === undefined || canvas_size.val_global() === undefined) return;
+                save_file_with_path({ file_state, opening_file_path, layer_arr: layer_arr.val_local()!, canvas_size: canvas_size.val_local()! })
+                write_user_data({ user_data: user_data.val_global().unwrap() })
             }
         });
         document.addEventListener("close_requested", async () => {
@@ -53,19 +62,20 @@ export const Window = () => {
                     "type": "warning",
                 })
                 if (!b) return;
-            }
+            };
+            write_user_data({ user_data: user_data.val_global().unwrap() });
             appWindow.close()
         });
-            (async () => {
-                set_user_data(Option.Some(await read_user_data()));
-            })()
+        (async () => {
+            user_data.set(Option.Some(await read_user_data()));
+        })()
     }, [])
 
     const set_context_menu_open = useSetRecoilState(is_context_menu_open_state);
     const set_context_menu_position = useSetRecoilState(context_menu_position_state);
     const set_context_menu_contents = useSetRecoilState(context_menu_contents_state);
 
-    const [context_menu_ref, set_context_menu_ref] = useRecoilState(context_menu_ref_state)
+    const [context_menu_ref, _set_context_menu_ref] = useRecoilState(context_menu_ref_state)
     return (
         <div id="window" onContextMenu={e => {
             if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;

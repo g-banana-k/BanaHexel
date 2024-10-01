@@ -61,7 +61,7 @@ fn save_file_new(layers: Vec<String>, meta_data: String) -> Result<Option<String
 }
 
 #[command]
-fn save_file_with_path(path: String, layers: Vec<String>, meta_data: String) -> Result<(), String> {
+fn write_file_with_path(path: String, layers: Vec<String>, meta_data: String) -> Result<(), String> {
     let file = OpenOptions::new()
         .read(true)
         .write(true)
@@ -208,7 +208,7 @@ fn main() {
             open_file_from_path,
             open_file,
             save_file_new,
-            save_file_with_path,
+            write_file_with_path,
             write_user_data,
             read_user_data
         ])

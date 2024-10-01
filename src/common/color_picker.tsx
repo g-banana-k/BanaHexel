@@ -6,7 +6,6 @@ import "./color_picker.css"
 import { Palette, Plus } from "lucide-react";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, is_context_menu_open_state } from "../context_menu";
 import { user_data_state } from "../app";
-import { write_user_data } from "../file";
 
 export const ColorPicker = ({
     color: c,
@@ -159,7 +158,6 @@ export const ColorPicker = ({
                                                 ({ uuid: uuid2 }) => uuid2 != uuid
                                             )
                                         }));
-                                        write_user_data({ user_data: user_data.val_local().unwrap() });
                                     }}>削除</div>,
                                 ]);
                             }}
@@ -171,7 +169,6 @@ export const ColorPicker = ({
                             user_data.set(user_data => Option.Some({
                                 palette: [...user_data.unwrap().palette, { code: color, uuid: crypto.randomUUID() }]
                             }));
-                            write_user_data({ user_data: user_data.val_local().unwrap() });
                         }}
                     ><Plus size={24} /></div>
                 </div> : ""

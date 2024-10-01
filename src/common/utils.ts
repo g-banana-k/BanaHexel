@@ -133,32 +133,6 @@ export class State<T> {
     }
 }
 
-export class StateWithHistory<T> extends State<T> {
-    protected prev: Option<T>;
-    constructor([initial, set_state]: [T, (updater: ((prev: T) => T) | T) => void]) {
-        super([initial, set_state])
-        this.prev = Option.None();
-    }
-    val_local() {
-        return this.cache;
-    }
-    val_global() {
-        this.prev = Option.Some(this.cache);
-        this.set_state(_ => { this.cache = _; return _ });
-        return this.cache;
-    }
-    set(updater: ((prev: T) => T) | T) {
-        this.prev = Option.Some(this.cache);
-        this.set_state((prev) => {
-            const new_v = typeof updater === "function"
-                ? (updater as (prev: T) => T)(prev)
-                : updater;
-            this.cache = new_v;
-            return new_v;
-        });
-    }
-}
-
 export const PromiseWithResolvers = <T>(): {
     promise: Promise<T>;
     resolve: (value: T | PromiseLike<T>) => void;

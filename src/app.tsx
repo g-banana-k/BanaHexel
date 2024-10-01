@@ -5,7 +5,7 @@ import { Option, Result, State, UnRequired } from "./common/utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
-import { binary_to_bitmap, data_fileT, open_file_from_path, user_dataT } from "./file";
+import { binary_to_bitmap, data_fileT, user_dataT } from "./file";
 import { file_save_state } from "./title_bar";
 
 export const user_data_state = atom({

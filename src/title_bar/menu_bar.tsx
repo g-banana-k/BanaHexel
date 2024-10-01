@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { appWindow, WebviewWindow } from "@tauri-apps/api/window";
+import { appWindow } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state } from "../app";
-import { open_file, save_file_new, save_file_with_path } from "../file";
+import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state, user_data_state } from "../app";
+import { open_file, read_file, save_file_new, save_file_with_path, write_file_with_path, write_user_data } from "../file";
 import { is_modal_open_state, modal_contents_state, modal_size_state } from "../modal";
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
@@ -22,11 +22,12 @@ export const MenuBar = () => {
     const set_layer_arr = useSetRecoilState(layer_arr_state);
     const set_canvas_size = useSetRecoilState(canvas_size_state);
     const set_current_layer = useSetRecoilState(current_layer_state);
-    const [opening_file_path, set_opening_file_path] = useRecoilState(opening_file_path_state);
+    const opening_file_path = new State(useRecoilState(opening_file_path_state));
 
     const set_modal_open = useSetRecoilState(is_modal_open_state);
     const set_modal_contents = useSetRecoilState(modal_contents_state);
     const set_modal_size = useSetRecoilState(modal_size_state);
+    const user_data = useRecoilValue(user_data_state);
 
     document.addEventListener("mousedown", e => {
         if (!menu_bar_ref.current) return;
@@ -67,7 +68,7 @@ export const MenuBar = () => {
                         resolve(Option.None())
                     }, { once: true });
                     (await promise).on_some(async ({ w, h }) => {
-                        set_opening_file_path(Option.None());
+                        opening_file_path.set(Option.None());
                         undo_stack.clear();
                         const canvas_w = !Number.isNaN(w) ? w : 64;
                         const canvas_h = !Number.isNaN(h) ? h : 64;
@@ -81,33 +82,37 @@ export const MenuBar = () => {
                 }} >新規作成</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
-                    file_state.set({ saving: true, saved: false, has_file: true })
-                    const p = await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
-                    set_opening_file_path(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!))
-                    file_state.set({ saving: false, saved: true, has_file: true })
+                    save_file_new({
+                        file_state,
+                        canvas_size,
+                        layer_arr: layer_arr,
+                        opening_file_path: opening_file_path
+                    })
+                    write_user_data({user_data:user_data.unwrap()})
                 }} >名前を付けて保存</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
-                    file_state.set({ saving: true, saved: false, has_file: true })
-                    if (opening_file_path.is_some()) {
-                        await save_file_with_path(opening_file_path.unwrap(), { layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
-                    } else {
-                        const p = await save_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
-                        set_opening_file_path(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!))
-                    }
-                    file_state.set({ saving: false, saved: true, has_file: true })
+                    save_file_with_path({
+                        file_state,
+                        canvas_size,
+                        layer_arr: layer_arr,
+                        opening_file_path: opening_file_path
+                    })
+                    write_user_data({user_data:user_data.unwrap()})
                 }} >上書き保存</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
-                    const new_data = (await open_file()).unwrap();
-                    new_data.on_some(async v => {
-                        undo_stack.clear();
-                        set_loading(true);
-                        set_opening_file_path(Option.Some(v[0]));
-                        await load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer });
-                        set_loading(false);
-                        file_state.set({ saving: false, saved: true, has_file: true })
+                    open_file({
+                        undo_stack,
+                        set_loading,
+                        set_layer_arr,
+                        set_canvas_size,
+                        set_current_layer,
+                        opening_file_path,
+                        load_file,
+                        file_state,
                     })
+                    write_user_data({user_data:user_data.unwrap()})
                 }} >開く</MenuContent>
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
