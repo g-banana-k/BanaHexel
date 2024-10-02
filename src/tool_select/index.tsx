@@ -1,4 +1,4 @@
-import { Brush, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer, Stamp, Type } from "lucide-react";
+import { Brush, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer, Stamp } from "lucide-react";
 import "./index.css";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";

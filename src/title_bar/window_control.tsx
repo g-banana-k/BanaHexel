@@ -1,4 +1,4 @@
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Maximize, Minimize, Minus, X } from "lucide-react"
 import { window_size_state } from "../window";
 import { useRecoilValue } from "recoil";
@@ -33,6 +33,6 @@ export const WindowControl = () => {
 }
 
 const close = () => { document.dispatchEvent(new Event("close_requested")) };
-const maximize = () => { appWindow.maximize() };
-const unmaximize = () => { appWindow.unmaximize() };
-const minimize = () => { appWindow.minimize() };
+const maximize = () => {getCurrentWindow().maximize()};
+const unmaximize = () => { getCurrentWindow().unmaximize() };
+const minimize = () =>   { getCurrentWindow().minimize() };

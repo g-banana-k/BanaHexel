@@ -1,4 +1,4 @@
-import { MutableRefObject, ReactNode, RefObject, useEffect, useRef } from "react";
+import { ReactNode, RefObject, useEffect, useRef } from "react";
 import "./index.css"
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 

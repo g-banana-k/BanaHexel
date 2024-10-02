@@ -1,4 +1,4 @@
-import { atom, SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
+import { SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
 import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
 import { Option, State } from "./utils";
@@ -89,7 +89,7 @@ export const ColorPicker = ({
     const set_context_menu_position = useSetRecoilState(context_menu_position_state);
     const set_context_menu_contents = useSetRecoilState(context_menu_contents_state);
 
-    const [context_menu_ref, set_context_menu_ref] = useRecoilState(context_menu_ref_state);
+    const [context_menu_ref, _set_context_menu_ref] = useRecoilState(context_menu_ref_state);
 
     return (
         <div className="common_color_picker_container" ref={container_ref}>

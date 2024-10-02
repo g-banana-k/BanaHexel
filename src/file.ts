@@ -1,10 +1,10 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Option, Result, State, UnRequired } from "./common/utils"
 import { appDataDir, join } from "@tauri-apps/api/path";
-import { createDir, exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { Layer } from "./data";
 import { SetterOrUpdater } from "recoil";
 import { UndoStack } from "./canvas_area/undo";
+import { exists } from "@tauri-apps/plugin-fs";
 
 export type data_fileT = {
     layers: string[],
@@ -35,9 +35,8 @@ export const binary_to_bitmap = (data: string): Promise<Result<ImageBitmap, unkn
     return image_bitmap;
 })
 
-export const write_file_new = (() => {
-    let is_writing = false;
-    return async (
+export const write_file_new =
+    async (
         data: {
             layers: HTMLCanvasElement[],
             meta_data: {
@@ -48,8 +47,6 @@ export const write_file_new = (() => {
             }
         },
     ): Promise<Result<Option<string>, unknown>> => {
-        if (is_writing) return Result.Ok(Option.None());
-        is_writing = true;
         const layers: string[] = [];
         data.layers.forEach((c) => {
             layers.push(canvas_to_binary(c))
@@ -58,14 +55,11 @@ export const write_file_new = (() => {
             layers: layers,
             metaData: JSON.stringify(data.meta_data),
         }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>())
-        is_writing = false;
         return res;
     }
-})()
 
-export const write_file_with_path = (() => {
-    let is_writing = false;
-    return async (
+export const write_file_with_path =
+    async (
         path: string,
         data: {
             layers: HTMLCanvasElement[],
@@ -77,8 +71,6 @@ export const write_file_with_path = (() => {
             }
         },
     ): Promise<Option<0>> => {
-        if (is_writing) return Option.None();
-        is_writing = true;
         const layers: string[] = [];
         data.layers.forEach((c) => {
             layers.push(canvas_to_binary(c))
@@ -86,12 +78,11 @@ export const write_file_with_path = (() => {
         await invoke("write_file_with_path", {
             path: path,
             layers: layers,
-            metaData: JSON.stringify(data.meta_data),
+            meta_data: JSON.stringify(data.meta_data),
         })
-        is_writing = false;
         return Option.Some(0)
     }
-})()
+
 
 export const canvas_to_binary = (canvas: HTMLCanvasElement): string => {
     return canvas.toDataURL('image/png').split(',')[1];
@@ -148,7 +139,7 @@ export const save_file_with_path = async ({
     layer_arr: Layer[],
     canvas_size: { width: number, height: number, }
 }) => {
-    if (file_state.val_global().saved || file_state.val_local().saving) return;
+    if (file_state.val_local().saving) return;
     file_state.set({ saving: true, saved: false, has_file: true })
     if (opening_file_path.val_local().is_some()) {
         await write_file_with_path(opening_file_path.val_local().unwrap(),
@@ -178,14 +169,16 @@ export const save_file_new = async ({
     layer_arr: Layer[],
     canvas_size: { width: number, height: number, }
 }) => {
-    if (file_state.val_local().saved || file_state.val_local().saving) return;
+    if (file_state.val_local().saving) return;
+    console.log("wowow")
+    const had_file = file_state.val_local().has_file;
     file_state.set({ saving: true, saved: false, has_file: true })
     const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
     p.on_ok(p => p.on_some(p => {
         opening_file_path.set(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!));
         file_state.set({ saving: false, saved: true, has_file: true });
     }).on_none(() => {
-        file_state.set({ saving: false, saved: false, has_file: false });
+        file_state.set({ saving: false, saved: false, has_file: had_file });
     }));
 
 }
@@ -218,7 +211,7 @@ export const open_file = async (
             set_current_layer: (arg0: number | ((arg0: number) => number)) => void;
         }) => Promise<void>,
     }) => {
-    if (file_state.val_local().saved || file_state.val_local().saving) return;
+    if (file_state.val_local().saving) return;
     const new_data = (await read_file()).unwrap();
     new_data.on_some(async v => {
         undo_stack.clear();

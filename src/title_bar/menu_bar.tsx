@@ -1,9 +1,9 @@
-import { invoke } from "@tauri-apps/api/tauri";
-import { appWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/core";
+import { Window } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state, user_data_state } from "../app";
-import { open_file, read_file, save_file_new, save_file_with_path, write_file_with_path, write_user_data } from "../file";
+import { open_file, save_file_new, save_file_with_path, write_user_data } from "../file";
 import { is_modal_open_state, modal_contents_state, modal_size_state } from "../modal";
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
@@ -88,7 +88,7 @@ export const MenuBar = () => {
                         layer_arr: layer_arr,
                         opening_file_path: opening_file_path
                     })
-                    write_user_data({user_data:user_data.unwrap()})
+                    write_user_data({ user_data: user_data.unwrap() })
                 }} >名前を付けて保存</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
@@ -98,10 +98,11 @@ export const MenuBar = () => {
                         layer_arr: layer_arr,
                         opening_file_path: opening_file_path
                     })
-                    write_user_data({user_data:user_data.unwrap()})
+                    write_user_data({ user_data: user_data.unwrap() })
                 }} >上書き保存</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
+                    console.log("lol");
                     open_file({
                         undo_stack,
                         set_loading,
@@ -112,7 +113,7 @@ export const MenuBar = () => {
                         load_file,
                         file_state,
                     })
-                    write_user_data({user_data:user_data.unwrap()})
+                    write_user_data({ user_data: user_data.unwrap() })
                 }} >開く</MenuContent>
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
@@ -121,7 +122,7 @@ export const MenuBar = () => {
                 }}>ホームページ</MenuContent></a>
                 <MenuContent on_click={() => {
                     set_selected(-1);
-                    invoke("open_devtools", { window: appWindow })
+                    invoke("open_devtools", { window: Window })
                 }} >開発者ツール</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);

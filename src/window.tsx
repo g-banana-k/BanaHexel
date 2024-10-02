@@ -1,16 +1,16 @@
 import "./index.css"
 
-import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { file_save_state, TitleBar } from "./title_bar";
-import { useEffect, useRef } from "react";
-import { appWindow } from "@tauri-apps/api/window";
+import { useEffect } from "react";
+import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import App, { canvas_size_state, layer_arr_state, opening_file_path_state, user_data_state } from "./app";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
-import { is_modal_open_state, Modal, modal_contents_state, modal_size_state } from "./modal";
+import { Modal } from "./modal";
 import { listen } from "@tauri-apps/api/event";
 import { Option, State } from "./common/utils";
-import { dialog } from "@tauri-apps/api";
 import { read_user_data, save_file_with_path, write_user_data } from "./file";
+import * as dialog from "@tauri-apps/plugin-dialog";
 
 listen("confirm_close", () => {
     document.dispatchEvent(new Event("close_requested"))
@@ -27,7 +27,7 @@ export const window_size_state = atom({
 })
 
 export const Window = () => {
-    const [window_size, set_window_size] = useRecoilState(window_size_state);
+    const [_window_size, set_window_size] = useRecoilState(window_size_state);
     const file_state = new State(useRecoilState(file_save_state));
     const user_data = new State(useRecoilState(user_data_state));
     const opening_file_path = new State(useRecoilState(opening_file_path_state));
@@ -35,18 +35,18 @@ export const Window = () => {
     const canvas_size = new State(useRecoilState(canvas_size_state));
 
     useEffect(() => {
-        appWindow.onResized(async (_) => {
+        appWindow().onResized(async (_) => {
             set_window_size({
                 w: window.innerWidth,
                 h: window.innerHeight,
-                maximized: await appWindow.isMaximized(),
-                minimized: await appWindow.isMinimized(),
+                maximized: await appWindow().isMaximized(),
+                minimized: await appWindow().isMinimized(),
             })
         });
         document.addEventListener("keydown", async e => {
-            if (e.key === "F12") {
-                e.preventDefault();
-            }
+            // if (e.key === "F12") {
+            //     e.preventDefault();
+            // }
             if (e.key === "s" && e.ctrlKey) {
                 e.preventDefault();
                 if (layer_arr.val_global() === undefined || canvas_size.val_global() === undefined) return;
@@ -59,12 +59,12 @@ export const Window = () => {
                 const b = await dialog.confirm("本当に離れていいですか？\n保存していない変更は失われます。", {
                     "okLabel": "離れる",
                     "cancelLabel": "戻る",
-                    "type": "warning",
+                    "kind": "warning",
                 })
                 if (!b) return;
             };
             write_user_data({ user_data: user_data.val_global().unwrap() });
-            appWindow.close()
+            appWindow().close()
         });
         (async () => {
             user_data.set(Option.Some(await read_user_data()));

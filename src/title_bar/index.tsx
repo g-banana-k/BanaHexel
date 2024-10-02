@@ -5,7 +5,7 @@ import { WindowControl } from "./window_control";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { State } from "../common/utils";
 import { opening_file_path_state } from "../app";
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 
 export const file_save_state = atom({
     key: "file_save_state",
@@ -19,9 +19,9 @@ export const file_save_state = atom({
 export const TitleBar = (props: { is_loading?: boolean }) => {
     const file_state = new State(useRecoilState(file_save_state));
     const opening_file_path = useRecoilValue(opening_file_path_state);
-    appWindow.setTitle(`${opening_file_path.unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)!} - BanaHexel`)
+    appWindow().setTitle(`${opening_file_path.unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)!} - BanaHexel`)
     return (
-        <div id="title_bar">
+        <div id="title_bar_container">
             <div id="title_bar_app_icon" ><Hexagon size="16" /></div>
             {props.is_loading ? "" : <MenuBar />}
             <div data-tauri-drag-region className="title_bar_flex_space">
