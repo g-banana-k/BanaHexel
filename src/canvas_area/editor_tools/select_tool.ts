@@ -8,7 +8,8 @@ export const select_tool = ({
     layers_arr,
     current_layer,
     undo_stack,
-    file_state
+    file_state,
+    need_on_end,
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
@@ -210,6 +211,7 @@ export const select_tool = ({
             ctx.fillRect(x, y, 1, 1);
         },
         "on_end": () => {
+            need_on_end.set(true);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             clipping.on_some(cl => {
                 const layer = layers_arr.val_global()![current_layer.val_global()];
@@ -239,8 +241,9 @@ export const select_tool = ({
             });
         },
         "on_ctrl_a": () => {
+            need_on_end.set(false);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (clipping.is_some()) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const cl = clipping.unwrap();
                 const layer = layers_arr.val_global()![current_layer.val_global()];
                 layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
@@ -249,7 +252,6 @@ export const select_tool = ({
                 clipping = Option.None();
             }
             const layer = layers_arr.val_global()![current_layer.val_global()];
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             const cl_canvas = document.createElement("canvas");
             cl_canvas.width = canvas.width;
             cl_canvas.height = canvas.height;
@@ -270,6 +272,7 @@ export const select_tool = ({
             const cl = clipping.unwrap();
             ctx.drawImage(cl.canvas, cl.x, cl.y);
             ctx.fillStyle = "#5fe07544";
+            console.log("WA")
             ctx.fillRect(cl.x, cl.y, cl.w, cl.h)
             o_u = Option.Some(clone_canvas(layer.body));
             layer.ctx.clearRect(0, 0, layer.body.width, layer.body.height);
@@ -379,7 +382,6 @@ export const select_tool = ({
 };
 
 const cl_to_pos = (cl: Clip, canvas: HTMLCanvasElement) => {
-
     const lt_x = Math.max(0, Math.min(cl.lt_x, cl.x));
     const lt_y = Math.max(0, Math.min(cl.lt_y, cl.y));
     const rb_x = Math.min(Math.max(cl.rb_x, cl.x + cl.w), canvas.width,);

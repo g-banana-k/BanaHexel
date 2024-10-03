@@ -9,7 +9,8 @@ export const eraser_tool = ({
     layers_arr,
     current_layer,
     undo_stack,
-    file_state
+    file_state,
+    need_on_end
 }: argsT): toolT => {
     let b_x = 0;
     let b_y = 0;
@@ -78,6 +79,7 @@ export const eraser_tool = ({
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
         },
         "on_end": () => {
+            if(!need_on_end.val_global()) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         },
         "on_ctrl_y": () => {

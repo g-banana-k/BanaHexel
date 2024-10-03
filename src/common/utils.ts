@@ -1,3 +1,5 @@
+import { invoke } from "@tauri-apps/api/core";
+
 export class Result<T, E> {
     private v: T | E;
     private is_ok_flag: boolean;
@@ -146,3 +148,5 @@ export const PromiseWithResolvers = <T>(): {
     });
     return { promise, resolve: resolve!, reject: reject! }
 }
+
+export const println = (log: string) => invoke("rust_log", { log })

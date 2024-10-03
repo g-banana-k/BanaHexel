@@ -102,7 +102,6 @@ export const MenuBar = () => {
                 }} >上書き保存</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
-                    console.log("lol");
                     open_file({
                         undo_stack,
                         set_loading,

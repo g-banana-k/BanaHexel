@@ -39,7 +39,8 @@ export type argsT = {
         saving: boolean,
         saved: boolean,
         has_file: boolean,
-    }>
+    }>,
+    need_on_end:State<boolean>,
 };
 
 export const editor_tools = ({
@@ -51,7 +52,8 @@ export const editor_tools = ({
     layers_arr,
     current_layer,
     undo_stack,
-    file_state
+    file_state,
+    need_on_end
 }: argsT): { [key in canvas_toolsT]: toolT } => {
     const packed = {
         canvas,
@@ -62,7 +64,8 @@ export const editor_tools = ({
         layers_arr,
         current_layer,
         undo_stack,
-        file_state
+        file_state,
+        need_on_end,
     };
     return {
         "none": (() => {

@@ -53,7 +53,7 @@ export const write_file_new =
         });
         const res = (await Result.from_try_catch_async(async () => await invoke<string>("save_file_new", {
             layers: layers,
-            metaData: JSON.stringify(data.meta_data),
+            meta_data: JSON.stringify(data.meta_data),
         }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>())
         return res;
     }
@@ -148,7 +148,6 @@ export const save_file_with_path = async ({
         file_state.set({ saving: false, saved: true, has_file: true });
     } else {
         const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
-        console.log(p);
         p.on_ok(p => p.on_some(p => {
             opening_file_path.set(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!));
             file_state.set({ saving: false, saved: true, has_file: true });
@@ -170,7 +169,6 @@ export const save_file_new = async ({
     canvas_size: { width: number, height: number, }
 }) => {
     if (file_state.val_local().saving) return;
-    console.log("wowow")
     const had_file = file_state.val_local().has_file;
     file_state.set({ saving: true, saved: false, has_file: true })
     const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });

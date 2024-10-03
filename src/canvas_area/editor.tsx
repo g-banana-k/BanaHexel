@@ -53,6 +53,7 @@ export const CanvasEditor = ({
     const brush_thickness = new State(useRecoilState(brush_tool_thickness_state));
     const eraser_thickness = new State(useRecoilState(eraser_tool_thickness_state));
     const file_state = new State(useRecoilState(file_save_state));
+    const need_on_end = new State(useState(true))
 
     const zoom = useRef(z);
     const fn_data = new State(useState(Option.None<ReturnType<typeof editor_tools>>()));
@@ -104,7 +105,8 @@ export const CanvasEditor = ({
             layers_arr,
             current_layer,
             undo_stack,
-            file_state
+            file_state,
+            need_on_end
         })));
         document.addEventListener("mousemove", e => {
             const canvas_rect = canvas.getBoundingClientRect();

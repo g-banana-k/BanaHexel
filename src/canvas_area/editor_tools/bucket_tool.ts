@@ -11,7 +11,8 @@ export const bucket_tool = ({
     layers_arr,
     current_layer,
     undo_stack,
-    file_state
+    file_state,
+    need_on_end
 }: argsT): toolT => {
     return {
         "down": ({ x, y, shift }) => {
@@ -58,6 +59,7 @@ export const bucket_tool = ({
             ctx.fillRect(x, y, 1, 1);
         },
         "on_end": () => {
+            if(!need_on_end.val_global()) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     }

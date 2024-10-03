@@ -8,7 +8,7 @@ import App, { canvas_size_state, layer_arr_state, opening_file_path_state, user_
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
 import { Modal } from "./modal";
 import { listen } from "@tauri-apps/api/event";
-import { Option, State } from "./common/utils";
+import { Option, println, State } from "./common/utils";
 import { read_user_data, save_file_with_path, write_user_data } from "./file";
 import * as dialog from "@tauri-apps/plugin-dialog";
 
@@ -44,9 +44,9 @@ export const Window = () => {
             })
         });
         document.addEventListener("keydown", async e => {
-            // if (e.key === "F12") {
-            //     e.preventDefault();
-            // }
+            if (e.key === "F12") {
+                e.preventDefault();
+            }
             if (e.key === "s" && e.ctrlKey) {
                 e.preventDefault();
                 if (layer_arr.val_global() === undefined || canvas_size.val_global() === undefined) return;

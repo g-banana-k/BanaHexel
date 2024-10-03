@@ -11,11 +11,18 @@ use zip::{write::FileOptions, ZipArchive, ZipWriter};
 
 use base64;
 
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Manager};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[command(rename_all = "snake_case")]
-fn open_devtools(app: AppHandle) {}
+fn open_devtools(app: AppHandle) {
+    app.get_webview_window("main").unwrap().open_devtools();
+}
+
+#[command(rename_all = "snake_case")]
+fn rust_log(log: String) {
+    println!("{}", log)
+}
 
 type DataFileT = (String, Vec<String>);
 
@@ -25,7 +32,6 @@ fn save_file_new(
     layers: Vec<String>,
     meta_data: String,
 ) -> Result<Option<String>, String> {
-    println!("HEHEHE");
     let path = app
         .dialog()
         .file()
@@ -33,7 +39,6 @@ fn save_file_new(
         .add_filter("BanaHexel Projects", &["bhp"])
         .set_file_name("project.bhp")
         .blocking_save_file();
-    println!("HEHEHEHE");
     let path = if let Some(s) = path {
         s.into_path().map_err(|e| e.to_string())?
     } else {
@@ -206,6 +211,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
+            rust_log,
             open_devtools,
             open_file_from_path,
             open_file,
