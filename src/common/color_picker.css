@@ -13,7 +13,7 @@
 }
 
 .common_color_picker_main {
-    background-color: #444;
+    background-color: var(--background_color_3);
     border-radius: 4px;
     padding: 8px;
     position: absolute;
@@ -26,7 +26,7 @@
     text-align: center;
     line-height: 30px;
     border-radius: 4px;
-    background-color: #333;
+    background-color: var(--background_color_2);
     margin: 0 0 6px 0;
 }
 
@@ -47,29 +47,29 @@
 }
 
 .common_color_picker_palette_icon:hover {
-    background-color: #fff1;
+    background-color: var(--char_color_2);
     border-radius: 4px;
 }
 
 .common_color_picker_box {
-    background-color: #fff1;
+    background-color: var(--char_color_2);
     border: none;
     border-radius: 2px;
     outline: none;
-    color: #fff;
+   color: var(--char_color_1);
     height: 20px;
     width: 150px;
 }
 
 .common_color_picker_box:focus {
-    background-color: #fff2;
+    background-color: var(--char_color_3);
     border: none;
     border-radius: 2px;
 }
 
 .common_color_picker_palette {
     position: absolute;
-    background-color: #444;
+    background-color: var(--background_color_3);
     left: 171px;
     border-radius: 4px;
     width: 220px;
@@ -87,7 +87,7 @@
     position: relative;
     width: 40px;
     height: 40px;
-    background-color: #fff1;
+    background-color: var(--char_color_2);
     margin: 5px 0 0 10px;
     border-radius: 4px;
 }

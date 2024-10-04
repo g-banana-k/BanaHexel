@@ -11,14 +11,14 @@
 
 .common_slider_knob {
     position: absolute;
-    background-color: #fff4;
+    background-color: var(--char_color_4);
     border-radius: 2px;
     user-select: none;
 }
 
 .common_slider_knob:hover {
     position: absolute;
-    background-color: #fff6;
+    background-color: var(--char_color_5);
 }
 
 .common_slider_with_box_outer {
@@ -32,11 +32,11 @@
     position: absolute;
     font-family: inherit;
     appearance: textfield;
-    background-color: #fff1;
+    background-color: var(--char_color_2);
     border: none;
     border-radius: 2px;
     outline: none;
-    color: #fff;
+   color: var(--char_color_1);
 }
 
 .common_slider_with_box_box::-webkit-inner-spin-button,
@@ -45,7 +45,7 @@
 }
 
 .common_slider_with_box_box:focus {
-    background-color: #fff2;
+    background-color: var(--char_color_3);
     border: none;
     border-radius: 2px;
 }

@@ -26,11 +26,11 @@
 }
 
 .tool_icon:hover {
-    background-color: #5fe07544;
+    background-color: var(--accent_color_3);
 }
 
 .tool_icon.selected_tool_icon {
-    background-color: #5fe07566;
+    background-color: var(--accent_color_2);
 }
 
 .tool_icon svg {

@@ -6,6 +6,7 @@ import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { State } from "../common/utils";
 import { opening_file_path_state } from "../app";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
+import { ThemeToggleSwitch } from "./color_theme";
 
 export const file_save_state = atom({
     key: "file_save_state",
@@ -33,6 +34,7 @@ export const TitleBar = (props: { is_loading?: boolean }) => {
                     }
                 </div>
             </div>
+            <ThemeToggleSwitch />
             <WindowControl />
         </div>
     )

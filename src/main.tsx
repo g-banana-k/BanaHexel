@@ -9,6 +9,14 @@ import "./file"
 const root = createRoot(document.getElementById("root") as Element);
 
 root.render(
+    <div style={{
+        width:"100%",
+        height: "100%",
+        backgroundColor: "#fff"
+    }}></div>
+)
+
+root.render(
     // <StrictMode>
         <RecoilRoot>
             <Window />

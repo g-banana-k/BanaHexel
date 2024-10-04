@@ -41,5 +41,5 @@
 }
 
 .tool_menu_select_edit_button:hover {
-    background-color: #5fe07544;
+    background-color: var(--accent_color_3);
 }
