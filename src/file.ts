@@ -144,7 +144,6 @@ export const save_file_with_path = async ({
         const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
         p.on_ok(p => p.on_some(p => {
             opening_file_path.set(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!));
-            console.log("WAAAAAAAAAAAAA")
             file_state.set({ saving: false, saved: true, has_file: true });
         }).on_none(() => {
             file_state.set({ saving: false, saved: false, has_file: false });
