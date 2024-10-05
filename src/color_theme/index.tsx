@@ -79,6 +79,7 @@ const property_keys = [
     "canvas_area_distant_view",
     "canvas_background_1",
     "canvas_background_2",
+    "tool_menu_edit_button",
 ] as const
 
 type ColorThemeRecord = Record<typeof property_keys[number], string>
@@ -121,6 +122,7 @@ const dark = new ColorTheme("dark", {
     canvas_area_distant_view: "#444",
     canvas_background_1: "#111",
     canvas_background_2: "#222",
+    tool_menu_edit_button: "#333",
 })
 
 const light = new ColorTheme("light", {
@@ -161,6 +163,7 @@ const light = new ColorTheme("light", {
     canvas_area_distant_view: "#ddd",
     canvas_background_1: "#fff",
     canvas_background_2: "#eee",
+    tool_menu_edit_button: "#eee",
 })
 
 ColorTheme.apply(dark);
