@@ -1,5 +1,4 @@
 #loading_background {
-    background-color: var(--background_color_2);
     width: 100%;
     flex-grow: 1;
 }

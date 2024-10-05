@@ -3,22 +3,22 @@ import "./index.css"
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 
 export const is_context_menu_open_state = atom({
-    key: "is_context_menu_open_state",
+    key: "is_context_menu_open_state_atom",
     default: false,
 })
 
 export const context_menu_contents_state = atom<string | ReactNode[]>({
-    key: "context_menu_contents_state",
+    key: "context_menu_contents_state_atom",
     default: ""
 })
 
 export const context_menu_position_state = atom({
-    key: "context_menu_position_state",
+    key: "context_menu_position_state_atom",
     default: { x: 0, y: 0 },
 })
 
 export const context_menu_ref_state = atom<RefObject<HTMLDivElement> | null>({
-    key: "context_menu_ref_state",
+    key: "context_menu_ref_state_atom",
     default: null,
 });
 

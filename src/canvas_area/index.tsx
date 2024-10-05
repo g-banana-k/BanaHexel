@@ -4,7 +4,7 @@ import { background_image } from "./background";
 import { SetterOrUpdater, useRecoilState, useRecoilValue } from "recoil";
 import { zoom_state } from "../zoom_in_out";
 import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
-import { canvas_size_state, current_layer_state, layer_arr_state} from "../app";
+import { canvas_size_state, current_layer_state, layer_arr_state } from "../app";
 import { CanvasEditor } from "./editor";
 import { window_size_state } from "../window";
 
@@ -20,6 +20,9 @@ export const CanvasArea = () => {
     const canvas_body_ref = useRef<HTMLDivElement>(null);
     const canvas_background_ref = useRef<HTMLDivElement>(null);
     const canvas_area_ref = useRef<HTMLDivElement>(null);
+
+    const canvas_back_ref = useRef<HTMLDivElement>(null);
+    const canvas_front_ref = useRef<HTMLDivElement>(null);
 
     const [canvas_size, set_canvas_size] = useRecoilState(canvas_size_state) as unknown as [{ width: number; height: number; }, SetterOrUpdater<{ width: number; height: number; }>];
     let [area_height, set_area_height] = useState(0);
@@ -58,26 +61,42 @@ export const CanvasArea = () => {
 
     useEffect(() => {
         const div_body = canvas_body_ref.current;
-        const div_back = canvas_background_ref.current;
+        const div_background = canvas_background_ref.current;
+        const div_back = canvas_back_ref.current;
+        const div_front = canvas_front_ref.current;
         const new_layer = layer_arr![current_layer];
         const background = background_image(Math.max(new_layer.body.width, new_layer.body.height) / 4, ["#111", "#222"]);
-        if (!(div_body && div_back && new_layer)) return;
+        if (!(div_body && div_background && div_back && div_front && new_layer)) return;
 
-        if (div_body.hasChildNodes()) div_body.removeChild(div_body.firstChild!);
-        div_body.appendChild(new_layer.body);
+        if (div_background.hasChildNodes()) div_background.removeChild(div_background.firstChild!);
+        div_background.appendChild(background);
+        set_background_height(background.height);
+        set_background_width(background.width);
+        background.style.height = "100%";
+        background.style.width = "100%";
+
+        div_back.innerHTML = "";
+        div_body.innerHTML = "";
+        div_front.innerHTML = "";
         set_canvas_size({
             height: new_layer.body.height,
             width: new_layer.body.width,
         })
-        new_layer.body.style.height = "100%";
-        new_layer.body.style.width = "100%";
-
-        if (div_back.hasChildNodes()) div_back.removeChild(div_back.firstChild!);
-        div_back.appendChild(background);
-        set_background_height(background.height);
-        set_background_width(background.width);
-        background.style.height = "100%"
-        background.style.width = "100%"
+        layer_arr!.forEach(({ body }, i) => {
+            if (i < current_layer) {
+                div_back.appendChild(body);
+                body.style.height = "100%";
+                body.style.width = "100%";
+            } else if (i == current_layer) {
+                div_body.appendChild(body);
+                body.style.height = "100%";
+                body.style.width = "100%";
+            } else {
+                div_front.appendChild(body);
+                body.style.height = "100%";
+                body.style.width = "100%";
+            }
+        });
     }, [current_layer, layer_arr]);
 
     return (<div id="canvas_area" ref={canvas_area_ref}>
@@ -87,7 +106,19 @@ export const CanvasArea = () => {
             width: background_width * zoom * 8,
             height: background_height * zoom * 8,
         }}></div>
+        <div id="canvas_layers_back_div" ref={canvas_back_ref} style={{
+            left: (-0.5 * canvas_size.width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_size.width * zoom),
+            top: (-0.5 * canvas_size.height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_size.height * zoom),
+            width: canvas_size.width * zoom,
+            height: canvas_size.height * zoom,
+        }}></div>
         <div id="canvas_body_div" ref={canvas_body_ref} style={{
+            left: (-0.5 * canvas_size.width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_size.width * zoom),
+            top: (-0.5 * canvas_size.height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_size.height * zoom),
+            width: canvas_size.width * zoom,
+            height: canvas_size.height * zoom,
+        }}></div>
+        <div id="canvas_layers_front_div" ref={canvas_front_ref} style={{
             left: (-0.5 * canvas_size.width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_size.width * zoom),
             top: (-0.5 * canvas_size.height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_size.height * zoom),
             width: canvas_size.width * zoom,

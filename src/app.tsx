@@ -9,32 +9,32 @@ import { binary_to_bitmap, data_fileT, user_dataT } from "./file";
 import { file_save_state } from "./title_bar";
 
 export const user_data_state = atom({
-    key: "user_data_state",
+    key: "user_data_state_atom",
     default: Option.None<user_dataT>()
 })
 
 export const layer_arr_state = atom<Layer[] | undefined>({
-    key: "layer_arr_state",
+    key: "layer_arr_state_atom",
     default: undefined
 })
 
 export const current_layer_state = atom({
-    key: "current_layer_state",
+    key: "current_layer_state_atom",
     default: 0
 })
 
 export const canvas_size_state = atom<{ width: number, height: number } | undefined>({
-    key: "canvas_size_state",
+    key: "canvas_size_state_atom",
     default: undefined
 })
 
 export const is_loading_state = atom<boolean>({
-    key: "is_loading_state",
+    key: "is_loading_state_atom",
     default: true,
 })
 
 export const opening_file_path_state = atom<Option<string>>({
-    key: "opening_file_path_state",
+    key: "opening_file_path_state_atom",
     default: Option.None(),
 })
 

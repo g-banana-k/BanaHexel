@@ -17,7 +17,7 @@ listen("confirm_close", () => {
 })
 
 export const window_size_state = atom({
-    key: "window_size_state",
+    key: "window_size_state_atom",
     default: {
         w: window.innerWidth,
         h: window.innerHeight,
@@ -77,7 +77,7 @@ export const Window = () => {
 
     const [context_menu_ref, _set_context_menu_ref] = useRecoilState(context_menu_ref_state)
     return (
-        <div id="window" onContextMenu={e => {
+        <div id="window" className="gaming" onContextMenu={e => {
             if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;
             e.preventDefault();
             if (context_menu_ref && context_menu_ref.current!.contains(e.target as Node)) return;

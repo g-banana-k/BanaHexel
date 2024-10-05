@@ -9,7 +9,7 @@ import { editor_tools } from "./editor_tools";
 import { undo_stack } from "./undo";
 import { file_save_state } from "../title_bar";
 
-type canvas_editor_propsT = {
+type CanvasEditorPropsT = {
     canvas_width: number,
     canvas_height: number,
     zoom: number,
@@ -20,7 +20,7 @@ type canvas_editor_propsT = {
 }
 
 export const is_mouse_down_in_editor_state = atom({
-    key: "is_mouse_down_in_editor_state",
+    key: "is_mouse_down_in_editor_state_atom",
     default: false,
 })
 
@@ -32,7 +32,7 @@ export const CanvasEditor = ({
     area_height,
     scroll_horizontal,
     scroll_vertical,
-}: canvas_editor_propsT) => {
+}: CanvasEditorPropsT) => {
     let [once, set_once] = useState(true);
     let [is_mouse_down, set_mouse_down_raw] = useRecoilState(is_mouse_down_in_editor_state);
     const layers_arr = new State(useRecoilState(layer_arr_state));

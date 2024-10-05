@@ -7,17 +7,17 @@ import { canvas_toolsT } from "../canvas_area";
 import { SelectToolMenu } from "./select_tool";
 
 export const brush_tool_color_state = atom({
-    key: "brush_tool_color_state",
+    key: "brush_tool_color_state_atom",
     default: "#000000ff"
 })
 
 export const brush_tool_thickness_state = atom({
-    key: "brush_tool_thickness_state",
+    key: "brush_tool_thickness_state_atom",
     default: 1
 })
 
 export const eraser_tool_thickness_state = atom({
-    key: "eraser_tool_thickness_state",
+    key: "eraser_tool_thickness_state_atom",
     default: 1
 })
 

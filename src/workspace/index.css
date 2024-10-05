@@ -1,6 +1,6 @@
 #work_space {
     flex-grow: 1;
-    background-color: var(--background_color_1);
+    background-color: var(--work_space_background);
     padding: 15px;
     display:flex;
     flex-direction: column;
@@ -9,7 +9,6 @@
 #work_space_row_flex_1 {
     height: 100px;
     margin: 0 0 20px 0;
-    border-bottom: dashed var(--background_color_2);
 }
 
 #work_space_row_flex_2 {

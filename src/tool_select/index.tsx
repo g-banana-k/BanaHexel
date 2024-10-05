@@ -6,7 +6,7 @@ import { is_mouse_down_in_editor_state } from "../canvas_area/editor";
 import { canvas_toolsT } from "../canvas_area";
 
 export const selected_tool_id_state = atom<canvas_toolsT>({
-    key: "selected_tool_state",
+    key: "selected_tool_state_atom",
     default: "none",
 })
 

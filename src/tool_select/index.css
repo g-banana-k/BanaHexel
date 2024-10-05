@@ -4,7 +4,7 @@
     position: relative;
     overflow: auto;
     scrollbar-gutter: stable;
-    scrollbar-color: #555 #0000;
+    scrollbar-color: var(--background_color_4) #0000;
 }
 
 #tool_select {
@@ -26,11 +26,11 @@
 }
 
 .tool_icon:hover {
-    background-color: var(--accent_color_3);
+    background-color: var(--tool_icon_hover);
 }
 
 .tool_icon.selected_tool_icon {
-    background-color: var(--accent_color_2);
+    background-color: var(--tool_icon_selected);
 }
 
 .tool_icon svg {

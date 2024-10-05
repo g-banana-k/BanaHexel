@@ -4,17 +4,17 @@ import { X } from "lucide-react";
 import { ReactNode } from "react";
 
 export const is_modal_open_state = atom({
-    key: "is_modal_open_state",
+    key: "is_modal_open_state_atom",
     default: false,
 })
 
 export const modal_contents_state = atom<string | ReactNode[]>({
-    key: "modal_contents_state",
+    key: "modal_contents_state_atom",
     default: ""
 })
 
 export const modal_size_state = atom<{ w: number, h: number }>({
-    key: "modal_size_state",
+    key: "modal_size_state_atom",
     default: { w: 0, h: 0 }
 })
 

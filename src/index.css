@@ -5,6 +5,21 @@
     font-style: normal;
 }
 
+.gaming {
+    /* 横長で虹色を作る */
+    background: linear-gradient(to right, Magenta, yellow, Cyan, Magenta) 0% center/200%;
+    animation: gaming 2s linear infinite;
+}
+
+@keyframes gaming {
+
+    /* backgroundを移動させる */
+    100% {
+        background-position-x: 200%;
+    }
+}
+
+
 html,
 body,
 #root,
@@ -14,7 +29,7 @@ body,
     height: 100%;
     font-family: "Noto Sans JP";
     font-weight: 400;
-   color: var(--char_color_1);
+    color: var(--char_color);
 }
 
 #window {

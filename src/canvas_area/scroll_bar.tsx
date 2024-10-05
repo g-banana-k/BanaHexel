@@ -3,12 +3,12 @@ import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { zoom_state } from "../zoom_in_out";
 
 export const scroll_vertical_state = atom({
-    key: "canvas_scroll_vertical_state",
+    key: "canvas_scroll_vertical_state_atom",
     default: 0,
 });
 
 export const scroll_horizontal_state = atom({
-    key: "canvas_scroll_horizontal_state",
+    key: "canvas_scroll_horizontal_state_atom",
     default: 0,
 });
 
@@ -76,7 +76,7 @@ export const ScrollBarVertical = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: "#0008" } : {})
+                ...(is_dragging ? { backgroundColor: "var(--scroll_bar_color_3)" } : {})
             }}
         ></div >
     )
@@ -146,7 +146,7 @@ export const ScrollBarHorizontal = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: "#0008" } : {})
+                ...(is_dragging ? { backgroundColor: "var(--scroll_bar_color_3)" } : {})
             }}
         ></div >
     )

@@ -5,8 +5,8 @@ import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { scroll_horizontal_state, scroll_vertical_state } from "../canvas_area/scroll_bar";
 
 export const zoom_state = atom({
-    key: "canvas_zoom_state",
-    default: 1,
+    key: "canvas_zoom_state_atom",
+    default: 8,
 })
 
 export const ZoomInOut = () => {

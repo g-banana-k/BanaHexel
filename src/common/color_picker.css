@@ -13,11 +13,11 @@
 }
 
 .common_color_picker_main {
-    background-color: var(--background_color_3);
     border-radius: 4px;
     padding: 8px;
     position: absolute;
     z-index: 1;
+    background-color: var(--color_picker_back);
 }
 
 .common_color_picker_mode {
@@ -26,8 +26,8 @@
     text-align: center;
     line-height: 30px;
     border-radius: 4px;
-    background-color: var(--background_color_2);
     margin: 0 0 6px 0;
+    background-color: var(--color_picker_mode);
 }
 
 .common_color_picker_palette_icon {
@@ -47,29 +47,27 @@
 }
 
 .common_color_picker_palette_icon:hover {
-    background-color: var(--char_color_2);
     border-radius: 4px;
 }
 
 .common_color_picker_box {
-    background-color: var(--char_color_2);
     border: none;
     border-radius: 2px;
     outline: none;
-   color: var(--char_color_1);
     height: 20px;
     width: 150px;
+    background-color: var(--text_box);
+    color: var(--char_color);
 }
 
 .common_color_picker_box:focus {
-    background-color: var(--char_color_3);
     border: none;
     border-radius: 2px;
+    background-color: var(--text_box_focus);
 }
 
 .common_color_picker_palette {
     position: absolute;
-    background-color: var(--background_color_3);
     left: 171px;
     border-radius: 4px;
     width: 220px;
@@ -77,9 +75,9 @@
     z-index: 1;
     overflow-y: scroll;
     scrollbar-gutter: stable;
-    scrollbar-color: #555 #0000;
     padding-top: 5px;
     padding-bottom: 5px;
+    background-color: var(--color_picker_back);
 }
 
 .common_color_picker_palette_add_button {
@@ -87,9 +85,9 @@
     position: relative;
     width: 40px;
     height: 40px;
-    background-color: var(--char_color_2);
     margin: 5px 0 0 10px;
     border-radius: 4px;
+    background-color: var(--color_palette_add_button);
 }
 
 .common_color_picker_palette_add_button>svg {

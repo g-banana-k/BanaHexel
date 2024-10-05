@@ -1,10 +1,10 @@
 #layer_area {
     height: 100%;
     width: 150px;
-    background-color: var(--background_color_2);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background-color: var(--layer_area);
 }
 
 #layer_list {
@@ -12,7 +12,6 @@
     display: flex;
     flex-direction: column;
     scrollbar-gutter: stable;
-    scrollbar-color: #555 #0000;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -32,14 +31,14 @@
     position: absolute;
     top: -12px;
     right: -12px;
-    background-color: var(--background_color_3);
     width: 24px;
     height: 24px;
     border-radius: 100px;
+    background-color: var(--layer_delete_button);
 }
 
 .layer_thumbnail_delete_button:hover {
-    background-color: var(--background_color_4);
+    background-color: var(--layer_delete_button_hover);
 }
 
 .layer_thumbnail_delete_button>svg {
@@ -53,18 +52,18 @@
 
 .layer_thumbnail_preview_container {
     border-radius: 10px;
-    outline: 3px solid #2228;
+    outline: 3px solid var(--layer_outline);
     overflow: hidden;
     width: 100px;
     height: 100px;
 }
 
 .layer_thumbnail_preview_container:hover {
-    outline: 3px solid #5fe07588;
+    outline: 3px solid var(--layer_outline_hover);
 }
 
 .layer_thumbnail_preview_container.layer_thumbnail_selected {
-    outline: 3px solid var(--accent_color_1);
+    outline: 3px solid var(--layer_outline_selected);
 }
 
 .layer_thumbnail_preview {
@@ -73,18 +72,17 @@
 }
 
 #layer_add_button {
-
+    background-color: var(--layer_add_button);
     width: 100px;
     height: 50px;
     margin: 15px 25px;
     border-radius: 10px;
-    background-color: var(--background_color_3);
     position: relative;
     
 }
 
 #layer_add_button:hover {
-    background-color: var(--background_color_4);
+    background-color: var(--layer_add_button_hover);
 }
 
 #layer_add_button>svg {
@@ -94,11 +92,6 @@
     bottom: 0;
     left: 0;
     margin: auto;
-}
-
-.layer_thumbnail_delete_button {
-    
-
 }
 
 .layer_thumbnail_delete_button>svg {

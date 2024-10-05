@@ -9,7 +9,7 @@ import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import { ThemeToggleSwitch } from "./color_theme";
 
 export const file_save_state = atom({
-    key: "file_save_state",
+    key: "file_save_state_atom",
     default: {
         saving: false,
         saved: true,

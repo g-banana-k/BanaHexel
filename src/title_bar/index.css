@@ -1,12 +1,11 @@
 #title_bar_container {
     height: 36px;
     width: 100%;
-    background-color: var(--background_color_3);
     padding: 0;
     margin: 0;
-
     display: flex;
     flex-direction: row;
+    background-color: var(--title_bar);
     z-index: 2;
 }
 
@@ -29,6 +28,7 @@
     height: 100%;
     padding: 0px 8px;
     border-radius: 4px;
+    background-color: var(--menu_bar);
 }
 
 .title_bar_menu_button {
@@ -42,7 +42,7 @@
 
 .title_bar_menu_button_label:hover,
 .title_bar_menu_button_label_opened {
-    background-color: var(--background_color_4)8;
+    background-color: var(--menu_bar_hover);
 }
 
 #title_bar_window_control {
@@ -71,14 +71,10 @@
     margin: auto;
 }
 
-#window_control_maximize_button:hover {
-    background-color: var(--background_color_4);
+#window_control_maximize_button:hover,
+#window_control_minimize_button:hover  {
+    background-color: var(--window_control_hover);
 }
-
-#window_control_minimize_button:hover {
-    background-color: var(--background_color_4);
-}
-
 #window_control_close_button:hover {
     background-color: #f00;
 }
@@ -90,9 +86,9 @@
 .title_bar_menu_contents {
     display: none;
     position: absolute;
-    background-color: var(--background_color_4);
     border-radius: 4px;
     padding: 3px;
+    background-color: var(--menu_bar_drop_down);
 }
 
 .title_bar_menu_content {
@@ -103,12 +99,12 @@
 }
 
 .title_bar_menu_content:hover {
-    background-color: var(--background_color_2);
     border-radius: 4px;
+    background-color: var(--menu_bar_drop_down_hover);
 }
 
 a {
-   color: var(--char_color_1);
+    color: var(--char_color);
     text-decoration: none;
 }
 
@@ -125,17 +121,15 @@ a {
     font-family: inherit;
     margin-top: 1px;
     appearance: textfield;
-    background-color: var(--background_color_3);
     border: none;
     border-radius: 2px;
     outline: none;
-   color: var(--char_color_1);
+    color: var(--char_color);
     padding-left: 5px;
     font-size: 16px;
 }
 
 .new_project_modal_confirm {
-    background-color: #5fe075dd;
     border-radius: 2px;
     height: 28px;
     line-height: 28px;
@@ -145,7 +139,7 @@ a {
 }
 
 .new_project_modal_confirm:hover {
-    background-color: var(--accent_color_1);
+    background-color: var(--accent_color);
 }
 
 .new_project_modal_canvas_size {
