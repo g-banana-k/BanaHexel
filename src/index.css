@@ -7,7 +7,7 @@
 
 .gaming {
     /* 横長で虹色を作る */
-    background: linear-gradient(to right, Magenta, yellow, Cyan, Magenta) 0% center/200%;
+    background: linear-gradient(to right, #f0f8, #ff08, #0ff8, #f0f8) 0% center/200%;
     animation: gaming 2s linear infinite;
 }
 
