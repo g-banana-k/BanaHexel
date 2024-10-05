@@ -272,7 +272,6 @@ export const select_tool = ({
             const cl = clipping.unwrap();
             ctx.drawImage(cl.canvas, cl.x, cl.y);
             ctx.fillStyle = "#5fe07544";
-            console.log("WA")
             ctx.fillRect(cl.x, cl.y, cl.w, cl.h)
             o_u = Option.Some(clone_canvas(layer.body));
             layer.ctx.clearRect(0, 0, layer.body.width, layer.body.height);

@@ -30,7 +30,6 @@ export class ColorTheme {
         }
         this.atom_setter.unwrap_or(() => { })(this.current);
         const theme = this.current.unwrap();
-        console.log(theme);
         property_keys.forEach(key => {
             const v = theme.val[key];
             document.body.style.setProperty(`--${key}`, v);

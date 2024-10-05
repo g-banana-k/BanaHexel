@@ -103,17 +103,11 @@ export type user_dataT = {
     palette: { code: string, uuid: string }[]
 }
 
-export const write_user_data = (() => {
-    let is_writing = false;
-    return async ({ user_data }: { user_data: user_dataT }) => {
-        if (is_writing) return;
-        is_writing = true;
-        const dir = await appDataDir();
-        const path = await join(dir, "user_data.json");
-        await invoke("write_user_data", { dir: dir, path: path, data: JSON.stringify(user_data) })
-        is_writing = false;
-    }
-})()
+export const write_user_data = async ({ user_data }: { user_data: user_dataT }) => {
+    const dir = await appDataDir();
+    const path = await join(dir, "user_data.json");
+    await invoke("write_user_data", { dir: dir, path: path, data: JSON.stringify(user_data) })
+}
 
 export const read_user_data = async (): Promise<user_dataT> => {
     const default_v = { palette: [] };
@@ -150,6 +144,7 @@ export const save_file_with_path = async ({
         const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
         p.on_ok(p => p.on_some(p => {
             opening_file_path.set(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!));
+            console.log("WAAAAAAAAAAAAA")
             file_state.set({ saving: false, saved: true, has_file: true });
         }).on_none(() => {
             file_state.set({ saving: false, saved: false, has_file: false });
