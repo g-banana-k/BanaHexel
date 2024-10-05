@@ -106,6 +106,7 @@ export type user_dataT = {
 export const write_user_data = async ({ user_data }: { user_data: user_dataT }) => {
     const dir = await appDataDir();
     const path = await join(dir, "user_data.json");
+    console.log(path, "save")
     await invoke("write_user_data", { dir: dir, path: path, data: JSON.stringify(user_data) })
 }
 
@@ -113,6 +114,7 @@ export const read_user_data = async (): Promise<user_dataT> => {
     const default_v = { palette: [] };
     const dir = await appDataDir();
     const path = await join(dir, "user_data.json");
+    console.log(path);
     return (await exists(path)) ?
         (await Result.from_try_catch_async<user_dataT>(
             async () => JSON.parse(await invoke("read_user_data", { path })))

@@ -63,7 +63,7 @@ export const Window = () => {
                 })
                 if (!b) return;
             };
-            write_user_data({ user_data: user_data.val_global().unwrap() });
+            await write_user_data({ user_data: user_data.val_global().unwrap() });
             appWindow().close()
         });
         (async () => {
