@@ -3,9 +3,14 @@ import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
 import { Option, State } from "./utils";
 import "./color_picker.css"
-import { Palette, Plus } from "lucide-react";
+import { Palette, Pipette, Plus } from "lucide-react";
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, is_context_menu_open_state } from "../context_menu";
 import { user_data_state } from "../app";
+
+declare class EyeDropper {
+    constructor()
+    open(): Promise<{sRGBHex: string}>
+}
 
 export const ColorPicker = ({
     color: c,
@@ -108,6 +113,16 @@ export const ColorPicker = ({
             {is_opening.val_local() ?
                 <div className="common_color_picker_main" style={{ top: height, }}>
                     <div className="common_color_picker_flex">
+                        <div
+                            className="common_color_picker_eyedropper_icon"
+                            onClick={async () => {
+                                const e_d = new EyeDropper();
+                                const c = (await e_d.open()).sRGBHex;
+                                set_color(c);
+                            }}
+                        >
+                            <Pipette size={24} />
+                        </div>
                         <div className="common_color_picker_mode" onClick={() => {
                             // model.set(({ "RGBA": "HSVA", "HSVA": "HSLA", "HSLA": "RGBA", } as const)[model.val()])
                             model.set(({ "RGBA": "RGBA", } as const)[model.val_local()])

@@ -31,6 +31,7 @@
     background-color: var(--color_picker_mode);
 }
 
+.common_color_picker_eyedropper_icon,
 .common_color_picker_palette_icon {
     width: 30px;
     height: 30px;
@@ -38,6 +39,7 @@
     position: relative;
 }
 
+.common_color_picker_eyedropper_icon>svg,
 .common_color_picker_palette_icon>svg {
     position: absolute;
     top: 0;
@@ -47,6 +49,7 @@
     margin: auto;
 }
 
+.common_color_picker_eyedropper_icon:hover,
 .common_color_picker_palette_icon:hover {
     border-radius: 4px;
 }
