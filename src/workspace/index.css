@@ -9,6 +9,7 @@
 #work_space_row_flex_1 {
     height: 100px;
     margin: 0 0 20px 0;
+    border-bottom: dashed var(--work_space_separator);
 }
 
 #work_space_row_flex_2 {

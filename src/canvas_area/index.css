@@ -14,11 +14,6 @@
     padding: 0;
 }
 
-#canvas_layers_back_div,
-#canvas_layers_front_div {
-    opacity: 0.5;
-}
-
 #canvas_body_div>canvas,
 #canvas_background_div>canvas,
 #canvas_layers_back_div>canvas,

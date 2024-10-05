@@ -63,6 +63,7 @@ const property_keys = [
     "color_picker_mode",
     "color_palette_add_button",
     "work_space_background",
+    "work_space_separator",
     "tool_icon_hover",
     "tool_icon_selected",
     "text_box",
@@ -80,6 +81,8 @@ const property_keys = [
     "canvas_background_1",
     "canvas_background_2",
     "tool_menu_edit_button",
+    "modal_confirm",
+    "modal_confirm_hover",
 ] as const
 
 type ColorThemeRecord = Record<typeof property_keys[number], string>
@@ -106,6 +109,7 @@ const dark = new ColorTheme("dark", {
     color_picker_mode: "#333",
     color_palette_add_button: "#fff2",
     work_space_background: "#222",
+    work_space_separator: "#333",
     tool_icon_hover: "#5fe07544",
     tool_icon_selected: "#5fe07588",
     text_box: "#fff1",
@@ -123,6 +127,8 @@ const dark = new ColorTheme("dark", {
     canvas_background_1: "#111",
     canvas_background_2: "#222",
     tool_menu_edit_button: "#333",
+    modal_confirm:  "#5fe075aa",
+    modal_confirm_hover:  "#5fe075",
 })
 
 const light = new ColorTheme("light", {
@@ -147,6 +153,7 @@ const light = new ColorTheme("light", {
     color_picker_mode: "#ddd",
     color_palette_add_button: "#2222",
     work_space_background: "#fff",
+    work_space_separator: "#ddd",
     tool_icon_hover: "#5fe07566",
     tool_icon_selected: "#5fe075bb",
     text_box: "#2221",
@@ -164,10 +171,12 @@ const light = new ColorTheme("light", {
     canvas_background_1: "#fff",
     canvas_background_2: "#eee",
     tool_menu_edit_button: "#eee",
+    modal_confirm:  "#5fe075aa",
+    modal_confirm_hover:  "#5fe075",
 })
 
 ColorTheme.apply(dark);
-ColorTheme.apply(light);
+ColorTheme.register(light);
 
 export const ColorThemeClassWrapper = () => {
     const set = useSetRecoilState(color_theme_state);

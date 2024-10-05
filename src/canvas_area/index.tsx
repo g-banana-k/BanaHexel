@@ -8,10 +8,12 @@ import { canvas_size_state, current_layer_state, layer_arr_state } from "../app"
 import { CanvasEditor } from "./editor";
 import { window_size_state } from "../window";
 import { color_theme_state, ColorTheme } from "../color_theme";
+import { layers_display_opacity_state } from "../layer_option";
 
 export const CanvasArea = () => {
     const [current_layer, _set_current_layer] = useRecoilState(current_layer_state);
     const [layer_arr, _set_layer_arr] = useRecoilState(layer_arr_state);
+    const layer_display_opacity = useRecoilValue(layers_display_opacity_state)
 
     const [zoom, set_zoom] = useRecoilState(zoom_state);
     const [scroll_horizontal, set_scroll_horizontal] = useRecoilState(scroll_horizontal_state)
@@ -122,6 +124,7 @@ export const CanvasArea = () => {
             top: (-0.5 * canvas_size.height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_size.height * zoom),
             width: canvas_size.width * zoom,
             height: canvas_size.height * zoom,
+            opacity: layer_display_opacity.back / 100,
         }}></div>
         <div id="canvas_body_div" ref={canvas_body_ref} style={{
             left: (-0.5 * canvas_size.width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_size.width * zoom),
@@ -134,6 +137,7 @@ export const CanvasArea = () => {
             top: (-0.5 * canvas_size.height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_size.height * zoom),
             width: canvas_size.width * zoom,
             height: canvas_size.height * zoom,
+            opacity: layer_display_opacity.front / 100,
         }}></div>
         <div style={{
             position: "absolute",

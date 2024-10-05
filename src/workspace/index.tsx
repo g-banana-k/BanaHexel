@@ -3,6 +3,7 @@ import { ToolMenu } from "../tool_menu"
 import { CanvasArea } from "../canvas_area"
 import "./index.css"
 import { ZoomInOut } from "../zoom_in_out"
+import { LayerOption } from "../layer_option"
 
 export const WorkSpace = () => {
 
@@ -16,6 +17,7 @@ export const WorkSpace = () => {
         </div>
         <div id="work_space_row_flex_3">
             <div className="work_space_flex_space"></div>
+            <LayerOption />
             <ZoomInOut />
         </div>
     </div>

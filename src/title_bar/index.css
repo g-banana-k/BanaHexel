@@ -133,6 +133,11 @@ a {
     color: var(--char_color);
     padding-left: 5px;
     font-size: 16px;
+    background-color: var(--text_box);
+}
+
+.new_project_modal_text_box:focus {
+    background-color: var(--text_box_focus);
 }
 
 .new_project_modal_confirm {
@@ -142,10 +147,11 @@ a {
     font-size: 16px;
     margin: 0 10px 10px 10px;
     padding-left: 5px;
+    background-color: var(--modal_confirm);
 }
 
 .new_project_modal_confirm:hover {
-    background-color: var(--accent_color);
+    background-color: var(--modal_confirm_hover);
 }
 
 .new_project_modal_canvas_size {
