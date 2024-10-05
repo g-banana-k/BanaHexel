@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./slider.css";
+import { useRecoilValue } from "recoil";
+import { color_theme_state, ColorTheme } from "../color_theme";
 
 export const Slider = ({
     setter,
@@ -8,7 +10,7 @@ export const Slider = ({
     min = 0,
     width = 100,
     height = 20,
-    background = "#fff"
+    background = undefined
 }: {
     setter: (w: ((v: number) => number) | number) => void,
     val: number,
@@ -23,6 +25,8 @@ export const Slider = ({
     let [is_dragging, set_dragging] = useState(false);
 
     let [once, set_once] = useState(true);
+
+    useRecoilValue(color_theme_state);
 
     useEffect(() => {
         const knob = knob_ref.current;
@@ -59,7 +63,7 @@ export const Slider = ({
     return (<div className="common_slider" style={{
         width: width,
         height: height,
-        background: background,
+        background: background ?? ColorTheme.current.on_some(t => { console.log(t.val.slider_default); return t.val.slider_default }).unwrap_or("#0000"),
     }}>
         <div className="common_slider_inner">
             <div ref={knob_ref} className="common_slider_knob" style={{
@@ -80,7 +84,7 @@ export const SliderWithBox = ({
     width = 100,
     height = 20,
     box_width = 60,
-    background = "#fff"
+    background = undefined,
 }: {
     setter: (w: ((v: number) => number) | number) => void,
     val: number,

@@ -12,6 +12,7 @@
     inset: 0;
     border-radius: 4px;
     padding: 20px;
+    background-color: var(--modal_background);
 }
 
 #modal_close_button {
@@ -24,6 +25,7 @@
 }
 
 #modal_close_button:hover {
+    background-color: var(--modal_close_button_hover);
 }
 
 #modal_close_button>svg {

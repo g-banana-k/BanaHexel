@@ -7,6 +7,7 @@ import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, Sc
 import { canvas_size_state, current_layer_state, layer_arr_state } from "../app";
 import { CanvasEditor } from "./editor";
 import { window_size_state } from "../window";
+import { color_theme_state, ColorTheme } from "../color_theme";
 
 export const CanvasArea = () => {
     const [current_layer, _set_current_layer] = useRecoilState(current_layer_state);
@@ -30,6 +31,8 @@ export const CanvasArea = () => {
 
     const [background_width, set_background_width] = useState(0);
     const [background_height, set_background_height] = useState(0);
+
+    useRecoilValue(color_theme_state);
 
     useEffect(() => {
         const area = canvas_area_ref.current;
@@ -61,19 +64,10 @@ export const CanvasArea = () => {
 
     useEffect(() => {
         const div_body = canvas_body_ref.current;
-        const div_background = canvas_background_ref.current;
         const div_back = canvas_back_ref.current;
         const div_front = canvas_front_ref.current;
         const new_layer = layer_arr![current_layer];
-        const background = background_image(Math.max(new_layer.body.width, new_layer.body.height) / 4, ["#111", "#222"]);
-        if (!(div_body && div_background && div_back && div_front && new_layer)) return;
-
-        if (div_background.hasChildNodes()) div_background.removeChild(div_background.firstChild!);
-        div_background.appendChild(background);
-        set_background_height(background.height);
-        set_background_width(background.width);
-        background.style.height = "100%";
-        background.style.width = "100%";
+        if (!(div_body && div_back && div_front && new_layer)) return;
 
         div_back.innerHTML = "";
         div_body.innerHTML = "";
@@ -98,6 +92,23 @@ export const CanvasArea = () => {
             }
         });
     }, [current_layer, layer_arr]);
+
+    useEffect(() => {
+        const div_background = canvas_background_ref.current;
+        const new_layer = layer_arr![current_layer];
+        const background = background_image(Math.max(new_layer.body.width, new_layer.body.height) / 4, [
+            ColorTheme.current.on_some<string | undefined>(t => t.val.canvas_background_1).unwrap_or(undefined),
+            ColorTheme.current.on_some<string | undefined>(t => t.val.canvas_background_2).unwrap_or(undefined),
+        ]);
+        if (!(div_background && new_layer)) return;
+
+        if (div_background.hasChildNodes()) div_background.removeChild(div_background.firstChild!);
+        div_background.appendChild(background);
+        set_background_height(background.height);
+        set_background_width(background.width);
+        background.style.height = "100%";
+        background.style.width = "100%";
+    }, [layer_arr, ColorTheme.current]);
 
     return (<div id="canvas_area" ref={canvas_area_ref}>
         <div id="canvas_background_div" ref={canvas_background_ref} style={{
@@ -131,7 +142,7 @@ export const CanvasArea = () => {
             width: canvas_size.width * zoom,
             height: canvas_size.height * zoom,
             backgroundColor: "#0000",
-            outline: `${area_width + area_height}px solid #333`,
+            outline: `${area_width + area_height}px solid ${ColorTheme.current.on_some(t => t.val.canvas_area_distant_view).unwrap_or("#0000")}`,
         }} />
         <CanvasEditor
             canvas_width={canvas_size.width}

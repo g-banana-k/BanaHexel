@@ -75,12 +75,18 @@
 #window_control_minimize_button:hover  {
     background-color: var(--window_control_hover);
 }
+
 #window_control_close_button:hover {
     background-color: #f00;
 }
 
+#window_control_close_button:hover>svg {
+    color: #fff;
+}
+
 .title_bar_menu_contents.title_bar_menu_contents_opened {
     display: block;
+    box-shadow: 2px 2px 6px #1118;
 }
 
 .title_bar_menu_contents {

@@ -1,4 +1,7 @@
-export const background_image = (n: number, c?: [string, string]): HTMLCanvasElement => {
+export const background_image = (n: number, c: [string | undefined, string | undefined]): HTMLCanvasElement => {
+    if (c[0] === undefined) c[0] = "#ffffff";
+    if (c[1] === undefined) c[1] = "#eaf0f8";
+
     if (c === undefined) {
         return background_image(n, ["#ffffff", "#eaf0f8"])
     }
@@ -16,7 +19,7 @@ export const background_image = (n: number, c?: [string, string]): HTMLCanvasEle
         ctx.fillRect(0, 0, 1, 1);
         return canvas;
     } else {
-        return background_parts(i, c);
+        return background_parts(i, c as [string, string]);
     }
 }
 

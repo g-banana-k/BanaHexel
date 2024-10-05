@@ -4,7 +4,7 @@
     position: relative;
     overflow: auto;
     scrollbar-gutter: stable;
-    scrollbar-color: var(--background_color_4) #0000;
+    scrollbar-color: var(--scroll_bar) #0000;
 }
 
 #tool_select {

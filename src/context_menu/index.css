@@ -9,6 +9,7 @@
     overflow: hidden;
     padding: 2px;
     z-index: 4;
+    box-shadow: 2px 2px 6px #1118;
 }
 
 .context_menu_content {
