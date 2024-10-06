@@ -25,7 +25,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    
+
 }
 
 .layer_thumbnail_delete_button {
@@ -50,6 +50,37 @@
     left: 0;
     margin: auto;
 }
+
+.layer_thumbnail_move_button_area {
+    position: absolute;
+    left: -16px;
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0.5;
+}
+
+.layer_thumbnail_move_button_area:hover {
+    opacity: 0.8;
+}
+
+.layer_thumbnail_move_button {
+    height: 24px;
+    width:  24px;
+    position: relative;
+    background-color: #fff4;
+}
+
+.layer_thumbnail_move_button:hover {
+    background-color: #fff8;
+}
+
+.layer_thumbnail_move_button>svg {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+}
+
+
 
 .layer_thumbnail_preview_container {
     border-radius: 10px;
@@ -79,7 +110,7 @@
     margin: 15px 25px;
     border-radius: 10px;
     position: relative;
-    
+
 }
 
 #layer_add_button:hover {
