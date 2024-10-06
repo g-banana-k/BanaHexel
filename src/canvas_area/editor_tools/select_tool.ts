@@ -243,15 +243,15 @@ export const select_tool = ({
         "on_ctrl_a": () => {
             need_on_end.set(false);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const layer = layers_arr.val_global()![current_layer.val_global()];
             if (clipping.is_some()) {
                 const cl = clipping.unwrap();
-                const layer = layers_arr.val_global()![current_layer.val_global()];
                 layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 clipping = Option.None();
             }
-            const layer = layers_arr.val_global()![current_layer.val_global()];
+            console.log(layer);
             const cl_canvas = document.createElement("canvas");
             cl_canvas.width = canvas.width;
             cl_canvas.height = canvas.height;

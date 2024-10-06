@@ -108,7 +108,7 @@ export const CanvasEditor = ({
             file_state,
             need_on_end
         })));
-        document.addEventListener("mousemove", e => {
+        const on_mousemove = (e: MouseEvent) => {
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
             const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, }
@@ -118,8 +118,8 @@ export const CanvasEditor = ({
             } else if (div.contains(e.target as Node | null)) {
                 if (fn.move) fn.move(packed);
             }
-        });
-        div.addEventListener("mousedown", e => {
+        };
+        const on_mousedown = (e: MouseEvent) => {
             if (e.button !== 0) return;
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
@@ -129,8 +129,8 @@ export const CanvasEditor = ({
             const fn = fn_data.val_local().unwrap()[selected_tool.current];
             if (fn.down) fn.down(packed);
             set_mouse_down(true);
-        });
-        document.addEventListener("mouseup", e => {
+        };
+        const on_mouseup = (e: MouseEvent) => {
             const canvas_rect = canvas.getBoundingClientRect();
             const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
 
@@ -139,8 +139,11 @@ export const CanvasEditor = ({
             const fn = fn_data.val_local().unwrap()[selected_tool.current];
             if (fn.up) fn.up(packed);
             set_mouse_down(false);
-        });
-        document.addEventListener("keydown", e => {
+        };
+        document.addEventListener("mousemove", on_mousemove)
+        div.addEventListener("mousedown", on_mousedown);
+        document.addEventListener("mouseup", on_mouseup);
+        const on_keydown = (e: KeyboardEvent) => {
             if ((e.target as HTMLElement | undefined)?.tagName === "INPUT") return;
             if (!e.ctrlKey) return;
             if (!("acvxyz".includes(e.key))) return;
@@ -190,7 +193,14 @@ export const CanvasEditor = ({
                     layers_arr.set([...layers]);
                 });
             }
-        });
+        }
+        document.addEventListener("keydown", on_keydown);
+        return () => {
+            document.removeEventListener("mousemove", on_mousemove)
+            div.removeEventListener("mousedown", on_mousedown);
+            document.removeEventListener("mouseup", on_mouseup);
+            document.removeEventListener("keydown", on_keydown)
+        }
     }, []);
 
     return (
