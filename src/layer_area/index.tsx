@@ -15,10 +15,7 @@ export const LayerArea = () => {
         layer_arr?.forEach((l, i) => {
             const preview_div = div_refs.current[i];
             if (!preview_div) return;
-
-            while (preview_div.hasChildNodes()) {
-                preview_div.removeChild(preview_div.firstChild!);
-            }
+            preview_div.innerHTML="";
 
             l.preview.classList.add("layer_thumbnail_preview");
             preview_div.appendChild(l.preview);

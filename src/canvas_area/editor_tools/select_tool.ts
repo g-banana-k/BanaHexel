@@ -139,6 +139,7 @@ export const select_tool = ({
                 const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
+                console.log(lt_x, lt_y, w, h, cl.rb_x,cl.rb_y);
                 undo_stack.push({ i, u, r });
                 clipping = Option.None();
                 file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
@@ -260,8 +261,8 @@ export const select_tool = ({
             clipping = Option.Some({
                 lt_x: 0,
                 lt_y: 0,
-                rb_x: 0,
-                rb_y: 0,
+                rb_x: canvas.width,
+                rb_y: canvas.height,
                 x: 0,
                 y: 0,
                 w: canvas.width,
@@ -333,8 +334,8 @@ export const select_tool = ({
                     clipping = Option.Some({
                         lt_x: 0,
                         lt_y: 0,
-                        rb_x: 0,
-                        rb_y: 0,
+                        rb_x: image.width,
+                        rb_y: image.height,
                         x: 0,
                         y: 0,
                         w: image.width,
