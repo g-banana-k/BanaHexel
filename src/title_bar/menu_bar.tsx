@@ -68,7 +68,7 @@ export const MenuBar = () => {
                         resolve(Option.None())
                     }, { once: true });
                     (await promise).on_some(async ({ w, h }) => {
-                        opening_file_path.set(Option.None());
+                        // opening_file_path.set(Option.None());
                         undo_stack.clear();
                         const canvas_w = !Number.isNaN(w) ? w : 64;
                         const canvas_h = !Number.isNaN(h) ? h : 64;

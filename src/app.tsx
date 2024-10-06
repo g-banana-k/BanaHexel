@@ -70,6 +70,7 @@ export const App = () => {
     const file_state = new State(useRecoilState(file_save_state));
     useEffect(() => {
         (async () => {
+            console.log("知らぬが仏")
             set_opening_file_path(Option.None());
             set_loading(true);
             await load_file({

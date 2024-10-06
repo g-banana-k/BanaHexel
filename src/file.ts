@@ -137,7 +137,7 @@ export const save_file_with_path = async ({
 }) => {
     if (file_state.val_local().saving) return;
     file_state.set({ saving: true, saved: false, has_file: true })
-    if (opening_file_path.val_local().is_some()) {
+    if (opening_file_path.val_global().is_some()) {
         await write_file_with_path(opening_file_path.val_local().unwrap(),
             { layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } }
         );
@@ -145,7 +145,7 @@ export const save_file_with_path = async ({
     } else {
         const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
         p.on_ok(p => p.on_some(p => {
-            opening_file_path.set(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!));
+            opening_file_path.set(Option.Some(p));
             file_state.set({ saving: false, saved: true, has_file: true });
         }).on_none(() => {
             file_state.set({ saving: false, saved: false, has_file: false });
@@ -169,7 +169,7 @@ export const save_file_new = async ({
     file_state.set({ saving: true, saved: false, has_file: true })
     const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
     p.on_ok(p => p.on_some(p => {
-        opening_file_path.set(Option.Some(p.split("/").at(-1)?.split("\\").at(-1)!));
+        opening_file_path.set(Option.Some(p));
         file_state.set({ saving: false, saved: true, has_file: true });
     }).on_none(() => {
         file_state.set({ saving: false, saved: false, has_file: had_file });
