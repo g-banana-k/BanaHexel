@@ -116,7 +116,7 @@ export const MenuBar = () => {
                 }} >開く</MenuContent>
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
-                <a href="https://bananahexagon.github.io" target="_blank"><MenuContent on_click={() => {
+                <a href="https://bananahexagon.github.io/banahexel_site" target="_blank"><MenuContent on_click={() => {
                     set_selected(-1);
                 }}>ホームページ</MenuContent></a>
                 <MenuContent on_click={() => {
