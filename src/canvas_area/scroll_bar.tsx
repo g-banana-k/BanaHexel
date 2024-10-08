@@ -78,7 +78,7 @@ export const ScrollBarVertical = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar).unwrap_or("#0000") } : {})
+                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
             }}
         ></div >
     )
@@ -149,7 +149,7 @@ export const ScrollBarHorizontal = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar).unwrap_or("#0000") } : {})
+                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
             }}
         ></div >
     )

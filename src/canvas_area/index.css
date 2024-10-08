@@ -38,8 +38,10 @@
     user-select: none;
     -webkit-user-select: none;
     -webkit-user-drug: none;
+    background-color: var(--canvas_scrollbar_1);
 }
 
 .canvas_scroll_bar:hover {
     position: absolute;
+    background-color: var(--canvas_scrollbar_2);
 }

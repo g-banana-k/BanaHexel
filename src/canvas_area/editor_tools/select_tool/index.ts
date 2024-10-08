@@ -239,6 +239,12 @@ export const select_tool = ({
             const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
             undo_stack.push({ i, u, r });
             file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+            const data_url = cl.canvas.toDataURL('image/png');
+            const blob = await (await fetch(data_url)).blob();
+            const clipboard_item = new ClipboardItem({
+                [blob.type]: blob
+            });
+            await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
         },
     }
 }
