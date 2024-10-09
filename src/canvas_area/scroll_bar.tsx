@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { zoom_state } from "../zoom_in_out";
+import { color_theme_state } from "../color_theme";
 
 export const scroll_vertical_state = atom({
     key: "canvas_scroll_vertical_state_atom",
@@ -16,6 +17,7 @@ export const ScrollBarVertical = (props: {
     canvas_height: number,
     area_height: number,
 }) => {
+    const color_theme = useRecoilValue(color_theme_state)
     let [scroll, set_scroll] = useRecoilState(scroll_vertical_state);
     const zoom = useRecoilValue(zoom_state);
     let [once, set_once] = useState(false);
@@ -76,7 +78,7 @@ export const ScrollBarVertical = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: "var(--scroll_bar_color_3)" } : {})
+                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
             }}
         ></div >
     )
@@ -86,6 +88,7 @@ export const ScrollBarHorizontal = (props: {
     canvas_width: number,
     area_width: number,
 }) => {
+    const color_theme = useRecoilValue(color_theme_state)
     let [scroll, set_scroll] = useRecoilState(scroll_horizontal_state);
     const zoom = useRecoilValue(zoom_state);
     let [once, set_once] = useState(false);
@@ -146,7 +149,7 @@ export const ScrollBarHorizontal = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: "var(--scroll_bar_color_3)" } : {})
+                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
             }}
         ></div >
     )

@@ -63,13 +63,4 @@ export class CanvasPart {
     }
 }
 
-export const clone_canvas = (c: HTMLCanvasElement) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = c.width;
-    canvas.height = c.height;
-    const ctx = canvas.getContext("2d");
-    ctx?.drawImage(c, 0, 0);
-    return canvas;
-}
-
 export const undo_stack = createUndoStack({ stack_size: 100 })

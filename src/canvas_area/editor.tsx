@@ -110,8 +110,9 @@ export const CanvasEditor = ({
         })));
         const on_mousemove = (e: MouseEvent) => {
             const canvas_rect = canvas.getBoundingClientRect();
-            const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
-            const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, }
+            const [f_x, f_y] = [(e.clientX - canvas_rect.left) / zoom.current, (e.clientY - canvas_rect.top) / zoom.current];
+            const [x, y] = [Math.floor(f_x), Math.floor(f_y)];
+            const packed = { f_x, f_y, x, y, ctrl: e.ctrlKey, shift: e.shiftKey, zoom: zoom.current }
             const fn = fn_data.val_local().unwrap()[selected_tool.current];
             if (is_mouse_down) {
                 if (fn.tool_move) fn.tool_move(packed);
@@ -122,9 +123,9 @@ export const CanvasEditor = ({
         const on_mousedown = (e: MouseEvent) => {
             if (e.button !== 0) return;
             const canvas_rect = canvas.getBoundingClientRect();
-            const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
-
-            const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, }
+            const [f_x, f_y] = [(e.clientX - canvas_rect.left) / zoom.current, (e.clientY - canvas_rect.top) / zoom.current];
+            const [x, y] = [Math.floor(f_x), Math.floor(f_y)];
+            const packed = { f_x, f_y, x, y, ctrl: e.ctrlKey, shift: e.shiftKey, zoom: zoom.current }
 
             const fn = fn_data.val_local().unwrap()[selected_tool.current];
             if (fn.down) fn.down(packed);
@@ -132,10 +133,9 @@ export const CanvasEditor = ({
         };
         const on_mouseup = (e: MouseEvent) => {
             const canvas_rect = canvas.getBoundingClientRect();
-            const [x, y] = [Math.floor((e.clientX - canvas_rect.left) / zoom.current), Math.floor((e.clientY - canvas_rect.top) / zoom.current)];
-
-            const packed = { x, y, ctrl: e.ctrlKey, shift: e.shiftKey, was_down: is_mouse_down }
-
+            const [f_x, f_y] = [(e.clientX - canvas_rect.left) / zoom.current, (e.clientY - canvas_rect.top) / zoom.current];
+            const [x, y] = [Math.floor(f_x), Math.floor(f_y)];
+            const packed = { f_x, f_y, x, y, ctrl: e.ctrlKey, shift: e.shiftKey, was_down: is_mouse_down, zoom: zoom.current }
             const fn = fn_data.val_local().unwrap()[selected_tool.current];
             if (fn.up) fn.up(packed);
             set_mouse_down(false);

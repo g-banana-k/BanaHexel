@@ -12,6 +12,7 @@ use zip::{write::FileOptions, ZipArchive, ZipWriter};
 use base64;
 
 use tauri::{command, AppHandle, Manager};
+use base64::prelude::*;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[command(rename_all = "snake_case")]
@@ -52,7 +53,7 @@ fn save_file_new(
         FileOptions::default().compression_method(zip::CompressionMethod::Stored);
     for (i, layer_base64) in layers.iter().enumerate() {
         // Base64デコード
-        let image_data = base64::decode(layer_base64).map_err(|e| e.to_string())?;
+        let image_data = BASE64_STANDARD.decode(layer_base64).map_err(|e| e.to_string())?;
 
         // ZIPエントリーを作成
         let filename = format!("{}.png", i);
@@ -89,7 +90,7 @@ fn write_file_with_path(
         FileOptions::default().compression_method(zip::CompressionMethod::Stored);
     for (i, layer_base64) in layers.iter().enumerate() {
         // Base64デコード
-        let image_data = base64::decode(layer_base64).map_err(|e| e.to_string())?;
+        let image_data = BASE64_STANDARD.decode(layer_base64).map_err(|e| e.to_string())?;
 
         // ZIPエントリーを作成
         let filename = format!("{}.png", i);
@@ -126,7 +127,7 @@ fn open_file_from_path(path: String) -> Result<DataFileT, String> {
             let mut buffer = Vec::new();
             file.read_to_end(&mut buffer).map_err(|e| e.to_string())?;
             img_vec_res.push((
-                base64::encode(buffer),
+                BASE64_STANDARD.encode(buffer),
                 (&file_name[0..file_name.len() - 4]).parse::<u32>().unwrap(),
             ));
         }
@@ -171,7 +172,7 @@ fn open_file(app: AppHandle) -> Result<Option<(String, DataFileT)>, String> {
             let mut buffer = Vec::new();
             file.read_to_end(&mut buffer).map_err(|e| e.to_string())?;
             img_vec_res.push((
-                base64::encode(buffer),
+                BASE64_STANDARD.encode(buffer),
                 (&file_name[0..file_name.len() - 4]).parse::<u32>().unwrap(),
             ));
         }
