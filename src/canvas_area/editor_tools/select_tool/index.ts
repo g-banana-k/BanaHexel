@@ -27,22 +27,22 @@ export const select_tool = ({
         if (e.detail === "flip_vertical") {
             await cl.flip_vertical();
             clip = Option.Some(new Clip(cl));
-            clip.unwrap().fill_surrond([canvas, ctx]);
+            clip.unwrap().stamp([canvas, ctx], "fill");
         }
         else if (e.detail === "flip_horizontal") {
             await cl.flip_horizontal();
             clip = Option.Some(new Clip(cl));
-            clip.unwrap().fill_surrond([canvas, ctx]);
+            clip.unwrap().stamp([canvas, ctx], "fill");
         }
         else if (e.detail === "rotate_r90") {
             cl.rotate_r90();
             clip = Option.Some(new Clip(cl));
-            clip.unwrap().fill_surrond([canvas, ctx]);
+            clip.unwrap().stamp([canvas, ctx], "fill");
         }
         else if (e.detail === "rotate_l90") {
             cl.rotate_l90();
             clip = Option.Some(new Clip(cl));
-            clip.unwrap().fill_surrond([canvas, ctx]);
+            clip.unwrap().stamp([canvas, ctx], "fill");
         }
         else if (e.detail === "trash") {
             const layer = layers_arr.val_global()![current_layer.val_global()];
@@ -56,15 +56,20 @@ export const select_tool = ({
         }
     })
     return {
-        "down": ({ x, y }) => {
+        "down": ({ f_x, f_y, zoom, x, y }) => {
             b_x = x;
             b_y = y;
+            if (clip.is_some()) {
+                const cl = clip.unwrap();
+                cl.resize = cl.check_resize({ f_x, f_y, zoom, })
+            }
             if (clip.is_some()
-                && clip.unwrap().x <= x && x <= clip.unwrap().x + clip.unwrap().w - 1
-                && clip.unwrap().y <= y && y <= clip.unwrap().y + clip.unwrap().h - 1
+                && (clip.unwrap().x <= x && x <= clip.unwrap().x + clip.unwrap().w - 1
+                    && clip.unwrap().y <= y && y <= clip.unwrap().y + clip.unwrap().h - 1
+                    || clip.unwrap().resize.is)
             ) {
                 const cl = clip.unwrap();
-                cl.stroke_surrond([canvas, ctx], [cl.x + x - b_x, cl.y + y - b_y])
+                cl.stamp([canvas, ctx], "stroke", [cl.x + x - b_x, cl.y + y - b_y])
             } else if (clip.is_some()) {
                 const layer = layers_arr.val_global()![current_layer.val_global()];
                 Clip.release_with_undo_stack([clip, layer, layers_arr, current_layer.val_local(), ctx, canvas, o_u.unwrap(), undo_stack, file_state])
@@ -74,9 +79,27 @@ export const select_tool = ({
             } else { }
         },
         "tool_move": ({ x, y }) => {
-            if (clip.is_some()) {
+            if (clip.is_some() && clip.unwrap().resize.is) {
                 const cl = clip.unwrap();
-                cl.stroke_surrond([canvas, ctx], [cl.x + x - b_x, cl.y + y - b_y])
+                const w = (n => 0 < n ? n : n - 1)(cl.resize.r ? x - cl.x : cl.resize.l ? cl.x - x + cl.w : cl.w);
+                const h = (n => 0 < n ? n : n - 1)(cl.resize.b ? y - cl.y : cl.resize.t ? cl.y - y + cl.h : cl.h);
+                const [n_canvas, n_ctx] = create_canvas({ width: Math.abs(w), height: Math.abs(h) })
+                const lt_x = cl.resize.r && w < 0 ? cl.x + w + 1
+                    : cl.resize.l && 0 < w ? x
+                        : cl.resize.l && w < 0 ? cl.x + cl.w - 1
+                            : cl.x;
+                const lt_y = cl.resize.b && h < 0 ? cl.y + h + 1
+                    : cl.resize.t && 0 < h ? y
+                        : cl.resize.t && h < 0 ? cl.y + cl.h - 1
+                            : cl.y;
+                n_ctx.imageSmoothingEnabled = false;
+                n_ctx.scale(w / cl.w, h / cl.h);
+                n_ctx.drawImage(cl.canvas, 0 > w ? -cl.w : 0, 0 > h ? -cl.h : 0,);
+                n_ctx.restore();
+                cl.stamp([canvas, ctx], "stroke", [lt_x, lt_y], n_canvas);
+            } else if (clip.is_some()) {
+                const cl = clip.unwrap();
+                cl.stamp([canvas, ctx], "stroke", [cl.x + x - b_x, cl.y + y - b_y])
             } else {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#5fe07566";
@@ -88,11 +111,36 @@ export const select_tool = ({
         },
         "up": ({ x, y, was_down }) => {
             if (!was_down) return;
-            if (clip.is_some()) {
+            if (clip.is_some() && clip.unwrap().resize.is) {
+                const cl = clip.unwrap();
+                const w = (n => 0 < n ? n : n - 1)(cl.resize.r ? x - cl.x : cl.resize.l ? cl.x - x + cl.w : cl.w);
+                const h = (n => 0 < n ? n : n - 1)(cl.resize.b ? y - cl.y : cl.resize.t ? cl.y - y + cl.h : cl.h);
+                const [n_canvas, n_ctx] = create_canvas({ width: Math.abs(w), height: Math.abs(h) })
+                const lt_x = cl.resize.r && w < 0 ? cl.x + w + 1
+                    : cl.resize.l && 0 < w ? x
+                        : cl.resize.l && w < 0 ? cl.x + cl.w - 1
+                            : cl.x;
+                const lt_y = cl.resize.b && h < 0 ? cl.y + h + 1
+                    : cl.resize.t && 0 < h ? y
+                        : cl.resize.t && h < 0 ? cl.y + cl.h - 1
+                            : cl.y;
+                n_ctx.imageSmoothingEnabled = false;
+                n_ctx.scale(w / cl.w, h / cl.h);
+                n_ctx.drawImage(cl.canvas, 0 > w ? -cl.w : 0, 0 > h ? -cl.h : 0,);
+                n_ctx.restore();
+                cl.x = lt_x;
+                cl.y = lt_y;
+                cl.canvas = n_canvas;
+                cl.ctx = n_ctx;
+                cl.w = Math.abs(w);
+                cl.h = Math.abs(h);
+                cl.stamp([canvas, ctx], "fill")
+                clip = Option.Some(new Clip(cl));
+            } else if (clip.is_some()) {
                 const cl = clip.unwrap();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 clip = Option.Some(new Clip({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y }));
-                clip.unwrap().fill_surrond([canvas, ctx]);
+                clip.unwrap().stamp([canvas, ctx], "fill");
                 file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
             } else if (is_try_clipping) {
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
@@ -117,7 +165,7 @@ export const select_tool = ({
                     ctx: cl_ctx
                 }));
                 const cl = clip.unwrap();
-                cl.fill_surrond([canvas, ctx]);
+                cl.stamp([canvas, ctx], "fill");
                 o_u = Option.Some(create_canvas(layer.body, true)[0]);
                 layer.ctx.clearRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
                 layer.preview_update();
@@ -126,11 +174,20 @@ export const select_tool = ({
                 file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
             }
         },
-        "move": ({ x, y }) => {
-            if (clip.is_some()) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#5fe07544";
-            ctx.fillRect(x, y, 1, 1);
+        "move": ({ f_x, f_y, zoom, x, y }) => {
+            if (clip.is_some()) {
+                const cl = clip.unwrap();
+                const m = cl.check_resize({ f_x, f_y, zoom });
+                if (m.r && m.t || m.l && m.b) document.body.style.cursor = "nesw-resize"
+                else if (m.r && m.b || m.l && m.t) document.body.style.cursor = "nwse-resize"
+                else if (m.r || m.l) document.body.style.cursor = "ew-resize";
+                else if (m.b || m.t) document.body.style.cursor = "ns-resize";
+                else document.body.style.cursor = "";
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#5fe07544";
+                ctx.fillRect(x, y, 1, 1);
+            }
         },
         "on_end": () => {
             need_on_end.set(true);
@@ -176,7 +233,7 @@ export const select_tool = ({
                 ctx: cl_ctx
             }));
             const cl = clip.unwrap();
-            cl.fill_surrond([canvas, ctx]);
+            cl.stamp([canvas, ctx], "fill");
             o_u = Option.Some(create_canvas(layer.body, true)[0]);
             cl.cut([layer, layers_arr, file_state]);
         },
@@ -223,7 +280,7 @@ export const select_tool = ({
                 }));
                 o_u = Option.Some(create_canvas(layer.body, true)[0]);
                 const cl = clip.unwrap();
-                cl.fill_surrond([canvas, ctx]);
+                cl.stamp([canvas, ctx], "fill");
                 break;
             }
         },
@@ -257,6 +314,7 @@ class Clip {
     h: number;
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
+    resize: { r: boolean, l: boolean, t: boolean, b: boolean, is: boolean };
     constructor(cl: ClipInit)
     constructor(cl: ClassProps<Clip>)
     constructor(cl: ClipInit | ClassProps<Clip>) {
@@ -268,6 +326,7 @@ class Clip {
             this.h = cl.h;
             this.canvas = cl.canvas;
             this.ctx = cl.ctx;
+            this.resize = cl.resize;
         } else {
             this.start = {
                 lt_x: cl.lt_x,
@@ -281,6 +340,7 @@ class Clip {
             this.h = cl.h;
             this.canvas = cl.canvas;
             this.ctx = cl.ctx;
+            this.resize = cl.resize ?? { r: false, l: false, t: false, b: false, is: false };
         }
     }
     rotate_r90() {
@@ -327,22 +387,23 @@ class Clip {
         this.ctx.drawImage(img, -this.canvas.width, 0);
         this.ctx.restore();
     }
-    fill_surrond([canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D]): void
-    fill_surrond([canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D], [x, y]: [number, number]): void
-    fill_surrond([canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D], [x, y]: [number, number] | [undefined, undefined] = [undefined, undefined]) {
+    stamp(
+        [canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D],
+        surround: "none" | "stroke" | "fill" = "none",
+        xy: [number, number] | [undefined, undefined] = [undefined, undefined],
+        img?: CanvasImageSource & { width: number, height: number }
+    ) {
+        const [x, y] = xy;
+        const [w, h] = [img?.width ?? this.w, img?.height ?? this.h];
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(this.canvas, x ?? this.x, y ?? this.y);
-        ctx.fillStyle = "#5fe07544";
-        ctx.fillRect(x ?? this.x, y ?? this.y, this.w, this.h);
-    }
-
-    stroke_surrond([canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D]): void
-    stroke_surrond([canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D], [x, y]: [number, number]): void
-    stroke_surrond([canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D], [x, y]: [number, number] | [undefined, undefined] = [undefined, undefined]) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(this.canvas, x ?? this.x, y ?? this.y);
-        ctx.strokeStyle = "#5fe07544";
-        ctx.strokeRect((x ?? this.x) + 0.5, (y ?? this.y) + 0.5, this.w - 1, this.h - 1);
+        ctx.drawImage(img ?? this.canvas, x ?? this.x, y ?? this.y);
+        if (surround === "stroke") {
+            ctx.strokeStyle = "#5fe07544";
+            ctx.strokeRect((x ?? this.x) + 0.5, (y ?? this.y) + 0.5, w - 1, h - 1);
+        } else if (surround === "fill") {
+            ctx.fillStyle = "#5fe07544";
+            ctx.fillRect(x ?? this.x, y ?? this.y, w, h);
+        }
     }
     visible_rect(canvas: HTMLCanvasElement) {
         const lt_x = Math.max(0, Math.min(this.start.lt_x, this.x));
@@ -365,6 +426,13 @@ class Clip {
         layer.preview_update();
         layers_arr.set([...layers_arr.val_local()!]);
         file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+    }
+    check_resize({ f_x, f_y, zoom }: { f_x: number, f_y: number, zoom: number }) {
+        const r = Math.abs(f_x - (this.x + this.w)) < 4 / zoom && (Math.abs(this.y + this.h / 2 - f_y) < this.h / 2 + 4 / zoom);
+        const l = Math.abs(f_x - this.x) < 4 / zoom && (Math.abs(this.y + this.h / 2 - f_y) < this.h / 2 + 4 / zoom);
+        const b = Math.abs(f_y - (this.y + this.h)) < 4 / zoom && (Math.abs(this.x + this.w / 2 - f_x) < this.w / 2 + 4 / zoom);
+        const t = Math.abs(f_y - this.y) < 4 / zoom && (Math.abs(this.x + this.w / 2 - f_x) < this.w / 2 + 4 / zoom);
+        return { r, l, b, t, is: r || l || b || t, }
     }
     static release([clip, layer, layers_arr]: [Option<Clip>, Layer, State<Layer[] | undefined>]) {
         clip.on_some(cl => {
@@ -402,6 +470,7 @@ type ClipInit = {
     h: number
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
+    resize?: { r: boolean, l: boolean, t: boolean, b: boolean, is: boolean };
 }
 
 type ClipRect = {
