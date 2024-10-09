@@ -18,7 +18,7 @@ export const eraser_tool = ({
     let lt_y = 0;
     let rb_x = 0;
     let rb_y = 0;
-    let down_canvas = Option.None<HTMLCanvasElement>();
+    let old_canvas = Option.None<HTMLCanvasElement>();
     return {
         "down": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,7 +27,7 @@ export const eraser_tool = ({
             const shift = Math.floor((thickness) / 2);
             b_x = x;
             b_y = y;
-            down_canvas = Option.Some(create_canvas(layer.body)[0]);
+            old_canvas = Option.Some(create_canvas(layer.body, true)[0]);
             lt_x = x;
             lt_y = y;
             rb_x = x;
@@ -60,7 +60,7 @@ export const eraser_tool = ({
             const s_y = Math.max(lt_y - Math.floor(thickness / 2), 0);
             const w = Math.min(rb_x + Math.ceil(thickness / 2), layer.body.width) - s_x + 1;
             const h = Math.min(rb_y + Math.ceil(thickness / 2), layer.body.width) - s_y + 1;
-            const u = new CanvasPart(s_x, s_y, w, h, down_canvas.unwrap());
+            const u = new CanvasPart(s_x, s_y, w, h, old_canvas.unwrap());
             const r = new CanvasPart(s_x, s_y, w, h, layer.body);
             undo_stack.push({ i, u, r });
             layer.preview_update();
@@ -68,7 +68,7 @@ export const eraser_tool = ({
             const shift = Math.floor((thickness) / 2);
             ctx.fillStyle = "#fff4";
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
-            down_canvas = Option.None();
+            old_canvas = Option.None();
             file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
         },
         "move": ({ x, y }) => {
@@ -83,20 +83,20 @@ export const eraser_tool = ({
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         },
         "on_ctrl_y": () => {
-            down_canvas.on_some(c => {
+            old_canvas.on_some(c => {
                 const layer = layers_arr.val_global()![current_layer.val_global()];
                 layer.ctx.drawImage(c, 0, 0);
                 Option.Some<0>(0);
             })
-            return !down_canvas.is_some();
+            return !old_canvas.is_some();
         },
         "on_ctrl_z": () => {
-            down_canvas.on_some(c => {
+            old_canvas.on_some(c => {
                 const layer = layers_arr.val_global()![current_layer.val_global()];
                 layer.ctx.drawImage(c, 0, 0);
                 Option.Some<0>(0);
             });
-            return !down_canvas.is_some();
+            return !old_canvas.is_some();
         },
     }
 };
