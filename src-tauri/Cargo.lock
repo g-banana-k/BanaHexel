@@ -280,7 +280,7 @@ dependencies = [
 
 [[package]]
 name = "banahexel"
-version = "0.2.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "serde",
