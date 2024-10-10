@@ -3,11 +3,11 @@ import { Window } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state, user_data_state } from "../app";
-import { open_file, save_file_new, save_file_with_path, write_user_data } from "../file";
+import { export_image, open_file, save_file_new, save_file_with_path, write_user_data } from "../file";
 import { is_modal_open_state, modal_contents_state, modal_size_state } from "../modal";
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
-import { Option, PromiseWithResolvers, State } from "../common/utils";
+import { create_canvas, Option, PromiseWithResolvers, State } from "../common/utils";
 import { file_save_state } from ".";
 import { undo_stack } from "../canvas_area/undo";
 
@@ -114,6 +114,14 @@ export const MenuBar = () => {
                     })
                     write_user_data({ user_data: user_data.unwrap() })
                 }} >開く</MenuContent>
+                <MenuContent on_click={async () => {
+                    const [canvas, ctx] = create_canvas(canvas_size);
+                    layer_arr.forEach(l => { ctx.drawImage(l.body, 0, 0) });
+                    export_image({
+                        img: canvas,
+                        project_name: opening_file_path.val_global().unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)!.replace(/^(.+)\..+$/, '$1'),
+                    })
+                }}>エクスポート</MenuContent>
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
                 <a href="https://bananahexagon.github.io/banahexel_site" target="_blank"><MenuContent on_click={() => {
