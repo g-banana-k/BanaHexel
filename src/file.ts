@@ -122,6 +122,19 @@ export const read_user_data = async (): Promise<user_dataT> => {
 
 export type file_stateT = { saving: boolean, saved: boolean, has_file: boolean }
 
+export const export_image = async ({
+    img,
+    project_name
+}: {
+    img: HTMLCanvasElement,
+    project_name: string | undefined,
+}) => {
+    return (await Result.from_try_catch_async(async () => await invoke<string>("export_image", {
+        img: canvas_to_binary(img),
+        project_name,
+    }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>())
+}
+
 export const save_file_with_path = async ({
     file_state,
     opening_file_path,
@@ -172,7 +185,6 @@ export const save_file_new = async ({
     }).on_none(() => {
         file_state.set({ saving: false, saved: false, has_file: had_file });
     }));
-
 }
 
 export const open_file = async (

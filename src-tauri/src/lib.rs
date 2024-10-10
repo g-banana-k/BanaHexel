@@ -11,8 +11,8 @@ use zip::{write::FileOptions, ZipArchive, ZipWriter};
 
 use base64;
 
-use tauri::{command, AppHandle, Manager};
 use base64::prelude::*;
+use tauri::{command, AppHandle, Manager};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[command(rename_all = "snake_case")]
@@ -53,7 +53,9 @@ fn save_file_new(
         FileOptions::default().compression_method(zip::CompressionMethod::Stored);
     for (i, layer_base64) in layers.iter().enumerate() {
         // Base64デコード
-        let image_data = BASE64_STANDARD.decode(layer_base64).map_err(|e| e.to_string())?;
+        let image_data = BASE64_STANDARD
+            .decode(layer_base64)
+            .map_err(|e| e.to_string())?;
 
         // ZIPエントリーを作成
         let filename = format!("{}.png", i);
@@ -66,6 +68,38 @@ fn save_file_new(
         .map_err(|e| e.to_string())?;
 
     zip.finish().map_err(|e| e.to_string())?;
+
+    let path_string = path.to_str().unwrap().to_string();
+
+    Ok(Some(path_string))
+}
+
+#[command(rename_all = "snake_case")]
+fn export_image(
+    app: AppHandle,
+    img: String,
+    project_name: Option<String>,
+) -> Result<Option<String>, String> {
+    let path = app
+        .dialog()
+        .file()
+        .set_title("名前を付けて保存")
+        .add_filter("PNG画像", &["png"])
+        .set_file_name(format!("{}.png", project_name.unwrap_or("project".to_string())))
+        .blocking_save_file();
+    let path = if let Some(s) = path {
+        s.into_path().map_err(|e| e.to_string())?
+    } else {
+        return Ok(None);
+    };
+
+    let mut file = File::create(&path).map_err(|e| e.to_string())?;
+
+    let image_data = BASE64_STANDARD
+    .decode(img)
+    .map_err(|e| e.to_string())?;
+
+    file.write_all(&image_data).map_err(|e| e.to_string())?;
 
     let path_string = path.to_str().unwrap().to_string();
 
@@ -90,7 +124,9 @@ fn write_file_with_path(
         FileOptions::default().compression_method(zip::CompressionMethod::Stored);
     for (i, layer_base64) in layers.iter().enumerate() {
         // Base64デコード
-        let image_data = BASE64_STANDARD.decode(layer_base64).map_err(|e| e.to_string())?;
+        let image_data = BASE64_STANDARD
+            .decode(layer_base64)
+            .map_err(|e| e.to_string())?;
 
         // ZIPエントリーを作成
         let filename = format!("{}.png", i);
@@ -219,7 +255,8 @@ pub fn run() {
             save_file_new,
             write_file_with_path,
             write_user_data,
-            read_user_data
+            read_user_data,
+            export_image
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
