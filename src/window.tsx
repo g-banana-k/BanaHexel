@@ -8,7 +8,7 @@ import App, { canvas_size_state, layer_arr_state, opening_file_path_state, user_
 import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
 import { Modal } from "./modal";
 import { listen } from "@tauri-apps/api/event";
-import { Option, State } from "./common/utils";
+import { Option, State, StateBySetter } from "./common/utils";
 import { read_user_data, save_file_with_path, write_user_data } from "./file";
 import * as dialog from "@tauri-apps/plugin-dialog";
 import { ColorTheme } from "./color_theme";
@@ -29,11 +29,11 @@ export const window_size_state = atom({
 
 export const Window = () => {
     const [_window_size, set_window_size] = useRecoilState(window_size_state);
-    const file_state = new State(useRecoilState(file_save_state));
-    const user_data = new State(useRecoilState(user_data_state));
-    const opening_file_path = new State(useRecoilState(opening_file_path_state));
-    const layer_arr = new State(useRecoilState(layer_arr_state));
-    const canvas_size = new State(useRecoilState(canvas_size_state));
+    const file_state        = new StateBySetter(useSetRecoilState(file_save_state));
+    const user_data         = new StateBySetter(useSetRecoilState(user_data_state));
+    const opening_file_path = new StateBySetter(useSetRecoilState(opening_file_path_state));
+    const layer_arr         = new StateBySetter(useSetRecoilState(layer_arr_state));
+    const canvas_size       = new StateBySetter(useSetRecoilState(canvas_size_state));
 
     useEffect(() => {
         appWindow().onResized(async (_) => {
@@ -45,18 +45,19 @@ export const Window = () => {
             })
         });
         document.addEventListener("keydown", async e => {
-            if (e.key === "F12") {
+            if (e.key === "F12" || e.key === "F5") {
                 e.preventDefault();
             }
             if (e.key === "s" && e.ctrlKey) {
                 e.preventDefault();
                 if (layer_arr.val_global() === undefined || canvas_size.val_global() === undefined) return;
-                save_file_with_path({ file_state, opening_file_path, layer_arr: layer_arr.val_local()!, canvas_size: canvas_size.val_local()! })
+                save_file_with_path({ file_state, opening_file_path, layer_arr: layer_arr.val_local().unwrap()!, canvas_size: canvas_size.val_local().unwrap()! })
                 write_user_data({ user_data: user_data.val_global().unwrap() })
             }
         });
         document.addEventListener("close_requested", async () => {
-            if (!file_state.val_global().saved && file_state.val_local().has_file) {
+            const f_s = file_state.val_global();
+            if (!f_s.saved && f_s.has_file) {
                 const b = await dialog.confirm("本当に離れていいですか？\n保存していない変更は失われます。", {
                     "okLabel": "離れる",
                     "cancelLabel": "戻る",
@@ -69,7 +70,7 @@ export const Window = () => {
         });
         (async () => {
             user_data.set(Option.Some(await read_user_data()));
-            ColorTheme.apply(user_data.val_local().on_some(_=>_.theme).unwrap() || "dark")
+            ColorTheme.apply(user_data.val_local().on_some(_=>_.unwrap().theme).unwrap() || "dark")
         })()
     }, [])
 

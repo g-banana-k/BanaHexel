@@ -12,7 +12,7 @@ use zip::{write::FileOptions, ZipArchive, ZipWriter};
 use base64;
 
 use base64::prelude::*;
-use tauri::{command, AppHandle, Manager};
+use tauri::{command, AppHandle, Emitter, Manager};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[command(rename_all = "snake_case")]
@@ -85,7 +85,10 @@ fn export_image(
         .file()
         .set_title("名前を付けて保存")
         .add_filter("PNG画像", &["png"])
-        .set_file_name(format!("{}.png", project_name.unwrap_or("project".to_string())))
+        .set_file_name(format!(
+            "{}.png",
+            project_name.unwrap_or("project".to_string())
+        ))
         .blocking_save_file();
     let path = if let Some(s) = path {
         s.into_path().map_err(|e| e.to_string())?
@@ -95,9 +98,7 @@ fn export_image(
 
     let mut file = File::create(&path).map_err(|e| e.to_string())?;
 
-    let image_data = BASE64_STANDARD
-    .decode(img)
-    .map_err(|e| e.to_string())?;
+    let image_data = BASE64_STANDARD.decode(img).map_err(|e| e.to_string())?;
 
     file.write_all(&image_data).map_err(|e| e.to_string())?;
 
@@ -240,6 +241,23 @@ fn read_user_data(path: String) -> Result<String, String> {
         .map_err(|e| e.to_string())?;
     Ok(buffer)
 }
+#[tauri::command]
+fn initial_file_path(app: AppHandle) -> Result<Option<String>, String> {
+    let file_path = app
+        .env()
+        .args_os
+        .iter()
+        .filter_map(|os_str: &std::ffi::OsString| {
+            let path = Path::new(os_str);
+            if path.extension().map(|ext| ext == "bhp").unwrap_or(false) {
+                Some(os_str.to_string_lossy().to_string())
+            } else {
+                None
+            }
+        })
+        .next();
+    Ok(file_path)
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -256,7 +274,8 @@ pub fn run() {
             write_file_with_path,
             write_user_data,
             read_user_data,
-            export_image
+            export_image,
+            initial_file_path,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

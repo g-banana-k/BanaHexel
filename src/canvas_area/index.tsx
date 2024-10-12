@@ -132,6 +132,15 @@ export const CanvasArea = () => {
             width: canvas_size.width * zoom,
             height: canvas_size.height * zoom,
         }}></div>
+        <CanvasEditor
+            canvas_width={canvas_size.width}
+            canvas_height={canvas_size.height}
+            zoom={zoom}
+            area_width={area_width}
+            area_height={area_height}
+            scroll_horizontal={scroll_horizontal}
+            scroll_vertical={scroll_vertical}
+        />
         <div id="canvas_layers_front_div" ref={canvas_front_ref} style={{
             left: (-0.5 * canvas_size.width * zoom) + (0.5 * area_width) - (scroll_horizontal * canvas_size.width * zoom),
             top: (-0.5 * canvas_size.height * zoom) + (0.5 * area_height) - (scroll_vertical * canvas_size.height * zoom),
@@ -147,16 +156,8 @@ export const CanvasArea = () => {
             height: canvas_size.height * zoom,
             backgroundColor: "#0000",
             outline: `${area_width + area_height}px solid ${ColorTheme.current.on_some(t => t.val.canvas_area_distant_view).unwrap_or("#0000")}`,
+            pointerEvents: "none",
         }} />
-        <CanvasEditor
-            canvas_width={canvas_size.width}
-            canvas_height={canvas_size.height}
-            zoom={zoom}
-            area_width={area_width}
-            area_height={area_height}
-            scroll_horizontal={scroll_horizontal}
-            scroll_vertical={scroll_vertical}
-        />
         <ScrollBarVertical
             canvas_height={canvas_size.height}
             area_height={area_height}

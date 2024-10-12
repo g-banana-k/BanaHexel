@@ -45,3 +45,7 @@
     position: absolute;
     background-color: var(--canvas_scrollbar_2);
 }
+
+#canvas_layers_front_div {
+    pointer-events: none;
+}
