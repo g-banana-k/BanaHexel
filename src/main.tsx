@@ -7,7 +7,7 @@ import { Window } from "./window";
 import "./file"
 import { StateWrappers } from "./state_wrappers";
 import { opening_file_path_state } from "./app";
-import { Option, println } from "./common/utils";
+import { Option } from "./common/utils";
 import { invoke } from "@tauri-apps/api/core";
 
 const root = createRoot(document.getElementById("root") as Element);
@@ -23,14 +23,13 @@ const WindowWrapper = ({ path }: { path: string | null }) => {
     return (<Window />)
 }
 
-const initial_path = await invoke<string | null>("initial_file_path");
-
-root.render(
-    // <StrictMode>
-    <RecoilRoot>
-        <StateWrappers />
-        <WindowWrapper path={initial_path} />
-    </RecoilRoot>
-    // </StrictMode>
-);
-
+invoke<string | null>("initial_file_path").then(initial_path => {
+    root.render(
+        // <StrictMode>
+        <RecoilRoot>
+            <StateWrappers />
+            <WindowWrapper path={initial_path} />
+        </RecoilRoot>
+        // </StrictMode>
+    );
+});
