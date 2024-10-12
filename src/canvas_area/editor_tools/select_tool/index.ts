@@ -28,23 +28,19 @@ export const select_tool = ({
             await cl.flip_vertical();
             clip = Option.Some(new Clip(cl));
             clip.unwrap().stamp([canvas, ctx], "fill");
-        }
-        else if (e.detail === "flip_horizontal") {
+        } else if (e.detail === "flip_horizontal") {
             await cl.flip_horizontal();
             clip = Option.Some(new Clip(cl));
             clip.unwrap().stamp([canvas, ctx], "fill");
-        }
-        else if (e.detail === "rotate_r90") {
+        } else if (e.detail === "rotate_r90") {
             cl.rotate_r90();
             clip = Option.Some(new Clip(cl));
             clip.unwrap().stamp([canvas, ctx], "fill");
-        }
-        else if (e.detail === "rotate_l90") {
+        } else if (e.detail === "rotate_l90") {
             cl.rotate_l90();
             clip = Option.Some(new Clip(cl));
             clip.unwrap().stamp([canvas, ctx], "fill");
-        }
-        else if (e.detail === "trash") {
+        } else if (e.detail === "trash") {
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const { lt_x, lt_y, w, h } = cl.visible_rect(canvas);
             const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
@@ -303,6 +299,26 @@ export const select_tool = ({
             });
             await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
         },
+        "on_arrow_down": ({ kind }) => {
+            if (!clip.is_some()) return;
+            const cl = clip.unwrap();
+            if (kind === "up") {
+                cl.y -= 1;
+            } else if (kind === "down") {
+                cl.y += 1;
+            } else if (kind === "right") {
+                cl.x += 1;
+            } else if (kind === "left") {
+                cl.x -= 1;
+            }
+            cl.stamp([canvas, ctx], "stroke");
+            clip = Option.Some(new Clip(cl));
+        },
+        "on_arrow_up": ({ }) => {
+            if (!clip.is_some()) return;
+            const cl = clip.unwrap();
+            cl.stamp([canvas, ctx], "fill");
+        }
     }
 }
 

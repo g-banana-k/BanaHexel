@@ -140,66 +140,87 @@ export const CanvasEditor = ({
             if (fn.up) fn.up(packed);
             set_mouse_down(false);
         };
-        document.addEventListener("mousemove", on_mousemove)
+        document.addEventListener("mousemove", on_mousemove);
         div.addEventListener("mousedown", on_mousedown);
         document.addEventListener("mouseup", on_mouseup);
         const on_keydown = (e: KeyboardEvent) => {
             if ((e.target as HTMLElement | undefined)?.tagName === "INPUT") return;
-            if (!e.ctrlKey) return;
-            if (!("acvxyz".includes(e.key))) return;
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
-            if ("acvx".includes(e.key)) set_selected_tool_id("select_tool");
-            const fns = fn_data.val_local().unwrap();
-            if (e.key === "a") {
+            if (!e.ctrlKey) {
+                if (!["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.key)) return;
                 e.preventDefault();
-                const fn = fns.select_tool.on_ctrl_a;
-                if (fn) fn({});
-            } else if (e.key === "c") {
+                const fns = fn_data.val_local().unwrap();
+                const fn = fns.select_tool.on_arrow_down;
+                const kind = ({ "ArrowUp": "up", "ArrowDown": "down", "ArrowRight": "right", "ArrowLeft": "left" } as const)[e.key]!;
+                if (fn) fn({ kind });
+            } else {
+                if (!("acvxyz".includes(e.key))) return;
+                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+                if ("acvx".includes(e.key)) set_selected_tool_id("select_tool");
+                const fns = fn_data.val_local().unwrap();
+                if (e.key === "a") {
+                    e.preventDefault();
+                    const fn = fns.select_tool.on_ctrl_a;
+                    if (fn) fn({});
+                } else if (e.key === "c") {
+                    e.preventDefault();
+                    const fn = fns.select_tool.on_ctrl_c;
+                    if (fn) fn({});
+                } else if (e.key === "v") {
+                    e.preventDefault();
+                    const fn = fns.select_tool.on_ctrl_v;
+                    if (fn) fn({});
+                } else if (e.key === "x") {
+                    e.preventDefault();
+                    const fn = fns.select_tool.on_ctrl_x;
+                    if (fn) fn({});
+                } else if (e.key === "y") {
+                    e.preventDefault();
+                    const fn = fns[selected_tool.current].on_ctrl_y;
+                    const f = fn ? fn({}) : true;
+                    if (f) undo_stack.redo().on_some(({ i, r }) => {
+                        const layers = layers_arr.val_global()!;
+                        const layer = layers[i];
+                        const ctx = layer.ctx;
+                        ctx.clearRect(r.x, r.y, r.area.width, r.area.height);
+                        ctx.drawImage(r.area, r.x, r.y);
+                        layer.preview_update();
+                        layers_arr.set([...layers]);
+                    });
+                } else if (e.key === "z") {
+                    e.preventDefault();
+                    const fn = fns[selected_tool.current].on_ctrl_z;
+                    const f = fn ? fn({}) : true;
+                    if (f) undo_stack.undo().on_some(({ i, u }) => {
+                        const layers = layers_arr.val_global()!;
+                        const layer = layers[i];
+                        const ctx = layer.ctx;
+                        ctx.clearRect(u.x, u.y, u.area.width, u.area.height);
+                        ctx.drawImage(u.area, u.x, u.y);
+                        layer.preview_update();
+                        layers_arr.set([...layers]);
+                    });
+                }
+            }
+        }
+        const on_keyup = (e: KeyboardEvent) => {
+            if ((e.target as HTMLElement | undefined)?.tagName === "INPUT") return;
+            if (!e.ctrlKey) {
+                if (!["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.key)) return;
                 e.preventDefault();
-                const fn = fns.select_tool.on_ctrl_c;
-                if (fn) fn({});
-            } else if (e.key === "v") {
-                e.preventDefault();
-                const fn = fns.select_tool.on_ctrl_v;
-                if (fn) fn({});
-            } else if (e.key === "x") {
-                e.preventDefault();
-                const fn = fns.select_tool.on_ctrl_x;
-                if (fn) fn({});
-            } else if (e.key === "y") {
-                e.preventDefault();
-                const fn = fns[selected_tool.current].on_ctrl_y;
-                const f = fn ? fn({}) : true;
-                if (f) undo_stack.redo().on_some(({ i, r }) => {
-                    const layers = layers_arr.val_global()!;
-                    const layer = layers[i];
-                    const ctx = layer.ctx;
-                    ctx.clearRect(r.x, r.y, r.area.width, r.area.height);
-                    ctx.drawImage(r.area, r.x, r.y);
-                    layer.preview_update();
-                    layers_arr.set([...layers]);
-                });
-            } else if (e.key === "z") {
-                e.preventDefault();
-                const fn = fns[selected_tool.current].on_ctrl_z;
-                const f = fn ? fn({}) : true;
-                if (f) undo_stack.undo().on_some(({ i, u }) => {
-                    const layers = layers_arr.val_global()!;
-                    const layer = layers[i];
-                    const ctx = layer.ctx;
-                    ctx.clearRect(u.x, u.y, u.area.width, u.area.height);
-                    ctx.drawImage(u.area, u.x, u.y);
-                    layer.preview_update();
-                    layers_arr.set([...layers]);
-                });
+                const fns = fn_data.val_local().unwrap();
+                const fn = fns.select_tool.on_arrow_up;
+                const kind = ({ "ArrowUp": "up", "ArrowDown": "down", "ArrowRight": "right", "ArrowLeft": "left" } as const)[e.key]!;
+                if (fn) fn({ kind });
             }
         }
         document.addEventListener("keydown", on_keydown);
+        document.addEventListener("keyup", on_keyup);
         return () => {
-            document.removeEventListener("mousemove", on_mousemove)
+            document.removeEventListener("mousemove", on_mousemove);
             div.removeEventListener("mousedown", on_mousedown);
             document.removeEventListener("mouseup", on_mouseup);
-            document.removeEventListener("keydown", on_keydown)
+            document.removeEventListener("keydown", on_keydown);
+            document.removeEventListener("keyup", on_keyup);
         }
     }, []);
 

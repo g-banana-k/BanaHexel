@@ -11,10 +11,10 @@ import { select_tool } from "./select_tool";
 import { stamp_tool } from "./stamp_tool";
 
 export type toolT = {
-    "down"?:      (args: { x: number, y: number, f_x: number, f_y: number,zoom: number, shift: boolean, ctrl: boolean }) => void,
-    "up"?:        (args: { x: number, y: number, f_x: number, f_y: number,zoom: number, shift: boolean, ctrl: boolean, was_down: boolean }) => void,
-    "move"?:      (args: { x: number, y: number, f_x: number, f_y: number,zoom: number, shift: boolean, ctrl: boolean }) => void,
-    "tool_move"?: (args: { x: number, y: number, f_x: number, f_y: number,zoom: number, shift: boolean, ctrl: boolean }) => void,
+    "down"?: (args: { x: number, y: number, f_x: number, f_y: number, zoom: number, shift: boolean, ctrl: boolean }) => void,
+    "up"?: (args: { x: number, y: number, f_x: number, f_y: number, zoom: number, shift: boolean, ctrl: boolean, was_down: boolean }) => void,
+    "move"?: (args: { x: number, y: number, f_x: number, f_y: number, zoom: number, shift: boolean, ctrl: boolean }) => void,
+    "tool_move"?: (args: { x: number, y: number, f_x: number, f_y: number, zoom: number, shift: boolean, ctrl: boolean }) => void,
     "on_end"?: (args: { new_tool: string }) => void,
     "on_start"?: (args: { old_tool: string }) => void,
     "on_canvas_change"?: (args: {}) => void,
@@ -24,6 +24,8 @@ export type toolT = {
     "on_ctrl_x"?: (args: {}) => void,
     "on_ctrl_y"?: (args: {}) => boolean,
     "on_ctrl_z"?: (args: {}) => boolean,
+    "on_arrow_down"?: (args: { kind: "up" | "down" | "right" | "left" }) => void,
+    "on_arrow_up"?: (args: { kind: "up" | "down" | "right" | "left" }) => void,
 };
 
 export type argsT = {
