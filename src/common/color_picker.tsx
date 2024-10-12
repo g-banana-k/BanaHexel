@@ -169,6 +169,7 @@ export const ColorPicker = ({
                                 set_context_menu_contents([
                                     <div className="context_menu_content" onClick={() => {
                                         user_data.set(Option.Some({
+                                            ...user_data.val_local().unwrap(),
                                             palette: user_data.val_local().unwrap().palette.filter(
                                                 ({ uuid: uuid2 }) => uuid2 != uuid
                                             )
@@ -182,6 +183,7 @@ export const ColorPicker = ({
                         className="common_color_picker_palette_add_button"
                         onClick={() => {
                             user_data.set(user_data => Option.Some({
+                                ...user_data.unwrap(),
                                 palette: [...user_data.unwrap().palette, { code: color, uuid: crypto.randomUUID() }]
                             }));
                         }}

@@ -18,7 +18,7 @@ export const ThemeToggleSwitch = () => {
             class_list.add("right");
             body_class_list.add("light");
         }
-    }, [])
+    }, [ColorTheme.current])
     return (<div id="app_theme_toggle_switch_container">
         <div ref={e_ref} id="app_theme_toggle_switch" onClick={e => {
             const class_list = e.currentTarget.classList;

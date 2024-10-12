@@ -58,49 +58,38 @@ export const write_file_new =
         return res;
     }
 
-export const write_file_with_path =
-    async (
-        path: string,
-        data: {
-            layers: HTMLCanvasElement[],
-            meta_data: {
-                canvas_size: {
-                    width: number,
-                    height: number,
-                }
+export const write_file_with_path = async (
+    path: string,
+    data: {
+        layers: HTMLCanvasElement[],
+        meta_data: {
+            canvas_size: {
+                width: number,
+                height: number,
             }
-        },
-    ): Promise<Option<0>> => {
-        const layers: string[] = [];
-        data.layers.forEach((c) => {
-            layers.push(canvas_to_binary(c))
-        });
-        await invoke("write_file_with_path", {
-            path: path,
-            layers: layers,
-            meta_data: JSON.stringify(data.meta_data),
-        })
-        return Option.Some(0)
-    }
+        }
+    },
+): Promise<Option<0>> => {
+    const layers: string[] = [];
+    data.layers.forEach((c) => {
+        layers.push(canvas_to_binary(c))
+    });
+    await invoke("write_file_with_path", {
+        path: path,
+        layers: layers,
+        meta_data: JSON.stringify(data.meta_data),
+    })
+    return Option.Some(0)
+}
 
 
 export const canvas_to_binary = (canvas: HTMLCanvasElement): string => {
     return canvas.toDataURL('image/png').split(',')[1];
 }
 
-//　export const open_file_from_path = async (path: string): Promise<Result<data_fileT, unknown>> => {
-//　    const v = await Result.from_try_catch_async<[string, Uint8Array[]]>((() => invoke("open_file_from_path", { path })))
-//　    return v.on_ok(([canvas_size, layers]) => ({ layers, canvas_size: JSON.parse(canvas_size) }))
-//　}
-
-// export const binary_to_bitmap = async (data: Uint8Array): Promise<Result<ImageBitmap, unknown>> => Result.from_try_catch_async(async () => {
-//     const blob = new Blob([data], { type: 'image/png' });
-//     const image_bitmap = await createImageBitmap(blob);
-//     return image_bitmap
-// })
-
 export type user_dataT = {
     palette: { code: string, uuid: string }[]
+    theme: string,
 }
 
 export const write_user_data = async ({ user_data }: { user_data: user_dataT }) => {
@@ -110,7 +99,7 @@ export const write_user_data = async ({ user_data }: { user_data: user_dataT }) 
 }
 
 export const read_user_data = async (): Promise<user_dataT> => {
-    const default_v = { palette: [] };
+    const default_v = { palette: [], theme: "dark" };
     const dir = await appDataDir();
     const path = await join(dir, "user_data.json");
     return (await exists(path)) ?
