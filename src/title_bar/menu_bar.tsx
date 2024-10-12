@@ -145,13 +145,14 @@ export const MenuBar = () => {
                         canvas_size,
                         layer_arr,
                         opening_file_path,
-                        canvas_handler: async ({ canvas}) => {
+                        canvas_handler: async ({ canvas }) => {
                             const data_url = canvas.toDataURL('image/png');
                             const blob = await (await fetch(data_url)).blob();
                             const clipboard_item = new ClipboardItem({
                                 [blob.type]: blob
                             });
                             await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
+                            URL.revokeObjectURL(data_url)
                         }
                     })
                 }>クリップボードにエクスポート</MenuContent>

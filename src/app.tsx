@@ -45,7 +45,7 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     set_current_layer: (arg0: number | ((arg0: number) => number)) => void,
 }) => {
     const promises: Promise<Result<CanvasImageSource, unknown>>[] = [];
-    if (data.layers !== undefined) data.layers.forEach((a) => promises.push(binary_to_bitmap(a)))
+    if (data.layers !== undefined) data.layers.forEach((a) => {promises.push(binary_to_bitmap(a))})
     await Promise.all(promises);
     const layers: Layer[] = [];
 

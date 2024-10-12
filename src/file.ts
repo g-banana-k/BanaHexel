@@ -32,6 +32,7 @@ export const read_file = async (): Promise<Result<Option<[string, data_fileT]>, 
 export const binary_to_bitmap = (data: string): Promise<Result<ImageBitmap, unknown>> => Result.from_try_catch_async(async () => {
     const data_url = `data:image/png;base64,${data}`;
     const image_bitmap = await createImageBitmap(await fetch(data_url).then(res => res.blob()));
+    URL.revokeObjectURL(data_url)
     return image_bitmap;
 })
 
@@ -54,6 +55,7 @@ export const write_file_new = async (
         layers: layers,
         meta_data: JSON.stringify(data.meta_data),
     }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>())
+    layers.forEach(url => URL.revokeObjectURL(url))
     return res;
 }
 
@@ -78,6 +80,7 @@ export const write_file_with_path = async (
         layers: layers,
         meta_data: JSON.stringify(data.meta_data),
     })
+    layers.forEach(url => URL.revokeObjectURL(url))
     return Option.Some(0)
 }
 
@@ -117,10 +120,12 @@ export const export_image = async ({
     img: HTMLCanvasElement,
     project_name: string | undefined,
 }) => {
-    return (await Result.from_try_catch_async(async () => await invoke<string>("export_image", {
-        img: canvas_to_binary(img),
+    const url = canvas_to_binary(img);
+    const res =  (await Result.from_try_catch_async(async () => await invoke<string>("export_image", {
+        img: url,
         project_name,
-    }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>())
+    }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>());
+    URL.revokeObjectURL(url)
 }
 
 export const save_file_with_path = async ({
