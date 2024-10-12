@@ -191,13 +191,13 @@ export const open_file = async (
         load_file,
         file_state
     }: {
-        undo_stack: UndoStack,
+        undo_stack?: UndoStack,
         set_loading: SetterOrUpdater<boolean>,
         set_layer_arr: SetterOrUpdater<Layer[] | undefined>,
         set_canvas_size: SetterOrUpdater<{ width: number, height: number } | undefined>,
         set_current_layer: SetterOrUpdater<number>,
         file_state: State<file_stateT>,
-        opening_file_path: State<Option<string>>,
+        opening_file_path: StateBySetter<Option<string>>,
         load_file: (data: UnRequired<data_fileT, "layers">, setters: {
             set_layer_arr: (arg0: Layer[]) => void;
             set_canvas_size: (arg0: {
@@ -208,10 +208,10 @@ export const open_file = async (
             set_current_layer: (arg0: number | ((arg0: number) => number)) => void;
         }) => Promise<void>,
     }) => {
-    if (file_state.val_local().saving) return;
+    if (file_state.val_global().saving) return;
     const new_data = (await read_file()).unwrap();
     new_data.on_some(async v => {
-        undo_stack.clear();
+        undo_stack?.clear();
         set_loading(true);
         opening_file_path.set(Option.Some(v[0]));
         await load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer });

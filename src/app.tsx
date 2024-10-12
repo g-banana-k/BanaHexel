@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { LayerArea } from "./layer_area";
 import { WorkSpace } from "./workspace";
-import { Option, Result, State, UnRequired } from "./common/utils";
+import { Option, Result, State, StateBySetter, UnRequired } from "./common/utils";
 import { ProjectLoading } from "./project_loading";
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
-import { binary_to_bitmap, data_fileT, user_dataT } from "./file";
+import { binary_to_bitmap, data_fileT, open_file, user_dataT } from "./file";
 import { file_save_state } from "./title_bar";
 
 export const user_data_state = atom({
@@ -45,7 +45,7 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     set_current_layer: (arg0: number | ((arg0: number) => number)) => void,
 }) => {
     const promises: Promise<Result<CanvasImageSource, unknown>>[] = [];
-    if (data.layers !== undefined) data.layers.forEach((a) => {promises.push(binary_to_bitmap(a))})
+    if (data.layers !== undefined) data.layers.forEach((a) => { promises.push(binary_to_bitmap(a)) })
     await Promise.all(promises);
     const layers: Layer[] = [];
 
@@ -66,21 +66,43 @@ export const App = () => {
     const set_current_layer = useSetRecoilState(current_layer_state);
     const set_layer_arr = useSetRecoilState(layer_arr_state);
     const set_canvas_size = useSetRecoilState(canvas_size_state);
-    const set_opening_file_path = useSetRecoilState(opening_file_path_state);
+    const opening_file_path = new StateBySetter(useSetRecoilState(opening_file_path_state));
     const file_state = new State(useRecoilState(file_save_state));
     useEffect(() => {
         (async () => {
-            set_opening_file_path(Option.None());
             set_loading(true);
-            await load_file({
-                meta_data: {
-                    canvas_size: {
-                        width: 64,
-                        height: 64,
+            if (opening_file_path.val_global().is_some()) {
+                open_file({
+                    set_loading,
+                    set_layer_arr,
+                    set_canvas_size,
+                    set_current_layer,
+                    opening_file_path,
+                    load_file,
+                    file_state
+                })
+                await load_file({
+                    meta_data: {
+                        canvas_size: {
+                            width: 64,
+                            height: 64,
+                        },
                     },
-                },
-            }, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
-            file_state.set({ saving: false, saved: false, has_file: false })
+                }, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
+                file_state.set({ saving: false, saved: false, has_file: false })
+
+            } else {
+                opening_file_path.set(Option.None());
+                await load_file({
+                    meta_data: {
+                        canvas_size: {
+                            width: 64,
+                            height: 64,
+                        },
+                    },
+                }, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
+                file_state.set({ saving: false, saved: false, has_file: false })
+            }
         })()
     }, [])
 

@@ -115,7 +115,7 @@ export const MenuBar = () => {
                         set_layer_arr,
                         set_canvas_size,
                         set_current_layer,
-                        opening_file_path,
+                        opening_file_path: opening_file_path.as_state_by_setter(),
                         load_file,
                         file_state,
                     })
