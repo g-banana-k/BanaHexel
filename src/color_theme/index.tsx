@@ -1,5 +1,8 @@
-import { atom, selector, SetterOrUpdater, useSetRecoilState } from "recoil";
+import { atom, SetterOrUpdater, useSetRecoilState } from "recoil";
 import { Option } from "../common/utils";
+import { user_data_state } from "../app";
+import { read_user_data, user_dataT } from "../file";
+import { useEffect } from "react";
 
 export const color_theme_state = atom<Option<ColorTheme>>({
     key: "color_theme_state_atom",
@@ -16,6 +19,7 @@ export class ColorTheme {
     static themes = new Map<string, ColorTheme>();
     static current = Option.None<ColorTheme>();
     static atom_setter = Option.None<SetterOrUpdater<Option<ColorTheme>>>();
+    static user_data_setter = Option.None<SetterOrUpdater<Option<user_dataT>>>();
     static register(t: ColorTheme) {
         this.themes.set(t.name, t);
     }
@@ -29,6 +33,15 @@ export class ColorTheme {
             this.current = Option.Some(arg);
         }
         this.atom_setter.unwrap_or(() => { })(this.current);
+        this.user_data_setter.unwrap_or(() => { })(user_data_optional => {
+            if (!user_data_optional.is_some()) return Option.None();
+            const user_data = user_data_optional.unwrap();
+            console.log("MAMAMA")
+            return Option.Some({
+                ...user_data,
+                theme: this.current.unwrap().name
+            });
+        });
         const theme = this.current.unwrap();
         property_keys.forEach(key => {
             const v = theme.val[key];
@@ -132,8 +145,8 @@ const dark = new ColorTheme("dark", {
     canvas_scrollbar_2: "#2228",
     canvas_scrollbar_3: "#222a",
     tool_menu_edit_button: "#333",
-    modal_confirm:  "#5fe075aa",
-    modal_confirm_hover:  "#5fe075",
+    modal_confirm: "#5fe075aa",
+    modal_confirm_hover: "#5fe075",
 })
 
 const light = new ColorTheme("light", {
@@ -179,8 +192,8 @@ const light = new ColorTheme("light", {
     canvas_scrollbar_2: "#4446",
     canvas_scrollbar_3: "#4448",
     tool_menu_edit_button: "#eee",
-    modal_confirm:  "#5fe075aa",
-    modal_confirm_hover:  "#5fe075",
+    modal_confirm: "#5fe075aa",
+    modal_confirm_hover: "#5fe075",
 })
 
 ColorTheme.apply(dark);
@@ -188,7 +201,10 @@ ColorTheme.register(light);
 
 export const ColorThemeClassWrapper = () => {
     const set = useSetRecoilState(color_theme_state);
-    set(ColorTheme.current);
+    const set_user_data = useSetRecoilState(user_data_state);
     ColorTheme.atom_setter = Option.Some(set);
+    ColorTheme.user_data_setter = Option.Some(set_user_data);
+    set_user_data(_ => { _.on_some(_ => { ColorTheme.apply(_.theme ?? "dark") }); return _; })
+    set(ColorTheme.current);
     return <div />
 }
