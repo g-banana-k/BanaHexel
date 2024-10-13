@@ -263,6 +263,7 @@ export const select_tool = ({
                 const blob = blob_res.unwrap();
                 const image = await createImageBitmap(blob);
                 const [cl_canvas, cl_ctx] = create_canvas(image, true);
+                image.close();
                 clip = Option.Some(new Clip({
                     lt_x: 0,
                     lt_y: 0,
@@ -395,6 +396,7 @@ class Clip {
         this.ctx.scale(1, -1)
         this.ctx.drawImage(img, 0, -this.canvas.height);
         this.ctx.restore();
+        img.close();
     }
     async flip_vertical() {
         const img = await createImageBitmap(this.canvas);
@@ -403,6 +405,7 @@ class Clip {
         this.ctx.scale(-1, 1)
         this.ctx.drawImage(img, -this.canvas.width, 0);
         this.ctx.restore();
+        img.close();
     }
     stamp(
         [canvas, ctx]: [HTMLCanvasElement, CanvasRenderingContext2D],

@@ -44,7 +44,7 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     set_loading: SetterOrUpdater<boolean>,
     set_current_layer: SetterOrUpdater<number>,
 }) => {
-    const promises: Promise<Result<CanvasImageSource, unknown>>[] = [];
+    const promises: Promise<Result<ImageBitmap, unknown>>[] = [];
     if (data.layers !== undefined) data.layers.forEach((a) => { promises.push(binary_to_bitmap(a)) })
     await Promise.all(promises);
     const layers: Layer[] = [];
@@ -54,13 +54,7 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     } else for (let i = 0; i < data.layers.length; i++) {
         const bitmap = (await promises[i]).unwrap();
         layers.push(new Layer(bitmap, data.meta_data.canvas_size))
-    }
-    {
-        let v: Layer[] = [];
-        setters.set_layer_arr(_ => { v = _!; return _ });
-        v?.forEach(l => {
-            l.delete();
-        });
+        bitmap.close();
     }
     setters.set_layer_arr(layers);
     setters.set_canvas_size(data.meta_data.canvas_size);

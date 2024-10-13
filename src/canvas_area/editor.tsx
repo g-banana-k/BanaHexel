@@ -221,6 +221,7 @@ export const CanvasEditor = ({
             document.removeEventListener("mouseup", on_mouseup);
             document.removeEventListener("keydown", on_keydown);
             document.removeEventListener("keyup", on_keyup);
+            fn_data.set(Option.None());
         }
     }, []);
 

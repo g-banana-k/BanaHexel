@@ -1,5 +1,5 @@
 import { canvas_toolsT } from "..";
-import { Option, State } from "../../common/utils";
+import { Option, println, State } from "../../common/utils";
 import { Layer } from "../../data";
 import { Cache, UndoStack } from "../undo";
 import { brush_tool } from "./brush_tool";

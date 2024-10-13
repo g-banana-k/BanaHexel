@@ -41,7 +41,6 @@ export const LayerArea = () => {
                         <div
                             className="layer_thumbnail_delete_button"
                             onClick={() => {
-                                layer_arr![i].delete();
                                 set_layer_arr(_ => _!.filter((_, j) => j !== i))
                                 if (layer_arr.length - 1 <= current_layer) set_current_layer(_ => _ - 1);
                             }}
