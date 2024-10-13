@@ -29,11 +29,11 @@ export const window_size_state = atom({
 
 export const Window = () => {
     const [_window_size, set_window_size] = useRecoilState(window_size_state);
-    const file_state        = new StateBySetter(useSetRecoilState(file_save_state));
-    const user_data         = new StateBySetter(useSetRecoilState(user_data_state));
+    const file_state = new StateBySetter(useSetRecoilState(file_save_state));
+    const user_data = new StateBySetter(useSetRecoilState(user_data_state));
     const opening_file_path = new StateBySetter(useSetRecoilState(opening_file_path_state));
-    const layer_arr         = new StateBySetter(useSetRecoilState(layer_arr_state));
-    const canvas_size       = new StateBySetter(useSetRecoilState(canvas_size_state));
+    const layer_arr = new StateBySetter(useSetRecoilState(layer_arr_state));
+    const canvas_size = new StateBySetter(useSetRecoilState(canvas_size_state));
 
     useEffect(() => {
         appWindow().onResized(async (_) => {
@@ -44,7 +44,7 @@ export const Window = () => {
                 minimized: await appWindow().isMinimized(),
             })
         });
-        document.addEventListener("keydown", async e => {
+        const on_keydown = async (e: KeyboardEvent) => {
             if (e.key === "F12" || e.key === "F5") {
                 e.preventDefault();
             }
@@ -54,8 +54,8 @@ export const Window = () => {
                 save_file_with_path({ file_state, opening_file_path, layer_arr: layer_arr.val_local().unwrap()!, canvas_size: canvas_size.val_local().unwrap()! })
                 write_user_data({ user_data: user_data.val_global().unwrap() })
             }
-        });
-        document.addEventListener("close_requested", async () => {
+        }
+        const on_close_requested = async () => {
             const f_s = file_state.val_global();
             if (!f_s.saved && f_s.has_file) {
                 const b = await dialog.confirm("本当に離れていいですか？\n保存していない変更は失われます。", {
@@ -67,11 +67,17 @@ export const Window = () => {
             };
             await write_user_data({ user_data: user_data.val_global().unwrap() });
             appWindow().close()
-        });
+        }
+        document.addEventListener("keydown", on_keydown);
+        document.addEventListener("close_requested", on_close_requested);
         (async () => {
             user_data.set(Option.Some(await read_user_data()));
-            ColorTheme.apply(user_data.val_local().on_some(_=>_.unwrap().theme).unwrap() || "dark")
+            ColorTheme.apply(user_data.val_local().on_some(_ => _.unwrap().theme).unwrap() || "dark")
         })()
+        return () => {
+            document.removeEventListener("keydown", on_keydown);
+            document.removeEventListener("close_requested", on_close_requested);
+        }
     }, [])
 
     const set_context_menu_open = useSetRecoilState(is_context_menu_open_state);

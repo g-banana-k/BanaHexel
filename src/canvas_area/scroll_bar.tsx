@@ -39,28 +39,36 @@ export const ScrollBarVertical = (props: {
         once = true;
         let start_bar = 0;
         let start_ptr_y = 0;
-        bar.addEventListener("mousedown", e => {
+        const on_mousedown = (e: MouseEvent) => {
             if (!is_dragging) {
                 set_scroll(s => { start_bar = s; return s; });
                 start_ptr_y = e.pageY;
                 set_dragging(true);
                 is_dragging = true;
             }
-        });
-        document.addEventListener("mousemove", e => {
+        }
+        const on_mousemove = (e: MouseEvent) => {
             if (is_dragging) {
                 const v = Math.max(-0.5, Math.min(0.5, (e.pageY - start_ptr_y) / bar_move_area.current + start_bar));
                 set_scroll(v);
             }
-        });
-        document.addEventListener("mouseup", e => {
+        }
+        const on_mouseup = (e: MouseEvent) => {
             if (is_dragging) {
                 const v = Math.max(-0.5, Math.min(0.5, (e.pageY - start_ptr_y) / bar_move_area.current + start_bar));
                 set_scroll(v);
                 set_dragging(false);
                 is_dragging = false;
             }
-        });
+        }
+        bar.addEventListener("mousedown", on_mousedown);
+        document.addEventListener("mousemove", on_mousemove);
+        document.addEventListener("mouseup", on_mouseup);
+        return () => {
+            bar.removeEventListener("mousedown", on_mousedown);
+            document.removeEventListener("mousemove", on_mousemove);
+            document.removeEventListener("mouseup", on_mouseup);
+        }
     }, [])
 
     return (
@@ -78,7 +86,7 @@ export const ScrollBarVertical = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
+                ...(is_dragging ? { backgroundColor: color_theme.on_some(_ => _.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
             }}
         ></div >
     )
@@ -110,28 +118,36 @@ export const ScrollBarHorizontal = (props: {
         once = true;
         let start_bar = 0;
         let start_ptr_x = 0;
-        bar.addEventListener("mousedown", e => {
+        const on_mousedown = (e: MouseEvent) => {
             if (!is_dragging) {
                 set_scroll(s => { start_bar = s; return s; });
                 start_ptr_x = e.pageX;
                 set_dragging(true);
                 is_dragging = true;
             }
-        });
-        document.addEventListener("mousemove", e => {
+        };
+        const on_mousemove = (e: MouseEvent) => {
             if (is_dragging) {
                 const v = Math.max(-0.5, Math.min(0.5, (e.pageX - start_ptr_x) / bar_move_area.current + start_bar));
                 set_scroll(v);
             }
-        });
-        document.addEventListener("mouseup", e => {
+        };
+        const on_mouseup = (e: MouseEvent) => {
             if (is_dragging) {
                 const v = Math.max(-0.5, Math.min(0.5, (e.pageX - start_ptr_x) / bar_move_area.current + start_bar));
                 set_scroll(v);
                 set_dragging(false);
                 is_dragging = false;
             }
-        });
+        };
+        bar.addEventListener("mousedown", on_mousedown);
+        document.addEventListener("mousemove", on_mousemove);
+        document.addEventListener("mouseup", on_mouseup);
+        return () => {
+            bar.removeEventListener("mousedown", on_mousedown);
+            document.removeEventListener("mousemove", on_mousemove);
+            document.removeEventListener("mouseup", on_mouseup);
+        }
     }, [])
 
     return (
@@ -149,7 +165,7 @@ export const ScrollBarHorizontal = (props: {
                 ...(bar_move_area.current <= 0 ? {
                     display: "none"
                 } : {}),
-                ...(is_dragging ? { backgroundColor: color_theme.on_some(_=>_.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
+                ...(is_dragging ? { backgroundColor: color_theme.on_some(_ => _.val.canvas_scrollbar_3).unwrap_or("#0000") } : {})
             }}
         ></div >
     )

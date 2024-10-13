@@ -36,34 +36,42 @@ export const Slider = ({
         once = true;
         let start_ptr_x = 0;
         let start_v = 0;
-        knob.addEventListener("mousedown", e => {
+        const on_mousedown = (e: MouseEvent) => {
             if (!is_dragging) {
                 start_ptr_x = e.clientX;
                 setter(_ => { start_v = Math.min(max, Math.max(min, _)); return _; })
                 set_dragging(true);
                 is_dragging = true;
             }
-        });
-        document.addEventListener("mousemove", e => {
+        }
+        const on_mousemove = (e: MouseEvent) => {
             if (is_dragging) {
                 const v = Math.min(max, Math.max(min, (e.clientX - start_ptr_x) / width * max + start_v));
                 setter(Math.floor(v));
             }
-        });
-        document.addEventListener("mouseup", e => {
+        }
+        const on_mouseup = (e: MouseEvent) => {
             if (is_dragging) {
                 const v = Math.min(max, Math.max(min, (e.clientX - start_ptr_x) / width * max + start_v));
                 setter(Math.floor(v));
                 set_dragging(false);
                 is_dragging = false;
             }
-        });
+        }
+        knob.addEventListener("mousedown", on_mousedown);
+        document.addEventListener("mousemove", on_mousemove);
+        document.addEventListener("mouseup", on_mouseup);
+        return () => {
+            knob.removeEventListener("mousedown", on_mousedown);
+            document.removeEventListener("mousemove", on_mousemove);
+            document.removeEventListener("mouseup", on_mouseup);
+        }
     }, []);
 
     return (<div className="common_slider" style={{
         width: width,
         height: height,
-        background: background ?? ColorTheme.current.on_some(t => t.val.slider_default ).unwrap_or("#0000"),
+        background: background ?? ColorTheme.current.on_some(t => t.val.slider_default).unwrap_or("#0000"),
     }}>
         <div className="common_slider_inner">
             <div ref={knob_ref} className="common_slider_knob" style={{

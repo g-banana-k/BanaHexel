@@ -3,9 +3,9 @@ import { LayerArea } from "./layer_area";
 import { WorkSpace } from "./workspace";
 import { Option, Result, State, StateBySetter, UnRequired } from "./common/utils";
 import { ProjectLoading } from "./project_loading";
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { atom, SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
 import { Layer } from "./data";
-import { binary_to_bitmap, data_fileT, open_file, user_dataT } from "./file";
+import { binary_to_bitmap, data_fileT, open_file, read_file_from_path, user_dataT } from "./file";
 import { file_save_state } from "./title_bar";
 
 export const user_data_state = atom({
@@ -39,10 +39,10 @@ export const opening_file_path_state = atom<Option<string>>({
 })
 
 export const load_file = async (data: UnRequired<data_fileT, "layers">, setters: {
-    set_layer_arr: (arg0: Layer[]) => void,
-    set_canvas_size: (arg0: { width: number, height: number }) => void,
-    set_loading: (arg0: boolean) => void,
-    set_current_layer: (arg0: number | ((arg0: number) => number)) => void,
+    set_layer_arr: SetterOrUpdater<Layer[] | undefined>,
+    set_canvas_size: SetterOrUpdater<{ width: number, height: number } | undefined>,
+    set_loading: SetterOrUpdater<boolean>,
+    set_current_layer: SetterOrUpdater<number>,
 }) => {
     const promises: Promise<Result<CanvasImageSource, unknown>>[] = [];
     if (data.layers !== undefined) data.layers.forEach((a) => { promises.push(binary_to_bitmap(a)) })
@@ -54,6 +54,13 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     } else for (let i = 0; i < data.layers.length; i++) {
         const bitmap = (await promises[i]).unwrap();
         layers.push(new Layer(bitmap, data.meta_data.canvas_size))
+    }
+    {
+        let v: Layer[] = [];
+        setters.set_layer_arr(_ => { v = _!; return _ });
+        v?.forEach(l => {
+            l.delete();
+        });
     }
     setters.set_layer_arr(layers);
     setters.set_canvas_size(data.meta_data.canvas_size);
@@ -71,26 +78,13 @@ export const App = () => {
     useEffect(() => {
         (async () => {
             set_loading(true);
+            console.log(opening_file_path.val_global())
             if (opening_file_path.val_global().is_some()) {
-                open_file({
-                    set_loading,
-                    set_layer_arr,
-                    set_canvas_size,
-                    set_current_layer,
-                    opening_file_path,
-                    load_file,
-                    file_state
-                })
-                await load_file({
-                    meta_data: {
-                        canvas_size: {
-                            width: 64,
-                            height: 64,
-                        },
-                    },
-                }, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
+                const res = (await read_file_from_path(opening_file_path.val_local().unwrap().unwrap())).unwrap();
+                await load_file(
+                    res
+                    , { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
                 file_state.set({ saving: false, saved: false, has_file: false })
-
             } else {
                 opening_file_path.set(Option.None());
                 await load_file({

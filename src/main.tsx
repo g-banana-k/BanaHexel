@@ -7,19 +7,17 @@ import { Window } from "./window";
 import "./file"
 import { StateWrappers } from "./state_wrappers";
 import { opening_file_path_state } from "./app";
-import { Option } from "./common/utils";
+import { Option, StateBySetter } from "./common/utils";
 import { invoke } from "@tauri-apps/api/core";
 
 const root = createRoot(document.getElementById("root") as Element);
 
 const WindowWrapper = ({ path }: { path: string | null }) => {
-    const path_set = useSetRecoilState(opening_file_path_state);
-    useEffect(() => {
-        if (typeof path === "string") {
-            console.log(path);
-            path_set(Option.Some(path));
-        }
-    }, [])
+    const path_state = new StateBySetter(useSetRecoilState(opening_file_path_state));
+    if (typeof path === "string") {
+        console.log(path);
+        path_state.set(Option.Some(path));
+    }
     return (<Window />)
 }
 

@@ -1,4 +1,4 @@
-export class Layer{
+export class Layer {
     body: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     preview: HTMLCanvasElement;
@@ -32,5 +32,10 @@ export class Layer{
         } else {
             preview_ctx.drawImage(canvas, 0, 50 * (1 - canvas.height / canvas.width), 100, 100 * canvas.height / canvas.width);
         }
+    }
+    delete() {
+        this.body.height = 0;
+        this.body.width = 0;
+        this.body.remove();
     }
 }

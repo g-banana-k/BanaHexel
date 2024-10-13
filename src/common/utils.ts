@@ -134,7 +134,7 @@ export class State<T> {
         });
     }
     as_state_by_setter() {
-        const s = new StateBySetter(this.set);
+        const s = new StateBySetter(this.set_state);
         s.set(this.val_local());
         return s;
     }

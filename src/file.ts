@@ -5,6 +5,7 @@ import { Layer } from "./data";
 import { SetterOrUpdater } from "recoil";
 import { UndoStack } from "./canvas_area/undo";
 import { exists } from "@tauri-apps/plugin-fs";
+import { load_file } from "./app";
 
 export type data_fileT = {
     layers: string[],
@@ -26,7 +27,7 @@ export const read_file = async (): Promise<Result<Option<[string, data_fileT]>, 
     return v.on_ok(v =>
         Option.from_nullable(v)
             .on_some(([path, [canvas_size, layers]]) => ([path, { layers, meta_data: JSON.parse(canvas_size) }] as [string, data_fileT]))
-    ).on_err(_ => _);
+    );
 }
 
 export const binary_to_bitmap = (data: string): Promise<Result<ImageBitmap, unknown>> => Result.from_try_catch_async(async () => {
@@ -121,7 +122,7 @@ export const export_image = async ({
     project_name: string | undefined,
 }) => {
     const url = canvas_to_binary(img);
-    const res =  (await Result.from_try_catch_async(async () => await invoke<string>("export_image", {
+    const res = (await Result.from_try_catch_async(async () => await invoke<string>("export_image", {
         img: url,
         project_name,
     }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>());
@@ -188,7 +189,6 @@ export const open_file = async (
         set_canvas_size,
         set_current_layer,
         opening_file_path,
-        load_file,
         file_state
     }: {
         undo_stack?: UndoStack,
@@ -198,15 +198,6 @@ export const open_file = async (
         set_current_layer: SetterOrUpdater<number>,
         file_state: State<file_stateT>,
         opening_file_path: StateBySetter<Option<string>>,
-        load_file: (data: UnRequired<data_fileT, "layers">, setters: {
-            set_layer_arr: (arg0: Layer[]) => void;
-            set_canvas_size: (arg0: {
-                width: number;
-                height: number;
-            }) => void;
-            set_loading: (arg0: boolean) => void;
-            set_current_layer: (arg0: number | ((arg0: number) => number)) => void;
-        }) => Promise<void>,
     }) => {
     if (file_state.val_global().saving) return;
     const new_data = (await read_file()).unwrap();

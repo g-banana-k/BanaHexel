@@ -76,7 +76,7 @@ export const ColorPicker = ({
     useEffect(() => {
         const container = container_ref.current;
         if (!container) return;
-        document.addEventListener("mousedown", e => {
+        const on_mousedown = (e: MouseEvent) => {
             if (container.contains(e.target as Node)) return;
             if (context_menu_ref?.current?.contains(e.target as Node)) return;
             is_opening.set(false);
@@ -84,7 +84,11 @@ export const ColorPicker = ({
             const input = input_ref.current;
             if (!input) return;
             set_color(rgba_to_code(...code_to_rgba(input.value)))
-        })
+        };
+        document.addEventListener("mousedown", on_mousedown);
+        return () => {
+            document.removeEventListener("mousedown", on_mousedown);
+        }
     }, [])
 
     const is_palette_opening = new State(useState(false));
