@@ -12,7 +12,7 @@ use zip::{write::FileOptions, ZipArchive, ZipWriter};
 use base64;
 
 use base64::prelude::*;
-use tauri::{command, AppHandle, Emitter, Manager};
+use tauri::{command, AppHandle, Manager};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[command(rename_all = "snake_case")]
