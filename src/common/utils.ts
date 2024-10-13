@@ -133,7 +133,39 @@ export class State<T> {
             return new_v;
         });
     }
+    as_state_by_setter() {
+        const s = new StateBySetter(this.set);
+        s.set(this.val_local());
+        return s;
+    }
 }
+
+
+export class StateBySetter<T> {
+    protected set_state: (updater: ((prev: T) => T) | T) => void;
+    protected cache: Option<T>;
+    constructor(set_state: (updater: ((prev: T) => T) | T) => void) {
+        this.set_state = set_state;
+        this.cache = Option.None();
+    }
+    val_local() {
+        return this.cache;
+    }
+    val_global() {
+        this.set_state(_ => { this.cache = Option.Some(_); return _ });
+        return this.cache.unwrap();
+    }
+    set(updater: ((prev: T) => T) | T) {
+        this.set_state((prev) => {
+            const new_v = typeof updater === "function"
+                ? (updater as (prev: T) => T)(prev)
+                : updater;
+            this.cache = Option.Some(new_v);
+            return new_v;
+        });
+    }
+}
+
 
 export const PromiseWithResolvers = <T>(): {
     promise: Promise<T>;

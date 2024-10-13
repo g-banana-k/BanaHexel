@@ -242,6 +242,7 @@ export const select_tool = ({
                 [blob.type]: blob
             });
             await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
+            URL.revokeObjectURL(data_url);
         },
         "on_ctrl_v": async () => {
             const layer = layers_arr.val_global()![current_layer.val_global()];

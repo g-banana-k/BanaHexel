@@ -36,7 +36,6 @@ export class ColorTheme {
         this.user_data_setter.unwrap_or(() => { })(user_data_optional => {
             if (!user_data_optional.is_some()) return Option.None();
             const user_data = user_data_optional.unwrap();
-            console.log("MAMAMA")
             return Option.Some({
                 ...user_data,
                 theme: this.current.unwrap().name

@@ -100,10 +100,10 @@ export const MenuBar = () => {
                 <MenuContent on_click={async () => {
                     set_selected(-1);
                     save_file_with_path({
-                        file_state,
+                        file_state: file_state.as_state_by_setter(),
                         canvas_size,
                         layer_arr: layer_arr,
-                        opening_file_path: opening_file_path
+                        opening_file_path: opening_file_path.as_state_by_setter(),
                     })
                     write_user_data({ user_data: user_data.unwrap() })
                 }} >上書き保存</MenuContent>
@@ -115,7 +115,7 @@ export const MenuBar = () => {
                         set_layer_arr,
                         set_canvas_size,
                         set_current_layer,
-                        opening_file_path,
+                        opening_file_path: opening_file_path.as_state_by_setter(),
                         load_file,
                         file_state,
                     })
@@ -145,13 +145,14 @@ export const MenuBar = () => {
                         canvas_size,
                         layer_arr,
                         opening_file_path,
-                        canvas_handler: async ({ canvas}) => {
+                        canvas_handler: async ({ canvas }) => {
                             const data_url = canvas.toDataURL('image/png');
                             const blob = await (await fetch(data_url)).blob();
                             const clipboard_item = new ClipboardItem({
                                 [blob.type]: blob
                             });
                             await Result.from_try_catch_async(async () => await navigator.clipboard.write([clipboard_item]));
+                            URL.revokeObjectURL(data_url)
                         }
                     })
                 }>クリップボードにエクスポート</MenuContent>
@@ -164,6 +165,9 @@ export const MenuBar = () => {
                     set_selected(-1);
                     invoke("open_devtools", { window: Window })
                 }} >開発者ツール</MenuContent>
+                {/* <MenuContent on_click={() => {
+                    window.location.reload();
+                }} >WebViewを再読み込み</MenuContent> */}
                 <MenuContent on_click={async () => {
                     set_selected(-1);
                     set_modal_open(true);
