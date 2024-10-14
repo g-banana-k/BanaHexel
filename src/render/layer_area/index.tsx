@@ -4,11 +4,14 @@ import { useAtom, useAtomValue } from "jotai";
 import { MoveDown, MoveUp, Plus, X } from "lucide-react";
 import { canvas_size_atom, current_layer_atom, layer_arr_atom } from "../../app";
 import { Layer } from "../../logic/data";
+import { useSetContextMenu } from "../context_menu";
 
 export const LayerArea = () => {
     const [layer_arr, set_layer_arr] = useAtom(layer_arr_atom);
     const [current_layer, set_current_layer] = useAtom(current_layer_atom);
     const canvas_size = useAtomValue(canvas_size_atom);
+
+    const [set_context_menu_contents, set_context_menu_position, set_context_menu_open,] = useSetContextMenu();
 
     const div_refs = useRef<(HTMLDivElement | null)[]>([]);
     useEffect(() => {
@@ -35,8 +38,28 @@ export const LayerArea = () => {
                     <div key={l.uuid} className="layer_thumbnail" >
                         <div
                             ref={(el) => (div_refs.current[i] = el)}
-                            className="layer_thumbnail_preview_container"
+                            className="layer_thumbnail_preview_container has_own_context_menu"
                             onClick={() => set_current_layer(i)}
+                            onContextMenu={e => {
+                                e.preventDefault();
+                                set_context_menu_open(true);
+                                set_context_menu_position({ x: e.clientX, y: e.clientY })
+                                set_context_menu_contents([
+                                    <div
+                                        className="context_menu_content"
+                                        onClick={() => {
+                                            if (i === 0) return;
+                                            layer_arr[i - 1].ctx.drawImage(layer_arr[i].body, 0, 0);
+                                            const l = [...layer_arr.filter((_, j) => j !== i)];
+                                            if (current_layer < i - 1) { }
+                                            else if (i - 1 <= current_layer && current_layer < i + 1) set_current_layer(i - 1)
+                                            else set_current_layer(current_layer - 1);
+                                            l[i-1].preview_update();
+                                            set_layer_arr(l);
+                                        }}
+                                    >上にマージ</div>
+                                ]);
+                            }}
                         />
                         <div
                             className="layer_thumbnail_delete_button"
