@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core"
 import { Option, Result } from "./utils"
 import { appDataDir, join } from "@tauri-apps/api/path"
 import { exists } from "@tauri-apps/plugin-fs"
+import { MetaDataT } from "./file"
 
 export type DataFileT = {
     layers: string[],
@@ -55,12 +56,7 @@ export const write_file_with_path = async (
     path: string,
     data: {
         layers: HTMLCanvasElement[],
-        meta_data: {
-            canvas_size: {
-                width: number,
-                height: number,
-            }
-        }
+        meta_data: MetaDataT
     },
 ): Promise<Option<0>> => {
     const layers: string[] = [];
@@ -98,4 +94,13 @@ export const read_user_data = async (): Promise<UserDataT> => {
             async () => JSON.parse(await invoke("read_user_data", { path })))
         ).unwrap_or(default_v) :
         default_v;
+}
+
+export const write_image = async ({img, name}: {img: HTMLCanvasElement, name: string}) => {
+    const url = img.toDataURL();
+    const res = (await Result.from_try_catch_async(async () => await invoke<string>("export_image", {
+        img: url,
+        name,
+    }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>());
+    URL.revokeObjectURL(url);
 }

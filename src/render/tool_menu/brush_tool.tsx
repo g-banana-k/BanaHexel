@@ -1,12 +1,12 @@
 import { useRecoilState } from "recoil";
 import "./index.css";
+import { brush_tool_color_atom, brush_tool_thickness_atom } from ".";
 import { SliderWithBox } from "../common/slider";
 import { ColorPicker } from "../common/color_picker";
-import { brush_tool_color_state, brush_tool_thickness_state } from ".";
 
 export const BrushToolMenu = () => {
-    const [brush_color, set_brush_color] = useRecoilState(brush_tool_color_state);
-    const [brush_thickness, set_brush_thickness] = useRecoilState(brush_tool_thickness_state);
+    const [brush_color, set_brush_color] = useRecoilState(brush_tool_color_atom);
+    const [brush_thickness, set_brush_thickness] = useRecoilState(brush_tool_thickness_atom);
     return (<div className="tool_menu_brush">
         <div className="tool_menu_brush_color">
             <div className="tool_menu_brush_color_text">塗りつぶし</div>

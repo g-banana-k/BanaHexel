@@ -1,24 +1,24 @@
-import "./index.css"
-import { useEffect, useRef, useState } from "react";
-import { background_image } from "./background";
 import { SetterOrUpdater, useRecoilState, useRecoilValue } from "recoil";
-import { zoom_state } from "../zoom_in_out";
-import { scroll_horizontal_state, scroll_vertical_state, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
-import { canvas_size_state, current_layer_state, layer_arr_state } from "../app";
+import { canvas_size_atom, current_layer_atom, layer_arr_atom } from "../../app";
+import "./index.css"
+import { layers_display_opacity_atom } from "../layer_option";
+import { zoom_atom } from "../zoom_in_out";
+import { window_size_atom } from "../../window";
+import { scroll_horizontal_atom, scroll_vertical_atom, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
+import { useEffect, useRef, useState } from "react";
+import { color_theme_atom, ColorTheme } from "../color_theme";
+import { background_image } from "./background";
 import { CanvasEditor } from "./editor";
-import { window_size_state } from "../window";
-import { color_theme_state, ColorTheme } from "../color_theme";
-import { layers_display_opacity_state } from "../layer_option";
 
 export const CanvasArea = () => {
-    const [current_layer, _set_current_layer] = useRecoilState(current_layer_state);
-    const [layer_arr, _set_layer_arr] = useRecoilState(layer_arr_state);
-    const layer_display_opacity = useRecoilValue(layers_display_opacity_state)
+    const [current_layer, _set_current_layer] = useRecoilState(current_layer_atom);
+    const [layer_arr, _set_layer_arr] = useRecoilState(layer_arr_atom);
+    const layer_display_opacity = useRecoilValue(layers_display_opacity_atom);
 
-    const [zoom, set_zoom] = useRecoilState(zoom_state);
-    const [scroll_horizontal, set_scroll_horizontal] = useRecoilState(scroll_horizontal_state)
-    const [scroll_vertical, set_scroll_vertical] = useRecoilState(scroll_vertical_state)
-    const window_size = useRecoilValue(window_size_state);
+    const [zoom, set_zoom] = useRecoilState(zoom_atom);
+    const [scroll_horizontal, set_scroll_horizontal] = useRecoilState(scroll_horizontal_atom)
+    const [scroll_vertical, set_scroll_vertical] = useRecoilState(scroll_vertical_atom)
+    const window_size = useRecoilValue(window_size_atom);
 
     const canvas_body_ref = useRef<HTMLDivElement>(null);
     const canvas_background_ref = useRef<HTMLDivElement>(null);
@@ -27,14 +27,14 @@ export const CanvasArea = () => {
     const canvas_back_ref = useRef<HTMLDivElement>(null);
     const canvas_front_ref = useRef<HTMLDivElement>(null);
 
-    const [canvas_size, set_canvas_size] = useRecoilState(canvas_size_state) as unknown as [{ width: number; height: number; }, SetterOrUpdater<{ width: number; height: number; }>];
+    const [canvas_size, set_canvas_size] = useRecoilState(canvas_size_atom) as unknown as [{ width: number; height: number; }, SetterOrUpdater<{ width: number; height: number; }>];
     let [area_height, set_area_height] = useState(0);
     let [area_width, set_area_width] = useState(0);
 
     const [background_width, set_background_width] = useState(0);
     const [background_height, set_background_height] = useState(0);
 
-    useRecoilValue(color_theme_state);
+    useRecoilValue(color_theme_atom);
 
     useEffect(() => {
         const area = canvas_area_ref.current;

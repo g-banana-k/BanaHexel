@@ -1,10 +1,10 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Maximize, Minimize, Minus, X } from "lucide-react"
-import { window_size_state } from "../../window";
 import { useRecoilValue } from "recoil";
+import { window_size_atom } from "../../window";
 
 export const WindowControl = () => {
-    const window_size = useRecoilValue(window_size_state);
+    const window_size = useRecoilValue(window_size_atom);
     return (
         <div id="title_bar_window_control">
             <div

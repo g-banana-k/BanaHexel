@@ -1,6 +1,7 @@
 import { canvas_toolsT } from "..";
-import { Option, println, State } from "../../common/utils";
-import { Layer } from "../../data";
+import { Layer } from "../../../logic/data";
+import { FileStateT } from "../../../logic/file";
+import { State } from "../../../logic/utils";
 import { Cache, UndoStack } from "../undo";
 import { brush_tool } from "./brush_tool";
 import { bucket_tool } from "./bucket_tool";
@@ -37,11 +38,7 @@ export type argsT = {
     layers_arr: State<Layer[] | undefined>,
     current_layer: State<number>,
     undo_stack: UndoStack,
-    file_state: State<{
-        saving: boolean,
-        saved: boolean,
-        has_file: boolean,
-    }>,
+    file_state: State<FileStateT>,
     need_on_end: State<boolean>,
 };
 

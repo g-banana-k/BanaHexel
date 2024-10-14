@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
 import "./index.css";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { canvas_size_state, current_layer_state, layer_arr_state } from "../app";
 import { MoveDown, MoveUp, Plus, X } from "lucide-react";
-import { Layer } from "../data";
+import { canvas_size_atom, current_layer_atom, layer_arr_atom } from "../../app";
+import { Layer } from "../../logic/data";
 
 export const LayerArea = () => {
-    const [layer_arr, set_layer_arr] = useRecoilState(layer_arr_state);
-    const [current_layer, set_current_layer] = useRecoilState(current_layer_state);
-    const canvas_size = useRecoilValue(canvas_size_state);
+    const [layer_arr, set_layer_arr] = useRecoilState(layer_arr_atom);
+    const [current_layer, set_current_layer] = useRecoilState(current_layer_atom);
+    const canvas_size = useRecoilValue(canvas_size_atom);
 
     const div_refs = useRef<(HTMLDivElement | null)[]>([]);
     useEffect(() => {

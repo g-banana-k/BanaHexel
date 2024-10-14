@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 import { atom, useRecoilState } from "recoil";
-import { selected_tool_id_state } from "../tool_select";
 import { canvas_toolsT } from ".";
-import { current_layer_state, layer_arr_state } from "../app";
-import { brush_tool_color_state, brush_tool_thickness_state, eraser_tool_thickness_state } from "../tool_menu"
-import { Option, State } from "../common/utils";
 import { editor_tools } from "./editor_tools";
 import { undo_stack } from "./undo";
-import { file_save_state } from "../title_bar";
+import { current_layer_atom, layer_arr_atom } from "../../app";
+import { Option, State } from "../../logic/utils";
+import { selected_tool_id_atom } from "../tool_select";
+import { brush_tool_color_atom, brush_tool_thickness_atom, eraser_tool_thickness_atom } from "../tool_menu";
+import { file_save_state_atom } from "../../window";
 
 type CanvasEditorPropsT = {
     canvas_width: number,
@@ -19,8 +19,8 @@ type CanvasEditorPropsT = {
     scroll_vertical: number,
 }
 
-export const is_mouse_down_in_editor_state = atom({
-    key: "is_mouse_down_in_editor_state_atom",
+export const is_mouse_down_in_editor_atom = atom({
+    key: "is_mouse_down_in_editor",
     default: false,
 })
 
@@ -34,9 +34,9 @@ export const CanvasEditor = ({
     scroll_vertical,
 }: CanvasEditorPropsT) => {
     let [once, set_once] = useState(true);
-    let [is_mouse_down, set_mouse_down_raw] = useRecoilState(is_mouse_down_in_editor_state);
-    const layers_arr = new State(useRecoilState(layer_arr_state));
-    const current_layer = new State(useRecoilState(current_layer_state));
+    let [is_mouse_down, set_mouse_down_raw] = useRecoilState(is_mouse_down_in_editor_atom);
+    const layers_arr = new State(useRecoilState(layer_arr_atom));
+    const current_layer = new State(useRecoilState(current_layer_atom));
 
     const set_mouse_down = (b: ((currVal: boolean) => boolean) | boolean) => {
         const v = typeof b === "function" ? b(is_mouse_down) : b;
@@ -47,12 +47,12 @@ export const CanvasEditor = ({
     const div_ref = useRef<HTMLDivElement>(null);
     const canvas_ref = useRef<HTMLCanvasElement>(null);
 
-    const [selected_tool_id, set_selected_tool_id] = useRecoilState(selected_tool_id_state);
+    const [selected_tool_id, set_selected_tool_id] = useRecoilState(selected_tool_id_atom);
     const selected_tool = useRef<canvas_toolsT>("none");
-    const brush_color = new State(useRecoilState(brush_tool_color_state));
-    const brush_thickness = new State(useRecoilState(brush_tool_thickness_state));
-    const eraser_thickness = new State(useRecoilState(eraser_tool_thickness_state));
-    const file_state = new State(useRecoilState(file_save_state));
+    const brush_color = new State(useRecoilState(brush_tool_color_atom));
+    const brush_thickness = new State(useRecoilState(brush_tool_thickness_atom));
+    const eraser_thickness = new State(useRecoilState(eraser_tool_thickness_atom));
+    const file_state = new State(useRecoilState(file_save_state_atom));
     const need_on_end = new State(useState(true))
 
     const zoom = useRef(z);
@@ -154,7 +154,7 @@ export const CanvasEditor = ({
                 if (fn) fn({ kind });
             } else {
                 if (!("acvxyz".includes(e.key))) return;
-                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+                file_state.set(_ => ({ ..._,  saved: false}));
                 if ("acvx".includes(e.key)) set_selected_tool_id("select_tool");
                 const fns = fn_data.val_local().unwrap();
                 if (e.key === "a") {

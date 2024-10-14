@@ -1,5 +1,6 @@
 import { argsT, toolT } from "..";
-import { Layer } from "../../../../data";
+import { Layer } from "../../../../logic/data";
+import { FileStateT } from "../../../../logic/file";
 import { create_canvas, Option, Result, State } from "../../../../logic/utils";
 import { CanvasPart, UndoStack } from "../../undo";
 
@@ -136,7 +137,7 @@ export const select_tool = ({
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 clip = Option.Some(new Clip({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y }));
                 clip.unwrap().stamp([canvas, ctx], "fill");
-                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+                file_state.set(_=>({..._, saved: false}));
             } else if (is_try_clipping) {
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
@@ -166,7 +167,7 @@ export const select_tool = ({
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 is_try_clipping = false;
-                file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+                file_state.set(_ => ({..._, saved: false }));
             }
         },
         "move": ({ f_x, f_y, zoom, x, y }) => {
@@ -292,7 +293,7 @@ export const select_tool = ({
             const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
             const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
             undo_stack.push({ i, u, r });
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+            file_state.set(_=>({..._, saved: false}));
             const data_url = cl.canvas.toDataURL('image/png');
             const blob = await (await fetch(data_url)).blob();
             const clipboard_item = new ClipboardItem({
@@ -440,11 +441,11 @@ class Clip {
             h,
         }
     }
-    cut([layer, layers_arr, file_state]: [Layer, State<Layer[] | undefined>, State<file_stateT>]) {
+    cut([layer, layers_arr, file_state]: [Layer, State<Layer[] | undefined>, State<FileStateT>]) {
         layer.ctx.clearRect(this.x, this.y, this.w, this.h);
         layer.preview_update();
         layers_arr.set([...layers_arr.val_local()!]);
-        file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+        file_state.set(_ => ({ ..._, saved: false }));
     }
     check_resize({ f_x, f_y, zoom }: { f_x: number, f_y: number, zoom: number }) {
         const r = Math.abs(f_x - (this.x + this.w)) < 4 / zoom && (Math.abs(this.y + this.h / 2 - f_y) < this.h / 2 + 4 / zoom);
@@ -462,7 +463,7 @@ class Clip {
         clip = Option.None()
     }
     static release_with_undo_stack([clip, layer, layers_arr, current_layer, ctx, canvas, o_u, undo_stack, file_state]
-        : [Option<Clip>, Layer, State<Layer[] | undefined>, number, CanvasRenderingContext2D, HTMLCanvasElement, HTMLCanvasElement, UndoStack, State<file_stateT>]) {
+        : [Option<Clip>, Layer, State<Layer[] | undefined>, number, CanvasRenderingContext2D, HTMLCanvasElement, HTMLCanvasElement, UndoStack, State<FileStateT>]) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const cl = clip.unwrap();
         const i = current_layer;
@@ -474,7 +475,8 @@ class Clip {
         layers_arr.set([...layers_arr.val_local()!]);
         undo_stack.push({ i, u, r });
         clip = Option.None();
-        file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+        
+        file_state.set(_ => ({ ..._, saved: false }));
     }
 }
 

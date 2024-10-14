@@ -1,4 +1,4 @@
-import { Option } from "../common/utils";
+import { Option } from "../../logic/utils";
 
 export const createUndoStack = ({ stack_size }: { stack_size: number }): UndoStack => {
     let stack: Cache[] = [];

@@ -1,7 +1,7 @@
 import { argsT, toolT } from ".";
-import { code_to_rgba } from "../../common/color_picker";
-import { Option, State } from "../../common/utils";
-import { Layer } from "../../data";
+import { code_to_rgba } from "../../../logic/color";
+import { Layer } from "../../../logic/data";
+import { Option, State } from "../../../logic/utils";
 import { CanvasPart } from "../undo";
 
 export const bucket_tool = ({
@@ -20,7 +20,7 @@ export const bucket_tool = ({
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const fn = fill({ brush_color, layer, x, y, shift });
             fn.on_some(fn => {
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+                file_state.set(_ => ({ ..._, saved: false, }));
                 const u = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 const i = current_layer.val_local();
                 fn();
@@ -34,7 +34,7 @@ export const bucket_tool = ({
             const layer = layers_arr.val_global()![current_layer.val_global()];
             const fn = fill({ brush_color, layer, x, y, shift });
             fn.on_some(fn => {
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+                file_state.set(_ => ({ ..._, saved: false, }));
                 const u = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 const i = current_layer.val_local();
                 fn();
@@ -59,7 +59,7 @@ export const bucket_tool = ({
             ctx.fillRect(x, y, 1, 1);
         },
         "on_end": () => {
-            if(!need_on_end.val_global()) return;
+            if (!need_on_end.val_global()) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     }

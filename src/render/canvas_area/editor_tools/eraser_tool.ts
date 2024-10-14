@@ -1,5 +1,5 @@
 import { argsT, bresenham, toolT } from ".";
-import { create_canvas, Option } from "../../common/utils";
+import { create_canvas, Option } from "../../../logic/utils";
 import { CanvasPart } from "../undo";
 
 export const eraser_tool = ({
@@ -33,7 +33,7 @@ export const eraser_tool = ({
             rb_x = x;
             rb_y = y;
             layer.ctx.clearRect(x - shift, y - shift, thickness, thickness);
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+            file_state.set(_ => ({..._, saved: false }));
         },
         "tool_move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -49,7 +49,7 @@ export const eraser_tool = ({
             lt_y = Math.min(lt_y, y);
             rb_x = Math.max(rb_x, x);
             rb_y = Math.max(rb_y, y);
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+            file_state.set(_ => ({..._, saved: false }));
         },
         "up": ({ x, y, was_down }) => {
             if (!was_down) return;
@@ -69,7 +69,7 @@ export const eraser_tool = ({
             ctx.fillStyle = "#fff4";
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
             old_canvas = Option.None();
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+            file_state.set(_ => ({..._, saved: false }));
         },
         "move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

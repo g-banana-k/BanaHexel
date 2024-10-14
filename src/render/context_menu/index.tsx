@@ -2,32 +2,32 @@ import { ReactNode, RefObject, useEffect, useRef } from "react";
 import "./index.css"
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 
-export const is_context_menu_open_state = atom({
-    key: "is_context_menu_open_state_atom",
+export const is_context_menu_open_atom = atom({
+    key: "is_context_menu_open",
     default: false,
 })
 
-export const context_menu_contents_state = atom<string | ReactNode[]>({
-    key: "context_menu_contents_state_atom",
+export const context_menu_contents_atom = atom<string | ReactNode[]>({
+    key: "context_menu_contents",
     default: ""
 })
 
-export const context_menu_position_state = atom({
-    key: "context_menu_position_state_atom",
+export const context_menu_position_atom = atom({
+    key: "context_menu_position",
     default: { x: 0, y: 0 },
 })
 
-export const context_menu_ref_state = atom<RefObject<HTMLDivElement> | null>({
-    key: "context_menu_ref_state_atom",
+export const context_menu_ref_atom = atom<RefObject<HTMLDivElement> | null>({
+    key: "context_menu_ref",
     default: null,
 });
 
 export const ContextMenu = () => {
-    const [is_open, set_open] = useRecoilState(is_context_menu_open_state);
-    const position = useRecoilValue(context_menu_position_state);
-    const contents = useRecoilValue(context_menu_contents_state);
+    const [is_open, set_open] = useRecoilState(is_context_menu_open_atom);
+    const position = useRecoilValue(context_menu_position_atom);
+    const contents = useRecoilValue(context_menu_contents_atom);
 
-    const [ref, set_ref] = useRecoilState(context_menu_ref_state);
+    const [ref, set_ref] = useRecoilState(context_menu_ref_atom);
     const ref_raw = useRef<HTMLDivElement>(null);
 
     useEffect(() => {

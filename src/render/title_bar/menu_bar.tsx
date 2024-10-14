@@ -2,33 +2,38 @@ import { invoke } from "@tauri-apps/api/core";
 import { Window } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state, user_data_state } from "../../app";
-import { export_image, open_file, save_file_new, save_file_with_path, write_user_data } from "../../logic/file";
-import { is_modal_open_state, modal_contents_state, modal_size_state } from "../modal";
+import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, load_file, opening_file_path_atom, user_data_atom } from "../../app";
+
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
 import { create_canvas, Option, PromiseWithResolvers, Result, State } from "../../logic/utils";
-import { file_save_state } from ".";
+
 import { undo_stack } from "../canvas_area/undo";
-import { Layer } from "../../data";
+import { file_save_state_atom, meta_data_atom } from "../../window";
+import { is_modal_open_atom, modal_contents_atom, modal_size_atom } from "../modal";
+import { write_image, write_user_data } from "../../logic/command";
+import { FileStateT, open_file, save_file_new, save_file_with_path } from "../../logic/file";
+import { Layer } from "../../logic/data";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
     let [selected, set_selected] = useState(-1);
-    const layer_arr = useRecoilValue(layer_arr_state)!;
-    const canvas_size = useRecoilValue(canvas_size_state)!;
-    const file_state = new State(useRecoilState(file_save_state));
+    const layer_arr = useRecoilValue(layer_arr_atom)!;
+    const canvas_size = useRecoilValue(canvas_size_atom)!;
+    const file_state = new State(useRecoilState(file_save_state_atom));
 
-    const set_loading = useSetRecoilState(is_loading_state);
-    const set_layer_arr = useSetRecoilState(layer_arr_state);
-    const set_canvas_size = useSetRecoilState(canvas_size_state);
-    const set_current_layer = useSetRecoilState(current_layer_state);
-    const opening_file_path = new State(useRecoilState(opening_file_path_state));
+    const set_loading = useSetRecoilState(is_loading_atom);
+    const set_layer_arr = useSetRecoilState(layer_arr_atom);
+    const set_canvas_size = useSetRecoilState(canvas_size_atom);
+    const set_current_layer = useSetRecoilState(current_layer_atom);
+    const opening_file_path = new State(useRecoilState(opening_file_path_atom));
 
-    const set_modal_open = useSetRecoilState(is_modal_open_state);
-    const set_modal_contents = useSetRecoilState(modal_contents_state);
-    const set_modal_size = useSetRecoilState(modal_size_state);
-    const user_data = useRecoilValue(user_data_state);
+    const [meta_data] = useRecoilState(meta_data_atom);
+
+    const set_modal_open = useSetRecoilState(is_modal_open_atom);
+    const set_modal_contents = useSetRecoilState(modal_contents_atom);
+    const set_modal_size = useSetRecoilState(modal_size_atom);
+    const user_data = useRecoilValue(user_data_atom);
 
     document.addEventListener("mousedown", e => {
         if (!menu_bar_ref.current) return;
@@ -84,16 +89,15 @@ export const MenuBar = () => {
                             set_layer_arr, set_canvas_size, set_loading, set_current_layer
                         });
                         set_loading(false)
-                        file_state.set({ saving: false, saved: false, has_file: false })
+                        file_state.set({ saving: false, saved: false, path: Option.None() })
                     });
                 }} >新規作成</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
                     save_file_new({
-                        file_state,
-                        canvas_size,
+                        file_state: file_state.as_state_by_setter(),
                         layer_arr: layer_arr,
-                        opening_file_path: opening_file_path
+                        meta_data: meta_data.unwrap(),
                     })
                     write_user_data({ user_data: user_data.unwrap() })
                 }} >名前を付けて保存</MenuContent>
@@ -101,9 +105,8 @@ export const MenuBar = () => {
                     set_selected(-1);
                     save_file_with_path({
                         file_state: file_state.as_state_by_setter(),
-                        canvas_size,
                         layer_arr: layer_arr,
-                        opening_file_path: opening_file_path.as_state_by_setter(),
+                        meta_data: meta_data.unwrap(),
                     })
                     write_user_data({ user_data: user_data.unwrap() })
                 }} >上書き保存</MenuContent>
@@ -115,26 +118,10 @@ export const MenuBar = () => {
                         set_layer_arr,
                         set_canvas_size,
                         set_current_layer,
-                        opening_file_path: opening_file_path.as_state_by_setter(),
                         file_state,
                     })
                     write_user_data({ user_data: user_data.unwrap() })
                 }} >開く</MenuContent>
-                <MenuContent on_click={project_export({
-                    set_selected,
-                    set_modal_open,
-                    set_modal_size,
-                    set_modal_contents,
-                    canvas_size,
-                    layer_arr,
-                    opening_file_path,
-                    canvas_handler: async ({ canvas, opening_file_path }) => {
-                        export_image({
-                            img: canvas,
-                            project_name: opening_file_path.val_global().unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)!.replace(/^(.+)\..+$/, '$1'),
-                        })
-                    }
-                })}>エクスポート</MenuContent>
                 <MenuContent on_click={
                     project_export({
                         set_selected,
@@ -143,7 +130,24 @@ export const MenuBar = () => {
                         set_modal_contents,
                         canvas_size,
                         layer_arr,
-                        opening_file_path,
+                        file_state: file_state.val_global(),
+                        canvas_handler: async ({ canvas, file_state }) => {
+                            write_image({
+                                img: canvas,
+                                name: file_state.path.unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)!.replace(/^(.+)\..+$/, '$1')!,
+                            })
+                        }
+                    })
+                }>エクスポート</MenuContent>
+                <MenuContent on_click={
+                    project_export({
+                        set_selected,
+                        set_modal_open,
+                        set_modal_size,
+                        set_modal_contents,
+                        canvas_size,
+                        layer_arr,
+                        file_state: file_state.val_global(),
                         canvas_handler: async ({ canvas }) => {
                             const data_url = canvas.toDataURL('image/png');
                             const blob = await (await fetch(data_url)).blob();
@@ -222,8 +226,8 @@ const project_export = ({
     set_modal_contents,
     canvas_size,
     layer_arr,
-    opening_file_path,
-    canvas_handler
+    canvas_handler,
+    file_state
 }: project_export_argsT & {
     canvas_handler: (args: project_export_argsT & { canvas: HTMLCanvasElement }) => Promise<void>;
 }) => async () => {
@@ -260,8 +264,7 @@ const project_export = ({
         ctx.imageSmoothingEnabled = false;
         ctx.scale(r, r);
         layer_arr.forEach(l => { ctx.drawImage(l.body, 0, 0) });
-        canvas_handler({ canvas, set_selected, set_modal_open, set_modal_size, set_modal_contents, canvas_size, layer_arr, opening_file_path })
-
+        canvas_handler({ canvas, set_selected, set_modal_open, set_modal_size, set_modal_contents, canvas_size, layer_arr, file_state })
     })
 }
 
@@ -272,7 +275,7 @@ type project_export_argsT = {
     set_modal_contents: SetterOrUpdater<string | React.ReactNode[]>,
     canvas_size: { width: number, height: number },
     layer_arr: Layer[],
-    opening_file_path: State<Option<string>>,
+    file_state: FileStateT
 }
 
 const MenuButton = (props: { label: string, id: string, nth: number, selected: number, set_selected: Dispatch<SetStateAction<number>>, children: ReactNode }) => {

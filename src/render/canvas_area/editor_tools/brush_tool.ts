@@ -64,7 +64,7 @@ export const brush_tool = ({
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
             undo_stack.push({ i, u, r })
-            file_state.set(_ => ({ saving: _.saving, saved: false, has_file: _.has_file }));
+            file_state.set(_ => ({ ..._, saved: false, }));
         },
         "move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

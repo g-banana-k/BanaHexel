@@ -3,25 +3,25 @@ import "./index.css";
 import { X } from "lucide-react";
 import { ReactNode } from "react";
 
-export const is_modal_open_state = atom({
-    key: "is_modal_open_state_atom",
+export const is_modal_open_atom = atom({
+    key: "is_modal_open",
     default: false,
 })
 
-export const modal_contents_state = atom<string | ReactNode[]>({
-    key: "modal_contents_state_atom",
+export const modal_contents_atom = atom<string | ReactNode[]>({
+    key: "modal_contents",
     default: ""
 })
 
-export const modal_size_state = atom<{ w: number, h: number }>({
-    key: "modal_size_state_atom",
+export const modal_size_atom = atom<{ w: number, h: number }>({
+    key: "modal_size",
     default: { w: 0, h: 0 }
 })
 
 export const Modal = () => {
-    const [is_modal_open, set_modal_open] = useRecoilState(is_modal_open_state);
-    const modal_contents = useRecoilValue(modal_contents_state);
-    const modal_size = useRecoilValue(modal_size_state);
+    const [is_modal_open, set_modal_open] = useRecoilState(is_modal_open_atom);
+    const modal_contents = useRecoilValue(modal_contents_atom);
+    const modal_size = useRecoilValue(modal_size_atom);
 
     return (
         <div id="modal_root" style={{ display: !is_modal_open ? "none" : "block" }}>

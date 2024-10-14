@@ -2,16 +2,16 @@ import { Brush, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer, St
 import "./index.css";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-import { is_mouse_down_in_editor_state } from "../canvas_area/editor";
 import { canvas_toolsT } from "../canvas_area";
+import { is_mouse_down_in_editor_atom } from "../canvas_area/editor";
 
-export const selected_tool_id_state = atom<canvas_toolsT>({
-    key: "selected_tool_state_atom",
+export const selected_tool_id_atom = atom<canvas_toolsT>({
+    key: "selected_tool",
     default: "none",
 })
 
 export const ToolSelect = () => {
-    const [selected_id, set_selected_id] = useRecoilState(selected_tool_id_state);
+    const [selected_id, set_selected_id] = useRecoilState(selected_tool_id_atom);
     return (
         <div id="tool_select_outer">
             <div id="tool_select">
@@ -28,7 +28,7 @@ export const ToolSelect = () => {
 }
 
 const ToolIcon = (props: { tool_id: canvas_toolsT, children: ReactNode, selected: canvas_toolsT, set_selected: Dispatch<SetStateAction<canvas_toolsT>> }) => {
-    const is_mouse_down_in_editor = useRecoilValue(is_mouse_down_in_editor_state);
+    const is_mouse_down_in_editor = useRecoilValue(is_mouse_down_in_editor_atom);
     return (
         <div
             className={`tool_icon ${props.selected == props.tool_id ? "selected_tool_icon" : ""}`}
