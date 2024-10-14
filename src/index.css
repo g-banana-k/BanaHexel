@@ -12,7 +12,6 @@
 }
 
 @keyframes gaming {
-
     /* backgroundを移動させる */
     100% {
         background-position-x: 200%;

@@ -11,7 +11,7 @@ import * as dialog from "@tauri-apps/plugin-dialog";
 import { ColorTheme } from "./render/color_theme";
 import { read_user_data, write_user_data } from "./logic/command";
 import { FileStateT, MetaDataT, save_file_with_path } from "./logic/file";
-import { context_menu_contents_atom, context_menu_position_atom, context_menu_ref_atom, ContextMenu, is_context_menu_open_atom } from "./render/context_menu";
+import { context_menu_contents_atom, context_menu_position_atom, context_menu_ref_atom, ContextMenu, is_context_menu_open_atom, useSetContextMenu } from "./render/context_menu";
 import App, { canvas_size_atom, layer_arr_atom, user_data_atom } from "./app";
 
 listen("confirm_close", () => {
@@ -81,11 +81,7 @@ export const Window = () => {
             document.removeEventListener("close_requested", on_close_requested);
         }
     }, [])
-
-    const set_context_menu_open = useSetAtom(is_context_menu_open_atom);
-    const set_context_menu_position = useSetAtom(context_menu_position_atom);
-    const set_context_menu_contents = useSetAtom(context_menu_contents_atom);
-
+    const [set_context_menu_contents, set_context_menu_position, set_context_menu_open,] = useSetContextMenu();
     const [context_menu_ref, _set_context_menu_ref] = useAtom(context_menu_ref_atom)
     return (
         <div id="window" onContextMenu={e => {

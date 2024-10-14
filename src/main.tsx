@@ -21,7 +21,7 @@ const WindowWrapper = ({ path }: { path: string | null }) => {
 
 invoke<string | null>("initial_file_path").then(initial_path => {
     root.render(
-        <div>
+        <div style={{height: "100%", width: "100%"}}>
             <StateWrappers />
             <WindowWrapper path={initial_path} />
         </div>

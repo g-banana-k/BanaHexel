@@ -10,7 +10,7 @@ import { Option, PromiseWithResolvers, Result, SetterOrUpdater, State } from "..
 
 import { undo_stack } from "../../logic/canvas_area/undo";
 import { file_save_state_atom, meta_data_atom } from "../../window";
-import { is_modal_open_atom, modal_contents_atom, modal_size_atom } from "../modal";
+import { useSetModal } from "../modal";
 import { write_image, write_user_data } from "../../logic/command";
 import { FileStateT, open_file, save_file_new, save_file_with_path } from "../../logic/file";
 import { Layer } from "../../logic/data";
@@ -30,9 +30,7 @@ export const MenuBar = () => {
 
     const [meta_data] = useAtom(meta_data_atom);
 
-    const set_modal_open = useSetAtom(is_modal_open_atom);
-    const set_modal_contents = useSetAtom(modal_contents_atom);
-    const set_modal_size = useSetAtom(modal_size_atom);
+    const [set_modal_contents,  set_modal_size, set_modal_open] = useSetModal();
     const user_data = useAtomValue(user_data_atom);
 
     document.addEventListener("mousedown", e => {
