@@ -241,6 +241,7 @@ fn read_user_data(path: String) -> Result<String, String> {
         .map_err(|e| e.to_string())?;
     Ok(buffer)
 }
+
 #[tauri::command]
 fn initial_file_path(app: AppHandle) -> Result<Option<String>, String> {
     let file_path = app

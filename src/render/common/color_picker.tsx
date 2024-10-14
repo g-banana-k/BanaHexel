@@ -6,11 +6,15 @@ import { Palette, Pipette, Plus } from "lucide-react";
 import { code_to_rgba, from_hx, rgba_to_code } from "../../logic/color";
 import { Option, SetterOrUpdater, State } from "../../logic/utils";
 import { user_data_atom } from "../../app";
+<<<<<<< HEAD
 import { context_menu_contents_atom, context_menu_position_atom, context_menu_ref_atom, is_context_menu_open_atom } from "../context_menu";
+=======
+import { context_menu_contents_atom, context_menu_position_atom, context_menu_ref_atom, is_context_menu_open_atom, useSetContextMenu } from "../context_menu";
+>>>>>>> dev
 
 declare class EyeDropper {
     constructor()
-    open(): Promise<{sRGBHex: string}>
+    open(): Promise<{ sRGBHex: string }>
 }
 
 export const ColorPicker = ({
@@ -95,9 +99,13 @@ export const ColorPicker = ({
     const is_palette_opening = new State(useState(false));
     const user_data = new State(useAtom(user_data_atom));
 
+<<<<<<< HEAD
     const set_context_menu_open = useSetAtom(is_context_menu_open_atom);
     const set_context_menu_position = useSetAtom(context_menu_position_atom);
     const set_context_menu_contents = useSetAtom(context_menu_contents_atom);
+=======
+    const [set_context_menu_contents, set_context_menu_position, set_context_menu_open,] = useSetContextMenu();
+>>>>>>> dev
 
     const [context_menu_ref, _set_context_menu_ref] = useAtom(context_menu_ref_atom);
 

@@ -2,14 +2,40 @@ import { atom, useAtom, useAtomValue } from "jotai";
 import "./index.css";
 import { X } from "lucide-react";
 import { ReactNode } from "react";
+<<<<<<< HEAD
 
 export const is_modal_open_atom = atom(
 false)
+=======
+import { useSetAtom } from "jotai";
+import { SetterOrUpdater } from "../../logic/utils";
+
+export const is_modal_open_atom = atom(
+    false)
+>>>>>>> dev
 
 export const modal_contents_atom = atom<string | ReactNode[]>("")
 
 export const modal_size_atom = atom<{ w: number, h: number }>({ w: 0, h: 0 })
 
+<<<<<<< HEAD
+=======
+export const useSetModal = (): [
+    SetterOrUpdater<string | ReactNode[]>,
+    SetterOrUpdater<{ w: number, h: number, }>,
+    SetterOrUpdater<boolean>,
+] => {
+    const set_contents = useSetAtom(modal_contents_atom);
+    const set_open = useSetAtom(is_modal_open_atom);
+    const set_size = useSetAtom(modal_size_atom);
+    return [
+        set_contents,
+        set_size,
+        set_open
+    ]
+}
+
+>>>>>>> dev
 export const Modal = () => {
     const [is_modal_open, set_modal_open] = useAtom(is_modal_open_atom);
     const modal_contents = useAtomValue(modal_contents_atom);
@@ -20,7 +46,11 @@ export const Modal = () => {
             <div id="modal_container" style={{ width: modal_size.w, height: modal_size.h }}>
                 {typeof modal_contents === "string" ? modal_contents : modal_contents}
                 <div id="modal_close_button" onClick={() => {
+<<<<<<< HEAD
                     const e = new CustomEvent("modal_close", {detail: "default"});
+=======
+                    const e = new CustomEvent("modal_close", { detail: "default" });
+>>>>>>> dev
                     document.dispatchEvent(e)
                     set_modal_open(false);
                 }}>
