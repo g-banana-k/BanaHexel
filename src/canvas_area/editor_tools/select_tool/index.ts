@@ -263,7 +263,6 @@ export const select_tool = ({
                 const blob = blob_res.unwrap();
                 const image = await createImageBitmap(blob);
                 const [cl_canvas, cl_ctx] = create_canvas(image, true);
-                image.close();
                 clip = Option.Some(new Clip({
                     lt_x: 0,
                     lt_y: 0,
@@ -276,6 +275,7 @@ export const select_tool = ({
                     canvas: cl_canvas,
                     ctx: cl_ctx
                 }));
+                image.close();
                 o_u = Option.Some(create_canvas(layer.body, true)[0]);
                 const cl = clip.unwrap();
                 cl.stamp([canvas, ctx], "fill");
