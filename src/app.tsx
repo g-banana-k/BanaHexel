@@ -1,50 +1,30 @@
 import { useEffect } from "react";
-import { LayerArea } from "./layer_area";
-import { WorkSpace } from "./workspace";
-import { Option, Result, State, StateBySetter, UnRequired } from "./common/utils";
-import { ProjectLoading } from "./project_loading";
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
-import { Layer } from "./data";
-import { binary_to_bitmap, data_fileT, open_file, user_dataT } from "./file";
-import { file_save_state } from "./title_bar";
+import { DataFileT, read_file_from_path, UserDataT } from "./logic/command";
+import { Option, Result, SetterOrUpdater, State, StateBySetter, UnRequired } from "./logic/utils";
+import { binary_to_bitmap, Layer } from "./logic/data";
+import { file_save_state_atom } from "./window";
+import { LayerArea } from "./render/layer_area";
+import { WorkSpace } from "./render/workspace";
+import { ProjectLoading } from "./render/project_loading";
+import { atom, useAtom, useSetAtom } from "jotai";
 
-export const user_data_state = atom({
-    key: "user_data_state_atom",
-    default: Option.None<user_dataT>()
-})
+export const user_data_atom = atom(Option.None<UserDataT>())
 
-export const layer_arr_state = atom<Layer[] | undefined>({
-    key: "layer_arr_state_atom",
-    default: undefined
-})
+export const layer_arr_atom = atom<Layer[] | undefined>(undefined)
 
-export const current_layer_state = atom({
-    key: "current_layer_state_atom",
-    default: 0
-})
+export const current_layer_atom = atom(0)
 
-export const canvas_size_state = atom<{ width: number, height: number } | undefined>({
-    key: "canvas_size_state_atom",
-    default: undefined
-})
+export const canvas_size_atom = atom<{ width: number, height: number } | undefined>(undefined)
 
-export const is_loading_state = atom<boolean>({
-    key: "is_loading_state_atom",
-    default: true,
-})
+export const is_loading_atom = atom<boolean>(true)
 
-export const opening_file_path_state = atom<Option<string>>({
-    key: "opening_file_path_state_atom",
-    default: Option.None(),
-})
-
-export const load_file = async (data: UnRequired<data_fileT, "layers">, setters: {
-    set_layer_arr: (arg0: Layer[]) => void,
-    set_canvas_size: (arg0: { width: number, height: number }) => void,
-    set_loading: (arg0: boolean) => void,
-    set_current_layer: (arg0: number | ((arg0: number) => number)) => void,
+export const load_file = async (data: UnRequired<DataFileT, "layers">, setters: {
+    set_layer_arr: SetterOrUpdater<Layer[] | undefined>,
+    set_canvas_size: SetterOrUpdater<{ width: number, height: number } | undefined>,
+    set_loading: SetterOrUpdater<boolean>,
+    set_current_layer: SetterOrUpdater<number>,
 }) => {
-    const promises: Promise<Result<CanvasImageSource, unknown>>[] = [];
+    const promises: Promise<Result<ImageBitmap, unknown>>[] = [];
     if (data.layers !== undefined) data.layers.forEach((a) => { promises.push(binary_to_bitmap(a)) })
     await Promise.all(promises);
     const layers: Layer[] = [];
@@ -54,6 +34,7 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
     } else for (let i = 0; i < data.layers.length; i++) {
         const bitmap = (await promises[i]).unwrap();
         layers.push(new Layer(bitmap, data.meta_data.canvas_size))
+        bitmap.close();
     }
     setters.set_layer_arr(layers);
     setters.set_canvas_size(data.meta_data.canvas_size);
@@ -62,37 +43,21 @@ export const load_file = async (data: UnRequired<data_fileT, "layers">, setters:
 }
 
 export const App = () => {
-    const [is_loading, set_loading] = useRecoilState(is_loading_state);
-    const set_current_layer = useSetRecoilState(current_layer_state);
-    const set_layer_arr = useSetRecoilState(layer_arr_state);
-    const set_canvas_size = useSetRecoilState(canvas_size_state);
-    const opening_file_path = new StateBySetter(useSetRecoilState(opening_file_path_state));
-    const file_state = new State(useRecoilState(file_save_state));
+    const [is_loading, set_loading] = useAtom(is_loading_atom);
+    const set_current_layer = useSetAtom(current_layer_atom);
+    const set_layer_arr = useSetAtom(layer_arr_atom);
+    const set_canvas_size = useSetAtom(canvas_size_atom);
+    const file_state = new State(useAtom(file_save_state_atom));
     useEffect(() => {
         (async () => {
             set_loading(true);
-            if (opening_file_path.val_global().is_some()) {
-                open_file({
-                    set_loading,
-                    set_layer_arr,
-                    set_canvas_size,
-                    set_current_layer,
-                    opening_file_path,
-                    load_file,
-                    file_state
-                })
-                await load_file({
-                    meta_data: {
-                        canvas_size: {
-                            width: 64,
-                            height: 64,
-                        },
-                    },
-                }, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
-                file_state.set({ saving: false, saved: false, has_file: false })
-
+            if (file_state.val_global().path.is_some()) {
+                const res = (await read_file_from_path(file_state.val_global().path.unwrap())).unwrap();
+                await load_file(
+                    res
+                    , { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
+                file_state.set({ saving: false, saved: false, path: Option.None() })
             } else {
-                opening_file_path.set(Option.None());
                 await load_file({
                     meta_data: {
                         canvas_size: {
@@ -101,7 +66,7 @@ export const App = () => {
                         },
                     },
                 }, { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
-                file_state.set({ saving: false, saved: false, has_file: false })
+                file_state.set({ saving: false, saved: false, path: Option.None() })
             }
         })()
     }, [])
