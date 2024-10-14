@@ -1,0 +1,4 @@
+#title_bar {
+    height: 35px;
+    background-color: var(--title_bar);
+}

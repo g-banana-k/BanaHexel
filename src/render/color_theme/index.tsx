@@ -1,8 +1,6 @@
 import { atom, SetterOrUpdater, useSetRecoilState } from "recoil";
-import { Option } from "../common/utils";
-import { user_data_state } from "../app";
-import { read_user_data, user_dataT } from "../file";
-import { useEffect } from "react";
+import { Option } from "../../logic/utils";
+import { user_dataT } from "../../logic/file";
 
 export const color_theme_state = atom<Option<ColorTheme>>({
     key: "color_theme_state_atom",
@@ -200,10 +198,7 @@ ColorTheme.register(light);
 
 export const ColorThemeClassWrapper = () => {
     const set = useSetRecoilState(color_theme_state);
-    const set_user_data = useSetRecoilState(user_data_state);
     ColorTheme.atom_setter = Option.Some(set);
-    ColorTheme.user_data_setter = Option.Some(set_user_data);
-    set_user_data(_ => { _.on_some(_ => { ColorTheme.apply(_.theme ?? "dark") }); return _; })
     set(ColorTheme.current);
     return <div />
 }

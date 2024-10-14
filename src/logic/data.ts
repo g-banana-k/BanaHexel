@@ -33,4 +33,9 @@ export class Layer {
             preview_ctx.drawImage(canvas, 0, 50 * (1 - canvas.height / canvas.width), 100, 100 * canvas.height / canvas.width);
         }
     }
+    close () {
+        this.body.width = 0;
+        this.body.height = 0;
+        this.body.remove();
+    }
 }
