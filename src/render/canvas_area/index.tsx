@@ -1,4 +1,4 @@
-import { SetterOrUpdater, useRecoilState, useRecoilValue } from "recoil";
+import { useAtom, useAtomValue } from "jotai";
 import { canvas_size_atom, current_layer_atom, layer_arr_atom } from "../../app";
 import "./index.css"
 import { layers_display_opacity_atom } from "../layer_option";
@@ -9,16 +9,17 @@ import { useEffect, useRef, useState } from "react";
 import { color_theme_atom, ColorTheme } from "../color_theme";
 import { background_image } from "../../logic/canvas_area/background";
 import { CanvasEditor } from "../../logic/canvas_area/editor";
+import { SetterOrUpdater } from "../../logic/utils";
 
 export const CanvasArea = () => {
-    const [current_layer, _set_current_layer] = useRecoilState(current_layer_atom);
-    const [layer_arr, _set_layer_arr] = useRecoilState(layer_arr_atom);
-    const layer_display_opacity = useRecoilValue(layers_display_opacity_atom);
+    const [current_layer, _set_current_layer] = useAtom(current_layer_atom);
+    const [layer_arr, _set_layer_arr] = useAtom(layer_arr_atom);
+    const layer_display_opacity = useAtomValue(layers_display_opacity_atom);
 
-    const [zoom, set_zoom] = useRecoilState(zoom_atom);
-    const [scroll_horizontal, set_scroll_horizontal] = useRecoilState(scroll_horizontal_atom)
-    const [scroll_vertical, set_scroll_vertical] = useRecoilState(scroll_vertical_atom)
-    const window_size = useRecoilValue(window_size_atom);
+    const [zoom, set_zoom] = useAtom(zoom_atom);
+    const [scroll_horizontal, set_scroll_horizontal] = useAtom(scroll_horizontal_atom)
+    const [scroll_vertical, set_scroll_vertical] = useAtom(scroll_vertical_atom)
+    const window_size = useAtomValue(window_size_atom);
 
     const canvas_body_ref = useRef<HTMLDivElement>(null);
     const canvas_background_ref = useRef<HTMLDivElement>(null);
@@ -27,14 +28,14 @@ export const CanvasArea = () => {
     const canvas_back_ref = useRef<HTMLDivElement>(null);
     const canvas_front_ref = useRef<HTMLDivElement>(null);
 
-    const [canvas_size, set_canvas_size] = useRecoilState(canvas_size_atom) as unknown as [{ width: number; height: number; }, SetterOrUpdater<{ width: number; height: number; }>];
+    const [canvas_size, set_canvas_size] = useAtom(canvas_size_atom) as unknown as [{ width: number; height: number; }, SetterOrUpdater<{ width: number; height: number; }>];
     let [area_height, set_area_height] = useState(0);
     let [area_width, set_area_width] = useState(0);
 
     const [background_width, set_background_width] = useState(0);
     const [background_height, set_background_height] = useState(0);
 
-    useRecoilValue(color_theme_atom);
+    useAtomValue(color_theme_atom);
 
     useEffect(() => {
         const area = canvas_area_ref.current;

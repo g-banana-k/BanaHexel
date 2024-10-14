@@ -1,25 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { atom, useRecoilState, useRecoilValue } from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { color_theme_atom } from "../color_theme";
 import { zoom_atom } from "../zoom_in_out";
 
-export const scroll_vertical_atom = atom({
-    key: "canvas_scroll_vertical",
-    default: 0,
-});
+export const scroll_vertical_atom = atom( 0);
 
-export const scroll_horizontal_atom = atom({
-    key: "canvas_scroll_horizontal",
-    default: 0,
-});
+export const scroll_horizontal_atom = atom(0);
 
 export const ScrollBarVertical = (props: {
     canvas_height: number,
     area_height: number,
 }) => {
-    const color_theme = useRecoilValue(color_theme_atom)
-    let [scroll, set_scroll] = useRecoilState(scroll_vertical_atom);
-    const zoom = useRecoilValue(zoom_atom);
+    const color_theme = useAtomValue(color_theme_atom)
+    let [scroll, set_scroll] = useAtom(scroll_vertical_atom);
+    const zoom = useAtomValue(zoom_atom);
     let [once, set_once] = useState(false);
 
     let [is_dragging, set_dragging] = useState(false);
@@ -96,9 +90,9 @@ export const ScrollBarHorizontal = (props: {
     canvas_width: number,
     area_width: number,
 }) => {
-    const color_theme = useRecoilValue(color_theme_atom)
-    let [scroll, set_scroll] = useRecoilState(scroll_horizontal_atom);
-    const zoom = useRecoilValue(zoom_atom);
+    const color_theme = useAtomValue(color_theme_atom)
+    let [scroll, set_scroll] = useAtom(scroll_horizontal_atom);
+    const zoom = useAtomValue(zoom_atom);
     let [once, set_once] = useState(false);
 
     let [is_dragging, set_dragging] = useState(false);

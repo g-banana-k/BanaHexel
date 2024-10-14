@@ -1,10 +1,10 @@
-import { SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
+import { useAtom, useSetAtom } from "jotai";
 import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
 import "./color_picker.css"
 import { Palette, Pipette, Plus } from "lucide-react";
 import { code_to_rgba, from_hx, rgba_to_code } from "../../logic/color";
-import { Option, State } from "../../logic/utils";
+import { Option, SetterOrUpdater, State } from "../../logic/utils";
 import { user_data_atom } from "../../app";
 import { context_menu_contents_atom, context_menu_position_atom, context_menu_ref_atom, is_context_menu_open_atom } from "../context_menu";
 
@@ -93,13 +93,13 @@ export const ColorPicker = ({
     }, [])
 
     const is_palette_opening = new State(useState(false));
-    const user_data = new State(useRecoilState(user_data_atom));
+    const user_data = new State(useAtom(user_data_atom));
 
-    const set_context_menu_open = useSetRecoilState(is_context_menu_open_atom);
-    const set_context_menu_position = useSetRecoilState(context_menu_position_atom);
-    const set_context_menu_contents = useSetRecoilState(context_menu_contents_atom);
+    const set_context_menu_open = useSetAtom(is_context_menu_open_atom);
+    const set_context_menu_position = useSetAtom(context_menu_position_atom);
+    const set_context_menu_contents = useSetAtom(context_menu_contents_atom);
 
-    const [context_menu_ref, _set_context_menu_ref] = useRecoilState(context_menu_ref_atom);
+    const [context_menu_ref, _set_context_menu_ref] = useAtom(context_menu_ref_atom);
 
     return (
         <div className="common_color_picker_container" ref={container_ref}>

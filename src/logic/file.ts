@@ -1,7 +1,6 @@
-import { SetterOrUpdater } from "recoil";
 import { read_file, write_file_new, write_file_with_path } from "./command";
 import { Layer } from "./data"
-import { Option, State, StateBySetter } from "./utils"
+import { Option, SetterOrUpdater, State, StateBySetter } from "./utils"
 import { UndoStack } from "./canvas_area/undo";
 import { load_file } from "../app";
 

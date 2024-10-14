@@ -182,3 +182,5 @@ export const PromiseWithResolvers = <T>(): {
 }
 
 export const println = (log: string) => invoke("rust_log", { log })
+
+export type SetterOrUpdater<T> = (f: ((prev: T) => T) | T) => void;

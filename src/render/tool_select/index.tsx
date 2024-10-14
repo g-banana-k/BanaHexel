@@ -1,17 +1,14 @@
 import { Brush, Eraser, PaintBucket, Slash, Square, SquareDashedMousePointer, Stamp } from "lucide-react";
 import "./index.css";
 import { Dispatch, ReactNode, SetStateAction } from "react";
-import { atom, useRecoilState, useRecoilValue } from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { canvas_toolsT } from "../canvas_area";
 import { is_mouse_down_in_editor_atom } from "../../logic/canvas_area/editor";
 
-export const selected_tool_id_atom = atom<canvas_toolsT>({
-    key: "selected_tool",
-    default: "none",
-})
+export const selected_tool_id_atom = atom<canvas_toolsT>("none",)
 
 export const ToolSelect = () => {
-    const [selected_id, set_selected_id] = useRecoilState(selected_tool_id_atom);
+    const [selected_id, set_selected_id] = useAtom(selected_tool_id_atom);
     return (
         <div id="tool_select_outer">
             <div id="tool_select">
@@ -28,7 +25,7 @@ export const ToolSelect = () => {
 }
 
 const ToolIcon = (props: { tool_id: canvas_toolsT, children: ReactNode, selected: canvas_toolsT, set_selected: Dispatch<SetStateAction<canvas_toolsT>> }) => {
-    const is_mouse_down_in_editor = useRecoilValue(is_mouse_down_in_editor_atom);
+    const is_mouse_down_in_editor = useAtomValue(is_mouse_down_in_editor_atom);
     return (
         <div
             className={`tool_icon ${props.selected == props.tool_id ? "selected_tool_icon" : ""}`}

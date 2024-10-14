@@ -1,27 +1,19 @@
-import { atom, useRecoilState, useRecoilValue } from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
 import "./index.css";
 import { X } from "lucide-react";
 import { ReactNode } from "react";
 
-export const is_modal_open_atom = atom({
-    key: "is_modal_open",
-    default: false,
-})
+export const is_modal_open_atom = atom(
+false)
 
-export const modal_contents_atom = atom<string | ReactNode[]>({
-    key: "modal_contents",
-    default: ""
-})
+export const modal_contents_atom = atom<string | ReactNode[]>("")
 
-export const modal_size_atom = atom<{ w: number, h: number }>({
-    key: "modal_size",
-    default: { w: 0, h: 0 }
-})
+export const modal_size_atom = atom<{ w: number, h: number }>({ w: 0, h: 0 })
 
 export const Modal = () => {
-    const [is_modal_open, set_modal_open] = useRecoilState(is_modal_open_atom);
-    const modal_contents = useRecoilValue(modal_contents_atom);
-    const modal_size = useRecoilValue(modal_size_atom);
+    const [is_modal_open, set_modal_open] = useAtom(is_modal_open_atom);
+    const modal_contents = useAtomValue(modal_contents_atom);
+    const modal_size = useAtomValue(modal_size_atom);
 
     return (
         <div id="modal_root" style={{ display: !is_modal_open ? "none" : "block" }}>

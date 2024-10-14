@@ -1,33 +1,21 @@
 import { ReactNode, RefObject, useEffect, useRef } from "react";
 import "./index.css"
-import { atom, useRecoilState, useRecoilValue } from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
 
-export const is_context_menu_open_atom = atom({
-    key: "is_context_menu_open",
-    default: false,
-})
+export const is_context_menu_open_atom = atom(false)
 
-export const context_menu_contents_atom = atom<string | ReactNode[]>({
-    key: "context_menu_contents",
-    default: ""
-})
+export const context_menu_contents_atom = atom<string | ReactNode[]>( "")
 
-export const context_menu_position_atom = atom({
-    key: "context_menu_position",
-    default: { x: 0, y: 0 },
-})
+export const context_menu_position_atom = atom({ x: 0, y: 0 },)
 
-export const context_menu_ref_atom = atom<RefObject<HTMLDivElement> | null>({
-    key: "context_menu_ref",
-    default: null,
-});
+export const context_menu_ref_atom = atom<RefObject<HTMLDivElement> | null>(null);
 
 export const ContextMenu = () => {
-    const [is_open, set_open] = useRecoilState(is_context_menu_open_atom);
-    const position = useRecoilValue(context_menu_position_atom);
-    const contents = useRecoilValue(context_menu_contents_atom);
+    const [is_open, set_open] = useAtom(is_context_menu_open_atom);
+    const position = useAtomValue(context_menu_position_atom);
+    const contents = useAtomValue(context_menu_contents_atom);
 
-    const [ref, set_ref] = useRecoilState(context_menu_ref_atom);
+    const [ref, set_ref] = useAtom(context_menu_ref_atom);
     const ref_raw = useRef<HTMLDivElement>(null);
 
     useEffect(() => {

@@ -1,12 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Window } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
-import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, load_file, user_data_atom } from "../../app";
 
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
-import { Option, PromiseWithResolvers, Result, State } from "../../logic/utils";
+import { Option, PromiseWithResolvers, Result, SetterOrUpdater, State } from "../../logic/utils";
 
 import { undo_stack } from "../../logic/canvas_area/undo";
 import { file_save_state_atom, meta_data_atom } from "../../window";
@@ -19,21 +19,21 @@ import { Canvas } from "../../logic/canvas";
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
     let [selected, set_selected] = useState(-1);
-    const layer_arr = useRecoilValue(layer_arr_atom)!;
-    const canvas_size = useRecoilValue(canvas_size_atom)!;
-    const file_state = new State(useRecoilState(file_save_state_atom));
+    const layer_arr = useAtomValue(layer_arr_atom)!;
+    const canvas_size = useAtomValue(canvas_size_atom)!;
+    const file_state = new State(useAtom(file_save_state_atom));
 
-    const set_loading = useSetRecoilState(is_loading_atom);
-    const set_layer_arr = useSetRecoilState(layer_arr_atom);
-    const set_canvas_size = useSetRecoilState(canvas_size_atom);
-    const set_current_layer = useSetRecoilState(current_layer_atom);
+    const set_loading = useSetAtom(is_loading_atom);
+    const set_layer_arr = useSetAtom(layer_arr_atom);
+    const set_canvas_size = useSetAtom(canvas_size_atom);
+    const set_current_layer = useSetAtom(current_layer_atom);
 
-    const [meta_data] = useRecoilState(meta_data_atom);
+    const [meta_data] = useAtom(meta_data_atom);
 
-    const set_modal_open = useSetRecoilState(is_modal_open_atom);
-    const set_modal_contents = useSetRecoilState(modal_contents_atom);
-    const set_modal_size = useSetRecoilState(modal_size_atom);
-    const user_data = useRecoilValue(user_data_atom);
+    const set_modal_open = useSetAtom(is_modal_open_atom);
+    const set_modal_contents = useSetAtom(modal_contents_atom);
+    const set_modal_size = useSetAtom(modal_size_atom);
+    const user_data = useAtomValue(user_data_atom);
 
     document.addEventListener("mousedown", e => {
         if (!menu_bar_ref.current) return;

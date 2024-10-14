@@ -1,18 +1,15 @@
 import { Equal, ZoomIn, ZoomOut } from "lucide-react"
 import "./index.css"
 import { useEffect, useRef } from "react";
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { atom, useAtom, useSetAtom } from "jotai";
 import { scroll_horizontal_atom, scroll_vertical_atom } from "../canvas_area/scroll_bar";
 
-export const zoom_atom = atom({
-    key: "canvas_zoom",
-    default: 8,
-})
+export const zoom_atom = atom(8)
 
 export const ZoomInOut = () => {
-    const [zoom, set_zoom] = useRecoilState(zoom_atom);
-    const set_scroll_vertical =   useSetRecoilState(scroll_vertical_atom);
-    const set_scroll_horizontal = useSetRecoilState(scroll_horizontal_atom);
+    const [zoom, set_zoom] = useAtom(zoom_atom);
+    const set_scroll_vertical = useSetAtom(scroll_vertical_atom);
+    const set_scroll_horizontal = useSetAtom(scroll_horizontal_atom);
     const text_box_ref = useRef<HTMLInputElement>(null);
 
     useEffect(() => {

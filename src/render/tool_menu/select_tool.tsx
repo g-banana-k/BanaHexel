@@ -1,4 +1,4 @@
-import { useRecoilState } from "recoil";
+import { useAtom } from "jotai";
 import "./index.css";
 import { FlipHorizontal2, FlipVertical2, RotateCcwSquare, RotateCwSquare, Trash2 } from "lucide-react";
 import { ColorPicker } from "../common/color_picker";
@@ -6,8 +6,8 @@ import { SliderWithBox } from "../common/slider";
 import { brush_tool_color_atom, brush_tool_thickness_atom } from ".";
 
 export const SelectToolMenu = () => {
-    const [brush_color, set_brush_color] = useRecoilState(brush_tool_color_atom);
-    const [brush_thickness, set_brush_thickness] = useRecoilState(brush_tool_thickness_atom);
+    const [brush_color, set_brush_color] = useAtom(brush_tool_color_atom);
+    const [brush_thickness, set_brush_thickness] = useAtom(brush_tool_thickness_atom);
     const dispatch = (s: "flip_vertical" | "flip_horizontal" | "rotate_l90" | "rotate_r90" | "trash") => document.dispatchEvent(new CustomEvent("select_area_event", { detail: s }))
     return (<div className="tool_menu_select">
         <div className="tool_menu_select_brush_part">

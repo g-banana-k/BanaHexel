@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react"
-import { atom, useRecoilState } from "recoil";
 import { canvas_toolsT } from "../../render/canvas_area";
 import { editor_tools } from "./tools";
 import { undo_stack } from "./undo";
@@ -8,6 +7,7 @@ import { Option, State } from "../utils";
 import { selected_tool_id_atom } from "../../render/tool_select";
 import { brush_tool_color_atom, brush_tool_thickness_atom, eraser_tool_thickness_atom } from "../../render/tool_menu";
 import { file_save_state_atom } from "../../window";
+import { atom, useAtom } from "jotai";
 
 type CanvasEditorPropsT = {
     canvas_width: number,
@@ -19,10 +19,7 @@ type CanvasEditorPropsT = {
     scroll_vertical: number,
 }
 
-export const is_mouse_down_in_editor_atom = atom({
-    key: "is_mouse_down_in_editor",
-    default: false,
-})
+export const is_mouse_down_in_editor_atom = atom(false)
 
 export const CanvasEditor = ({
     canvas_width,
@@ -34,9 +31,9 @@ export const CanvasEditor = ({
     scroll_vertical,
 }: CanvasEditorPropsT) => {
     let [once, set_once] = useState(true);
-    let [is_mouse_down, set_mouse_down_raw] = useRecoilState(is_mouse_down_in_editor_atom);
-    const layers_arr = new State(useRecoilState(layer_arr_atom));
-    const current_layer = new State(useRecoilState(current_layer_atom));
+    let [is_mouse_down, set_mouse_down_raw] = useAtom(is_mouse_down_in_editor_atom);
+    const layers_arr = new State(useAtom(layer_arr_atom));
+    const current_layer = new State(useAtom(current_layer_atom));
 
     const set_mouse_down = (b: ((currVal: boolean) => boolean) | boolean) => {
         const v = typeof b === "function" ? b(is_mouse_down) : b;
@@ -47,12 +44,12 @@ export const CanvasEditor = ({
     const div_ref = useRef<HTMLDivElement>(null);
     const canvas_ref = useRef<HTMLCanvasElement>(null);
 
-    const [selected_tool_id, set_selected_tool_id] = useRecoilState(selected_tool_id_atom);
+    const [selected_tool_id, set_selected_tool_id] = useAtom(selected_tool_id_atom);
     const selected_tool = useRef<canvas_toolsT>("none");
-    const brush_color = new State(useRecoilState(brush_tool_color_atom));
-    const brush_thickness = new State(useRecoilState(brush_tool_thickness_atom));
-    const eraser_thickness = new State(useRecoilState(eraser_tool_thickness_atom));
-    const file_state = new State(useRecoilState(file_save_state_atom));
+    const brush_color = new State(useAtom(brush_tool_color_atom));
+    const brush_thickness = new State(useAtom(brush_tool_thickness_atom));
+    const eraser_thickness = new State(useAtom(eraser_tool_thickness_atom));
+    const file_state = new State(useAtom(file_save_state_atom));
     const need_on_end = new State(useState(true))
 
     const zoom = useRef(z);

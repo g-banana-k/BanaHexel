@@ -1,13 +1,13 @@
 import "../color_theme/index.css"
 
 import { Moon, Sun } from "lucide-react";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 import { color_theme_atom, ColorTheme } from "../color_theme";
 
 export const ThemeToggleSwitch = () => {
     const e_ref = useRef<HTMLDivElement>(null);
-    useRecoilValue(color_theme_atom);
+    useAtomValue(color_theme_atom);
     useEffect(() => {
         const e = e_ref.current;
         if (!e) return;

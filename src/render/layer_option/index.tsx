@@ -1,15 +1,12 @@
-import { atom, useRecoilState } from "recoil"
+import { atom, useAtom } from "jotai"
 import "./index.css"
 import { Layers3 } from "lucide-react"
 import { State } from "../../logic/utils"
 
-export const layers_display_opacity_atom = atom({
-    key: "layers_display_opacity",
-    default: {back: 50, front: 50}
-})
+export const layers_display_opacity_atom = atom({back: 50, front: 50})
 
 export const LayerOption = () => {
-    const opacity = new State(useRecoilState(layers_display_opacity_atom));
+    const opacity = new State(useAtom(layers_display_opacity_atom));
     return (
         <div id="layer_display_option">
             <div id="layer_display_option_area_icon">

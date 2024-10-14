@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./slider.css";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import { color_theme_atom, ColorTheme } from "../color_theme";
 
 export const Slider = ({
@@ -26,7 +26,7 @@ export const Slider = ({
 
     let [once, set_once] = useState(true);
 
-    useRecoilValue(color_theme_atom);
+    useAtomValue(color_theme_atom);
 
     useEffect(() => {
         const knob = knob_ref.current;

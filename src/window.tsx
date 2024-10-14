@@ -1,7 +1,7 @@
 import "./index.css"
 
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
-import {  TitleBar } from "./render/title_bar";
+import { atom, useAtom, useSetAtom } from "jotai";
+import { TitleBar } from "./render/title_bar";
 import { useEffect } from "react";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import { Modal } from "./render/modal";
@@ -19,32 +19,23 @@ listen("confirm_close", () => {
 })
 
 export const window_size_atom = atom({
-    key: "window_size",
-    default: {
-        w: window.innerWidth,
-        h: window.innerHeight,
-        maximized: false,
-        minimized: false
-    }
+    w: window.innerWidth,
+    h: window.innerHeight,
+    maximized: false,
+    minimized: false
 })
 
-export const file_save_state_atom = atom<FileStateT>({
-    key: "file_save_state",
-    default: { saved: false, saving: false, path: Option.None() }
-})
+export const file_save_state_atom = atom<FileStateT>({ saved: false, saving: false, path: Option.None<string>() })
 
-export const meta_data_atom = atom<Option<MetaDataT>>({
-    key: "meta_data",
-    default: Option.None()
-})
+export const meta_data_atom = atom<Option<MetaDataT>>(Option.None<MetaDataT>())
 
 export const Window = () => {
-    const [_window_size, set_window_size] = useRecoilState(window_size_atom);
-    const file_state = new StateBySetter(useSetRecoilState(file_save_state_atom));
-    const user_data = new StateBySetter(useSetRecoilState(user_data_atom));
-    const layer_arr = new StateBySetter(useSetRecoilState(layer_arr_atom));
-    const canvas_size = new StateBySetter(useSetRecoilState(canvas_size_atom));
-    const meta_data = new StateBySetter(useSetRecoilState(meta_data_atom))
+    const [_window_size, set_window_size] = useAtom(window_size_atom);
+    const file_state = new StateBySetter(useSetAtom(file_save_state_atom));
+    const user_data = new StateBySetter(useSetAtom(user_data_atom));
+    const layer_arr = new StateBySetter(useSetAtom(layer_arr_atom));
+    const canvas_size = new StateBySetter(useSetAtom(canvas_size_atom));
+    const meta_data = new StateBySetter(useSetAtom(meta_data_atom))
 
     useEffect(() => {
         appWindow().onResized(async (_) => {
@@ -91,11 +82,11 @@ export const Window = () => {
         }
     }, [])
 
-    const set_context_menu_open = useSetRecoilState(is_context_menu_open_atom);
-    const set_context_menu_position = useSetRecoilState(context_menu_position_atom);
-    const set_context_menu_contents = useSetRecoilState(context_menu_contents_atom);
+    const set_context_menu_open = useSetAtom(is_context_menu_open_atom);
+    const set_context_menu_position = useSetAtom(context_menu_position_atom);
+    const set_context_menu_contents = useSetAtom(context_menu_contents_atom);
 
-    const [context_menu_ref, _set_context_menu_ref] = useRecoilState(context_menu_ref_atom)
+    const [context_menu_ref, _set_context_menu_ref] = useAtom(context_menu_ref_atom)
     return (
         <div id="window" onContextMenu={e => {
             if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;

@@ -2,7 +2,7 @@ import "./index.css";
 import { Hexagon } from "lucide-react";
 import { MenuBar } from "./menu_bar";
 import { WindowControl } from "./window_control";
-import { atom, useRecoilState, useRecoilValue } from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { State } from "../../logic/utils";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import { ThemeToggleSwitch } from "./color_theme";
@@ -10,7 +10,7 @@ import { file_save_state_atom } from "../../window";
 
 
 export const TitleBar = (props: { is_loading?: boolean }) => {
-    const file_state = new State(useRecoilState(file_save_state_atom));
+    const file_state = new State(useAtom(file_save_state_atom));
     appWindow().setTitle(`${file_state.val_local().path.unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)!} - BanaHexel`)
     return (
         <div id="title_bar_container">
