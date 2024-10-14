@@ -59,6 +59,7 @@ export class Result<T, E> {
         }
     }
 }
+
 export class Option<T> {
     private v: T | undefined;
     private is_some_flag: boolean;
@@ -138,6 +139,8 @@ export class State<T> {
         return s;
     }
 }
+
+
 export class StateBySetter<T> {
     protected set_state: (updater: ((prev: T) => T) | T) => void;
     protected cache: Option<T>;
@@ -162,6 +165,7 @@ export class StateBySetter<T> {
         });
     }
 }
+
 
 export const PromiseWithResolvers = <T>(): {
     promise: Promise<T>;

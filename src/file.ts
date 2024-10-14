@@ -2,7 +2,10 @@ import { invoke } from "@tauri-apps/api/core";
 import { Option, Result, State, StateBySetter, UnRequired } from "./common/utils"
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { Layer } from "./data";
+import { SetterOrUpdater } from "recoil";
+import { UndoStack } from "./canvas_area/undo";
 import { exists } from "@tauri-apps/plugin-fs";
+import { load_file } from "./app";
 
 export type data_fileT = {
     layers: string[],
@@ -13,12 +16,6 @@ export type data_fileT = {
         },
     },
 }
-
-export type user_dataT = {
-    palette: { code: string, uuid: string }[]
-    theme: string,
-}
-
 
 export const read_file_from_path = async (path: string): Promise<Result<data_fileT, unknown>> => {
     const v = await Result.from_try_catch_async<[string, string[]]>((() => invoke("open_file_from_path", { path })))
@@ -93,6 +90,11 @@ export const canvas_to_binary = (canvas: HTMLCanvasElement): string => {
     return canvas.toDataURL('image/png').split(',')[1];
 }
 
+export type user_dataT = {
+    palette: { code: string, uuid: string }[]
+    theme: string,
+}
+
 export const write_user_data = async ({ user_data }: { user_data: user_dataT }) => {
     const dir = await appDataDir();
     const path = await join(dir, "user_data.json");
@@ -110,6 +112,8 @@ export const read_user_data = async (): Promise<user_dataT> => {
         default_v;
 }
 
+export type file_stateT = { saving: boolean, saved: boolean, has_file: boolean }
+
 export const export_image = async ({
     img,
     project_name
@@ -126,37 +130,83 @@ export const export_image = async ({
 }
 
 export const save_file_with_path = async ({
+    file_state,
     opening_file_path,
     layer_arr,
     canvas_size
 }: {
+    file_state: StateBySetter<file_stateT>,
     opening_file_path: StateBySetter<Option<string>>,
     layer_arr: Layer[],
     canvas_size: { width: number, height: number, }
 }) => {
+    if (file_state.val_global().saving) return;
+    file_state.set({ saving: true, saved: false, has_file: true })
     if (opening_file_path.val_global().is_some()) {
         await write_file_with_path(opening_file_path.val_local().unwrap().unwrap(),
             { layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } }
         );
+        file_state.set({ saving: false, saved: true, has_file: true });
     } else {
         const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
         p.on_ok(p => p.on_some(p => {
             opening_file_path.set(Option.Some(p));
+            file_state.set({ saving: false, saved: true, has_file: true });
+        }).on_none(() => {
+            file_state.set({ saving: false, saved: false, has_file: false });
         }));
     }
 }
 
 export const save_file_new = async ({
+    file_state,
     opening_file_path,
     layer_arr,
     canvas_size
 }: {
+    file_state: State<file_stateT>,
     opening_file_path: State<Option<string>>,
     layer_arr: Layer[],
     canvas_size: { width: number, height: number, }
 }) => {
+    if (file_state.val_local().saving) return;
+    const had_file = file_state.val_local().has_file;
+    file_state.set({ saving: true, saved: false, has_file: true })
     const p = await write_file_new({ layers: layer_arr!.map((v) => v.body), meta_data: { canvas_size } });
     p.on_ok(p => p.on_some(p => {
         opening_file_path.set(Option.Some(p));
-    }))
+        file_state.set({ saving: false, saved: true, has_file: true });
+    }).on_none(() => {
+        file_state.set({ saving: false, saved: false, has_file: had_file });
+    }));
+}
+
+export const open_file = async (
+    {
+        undo_stack,
+        set_loading,
+        set_layer_arr,
+        set_canvas_size,
+        set_current_layer,
+        opening_file_path,
+        file_state
+    }: {
+        undo_stack?: UndoStack,
+        set_loading: SetterOrUpdater<boolean>,
+        set_layer_arr: SetterOrUpdater<Layer[] | undefined>,
+        set_canvas_size: SetterOrUpdater<{ width: number, height: number } | undefined>,
+        set_current_layer: SetterOrUpdater<number>,
+        file_state: State<file_stateT>,
+        opening_file_path: StateBySetter<Option<string>>,
+    }) => {
+    if (file_state.val_global().saving) return;
+    const new_data = (await read_file()).unwrap();
+    new_data.on_some(async v => {
+        undo_stack?.clear();
+        set_loading(true);
+        opening_file_path.set(Option.Some(v[0]));
+        await load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer });
+        set_loading(false);
+        file_state.set({ saving: false, saved: true, has_file: true })
+    })
 }
