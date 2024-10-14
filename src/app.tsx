@@ -10,7 +10,7 @@ import { file_save_state } from "./title_bar";
 
 export const user_data_state = atom({
     key: "user_data_state_atom",
-    default: Option.None<user_dataT>()
+    default: Option.None<user_dataT>(),
 })
 
 export const layer_arr_state = atom<Layer[] | undefined>({
