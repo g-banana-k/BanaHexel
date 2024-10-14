@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Window } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, load_file, opening_file_path_atom, user_data_atom } from "../../app";
+import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, load_file, user_data_atom } from "../../app";
 
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
@@ -26,7 +26,6 @@ export const MenuBar = () => {
     const set_layer_arr = useSetRecoilState(layer_arr_atom);
     const set_canvas_size = useSetRecoilState(canvas_size_atom);
     const set_current_layer = useSetRecoilState(current_layer_atom);
-    const opening_file_path = new State(useRecoilState(opening_file_path_atom));
 
     const [meta_data] = useRecoilState(meta_data_atom);
 
@@ -80,7 +79,6 @@ export const MenuBar = () => {
                         resolve(Option.None())
                     }, { once: true });
                     (await promise).on_some(async ({ w, h }) => {
-                        // opening_file_path.set(Option.None());
                         undo_stack.clear();
                         const canvas_w = !Number.isNaN(w) ? w : 64;
                         const canvas_h = !Number.isNaN(h) ? h : 64;

@@ -33,11 +33,6 @@ export const is_loading_atom = atom<boolean>({
     default: true,
 })
 
-export const opening_file_path_atom = atom<Option<string>>({
-    key: "opening_file_path",
-    default: Option.None(),
-})
-
 export const load_file = async (data: UnRequired<DataFileT, "layers">, setters: {
     set_layer_arr: SetterOrUpdater<Layer[] | undefined>,
     set_canvas_size: SetterOrUpdater<{ width: number, height: number } | undefined>,
@@ -67,20 +62,17 @@ export const App = () => {
     const set_current_layer = useSetRecoilState(current_layer_atom);
     const set_layer_arr = useSetRecoilState(layer_arr_atom);
     const set_canvas_size = useSetRecoilState(canvas_size_atom);
-    const opening_file_path = new StateBySetter(useSetRecoilState(opening_file_path_atom));
     const file_state = new State(useRecoilState(file_save_state_atom));
     useEffect(() => {
         (async () => {
             set_loading(true);
-            console.log(opening_file_path.val_global())
-            if (opening_file_path.val_global().is_some()) {
-                const res = (await read_file_from_path(opening_file_path.val_local().unwrap().unwrap())).unwrap();
+            if (file_state.val_global().path.is_some()) {
+                const res = (await read_file_from_path(file_state.val_global().path.unwrap())).unwrap();
                 await load_file(
                     res
                     , { set_canvas_size, set_layer_arr, set_loading, set_current_layer });
                 file_state.set({ saving: false, saved: false, path: Option.None() })
             } else {
-                opening_file_path.set(Option.None());
                 await load_file({
                     meta_data: {
                         canvas_size: {
