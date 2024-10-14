@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 import { atom, useRecoilState } from "recoil";
-import { canvas_toolsT } from ".";
-import { editor_tools } from "./editor_tools";
+import { canvas_toolsT } from "../../render/canvas_area";
+import { editor_tools } from "./tools";
 import { undo_stack } from "./undo";
 import { current_layer_atom, layer_arr_atom } from "../../app";
-import { Option, State } from "../../logic/utils";
-import { selected_tool_id_atom } from "../tool_select";
-import { brush_tool_color_atom, brush_tool_thickness_atom, eraser_tool_thickness_atom } from "../tool_menu";
+import { Option, State } from "../utils";
+import { selected_tool_id_atom } from "../../render/tool_select";
+import { brush_tool_color_atom, brush_tool_thickness_atom, eraser_tool_thickness_atom } from "../../render/tool_menu";
 import { file_save_state_atom } from "../../window";
 
 type CanvasEditorPropsT = {

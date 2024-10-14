@@ -3,7 +3,7 @@ import "./index.css";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
 import { canvas_toolsT } from "../canvas_area";
-import { is_mouse_down_in_editor_atom } from "../canvas_area/editor";
+import { is_mouse_down_in_editor_atom } from "../../logic/canvas_area/editor";
 
 export const selected_tool_id_atom = atom<canvas_toolsT>({
     key: "selected_tool",

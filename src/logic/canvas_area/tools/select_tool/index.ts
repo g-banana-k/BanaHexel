@@ -1,7 +1,7 @@
 import { argsT, toolT } from "..";
-import { Layer } from "../../../../logic/data";
-import { FileStateT } from "../../../../logic/file";
-import { create_canvas, Option, Result, State } from "../../../../logic/utils";
+import { Layer } from "../../../data";
+import { FileStateT } from "../../../file";
+import { create_canvas, Option, Result, State } from "../../../utils";
 import { CanvasPart, UndoStack } from "../../undo";
 
 export const select_tool = ({

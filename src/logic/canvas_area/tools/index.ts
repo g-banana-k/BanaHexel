@@ -1,7 +1,7 @@
-import { canvas_toolsT } from "..";
-import { Layer } from "../../../logic/data";
-import { FileStateT } from "../../../logic/file";
-import { State } from "../../../logic/utils";
+import { canvas_toolsT } from "../../../render/canvas_area";
+import { Layer } from "../../data";
+import { FileStateT } from "../../file";
+import { State } from "../../utils";
 import { Cache, UndoStack } from "../undo";
 import { brush_tool } from "./brush_tool";
 import { bucket_tool } from "./bucket_tool";

@@ -7,8 +7,8 @@ import { window_size_atom } from "../../window";
 import { scroll_horizontal_atom, scroll_vertical_atom, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
 import { useEffect, useRef, useState } from "react";
 import { color_theme_atom, ColorTheme } from "../color_theme";
-import { background_image } from "./background";
-import { CanvasEditor } from "./editor";
+import { background_image } from "../../logic/canvas_area/background";
+import { CanvasEditor } from "../../logic/canvas_area/editor";
 
 export const CanvasArea = () => {
     const [current_layer, _set_current_layer] = useRecoilState(current_layer_atom);

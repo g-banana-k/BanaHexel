@@ -8,7 +8,7 @@ import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
 import { create_canvas, Option, PromiseWithResolvers, Result, State } from "../../logic/utils";
 
-import { undo_stack } from "../canvas_area/undo";
+import { undo_stack } from "../../logic/canvas_area/undo";
 import { file_save_state_atom, meta_data_atom } from "../../window";
 import { is_modal_open_atom, modal_contents_atom, modal_size_atom } from "../modal";
 import { write_image, write_user_data } from "../../logic/command";

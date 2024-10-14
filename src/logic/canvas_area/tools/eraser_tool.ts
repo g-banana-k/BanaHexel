@@ -1,5 +1,5 @@
 import { argsT, bresenham, toolT } from ".";
-import { create_canvas, Option } from "../../../logic/utils";
+import { create_canvas, Option } from "../../utils";
 import { CanvasPart } from "../undo";
 
 export const eraser_tool = ({
