@@ -2,15 +2,15 @@ import { invoke } from "@tauri-apps/api/core";
 import { Window } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { SetterOrUpdater, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state, user_data_state } from "../app";
-import { export_image, open_file, save_file_new, save_file_with_path, write_user_data } from "../logic/file";
-import { is_modal_open_state, modal_contents_state, modal_size_state } from "../render/modal";
+import { canvas_size_state, current_layer_state, is_loading_state, layer_arr_state, load_file, opening_file_path_state, user_data_state } from "../../app";
+import { export_image, open_file, save_file_new, save_file_with_path, write_user_data } from "../../logic/file";
+import { is_modal_open_state, modal_contents_state, modal_size_state } from "../modal";
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
-import { create_canvas, Option, PromiseWithResolvers, Result, State } from "../logic/utils";
+import { create_canvas, Option, PromiseWithResolvers, Result, State } from "../../logic/utils";
 import { file_save_state } from ".";
 import { undo_stack } from "../canvas_area/undo";
-import { Layer } from "../data";
+import { Layer } from "../../data";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);

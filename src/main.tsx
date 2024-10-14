@@ -3,10 +3,10 @@ import { createRoot } from "react-dom/client";
 import { RecoilRoot, useSetRecoilState } from "recoil";
 import { Window } from "./window";
 
-import "./file"
+import "./logic/file"
 import { StateWrappers } from "./state_wrappers";
 import { opening_file_path_state } from "./app";
-import { Option, StateBySetter } from "./common/utils";
+import { Option, StateBySetter } from "./logic/utils";
 import { invoke } from "@tauri-apps/api/core";
 
 const root = createRoot(document.getElementById("root") as Element);

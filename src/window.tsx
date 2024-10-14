@@ -1,17 +1,16 @@
 import "./index.css"
 
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
-import { file_save_state, TitleBar } from "./title_bar";
+import { file_save_state, TitleBar } from "./render/title_bar";
 import { useEffect } from "react";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import App, { canvas_size_state, layer_arr_state, opening_file_path_state, user_data_state } from "./app";
-import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./context_menu";
-import { Modal } from "./modal";
+import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, ContextMenu, is_context_menu_open_state } from "./render/context_menu";
+import { Modal } from "./render/modal";
 import { listen } from "@tauri-apps/api/event";
-import { Option, State, StateBySetter } from "./common/utils";
-import { read_user_data, save_file_with_path, write_user_data } from "./file";
+import { Option, State, StateBySetter } from "./logic/utils";
 import * as dialog from "@tauri-apps/plugin-dialog";
-import { ColorTheme } from "./color_theme";
+import { ColorTheme } from "./render/color_theme";
 
 listen("confirm_close", () => {
     document.dispatchEvent(new Event("close_requested"))

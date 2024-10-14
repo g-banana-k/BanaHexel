@@ -1,10 +1,10 @@
 import { SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
 import { SliderWithBox } from "./slider";
 import { useEffect, useRef, useState } from "react";
-import { Option, State } from "./utils";
+import { Option, State } from "../logic/utils";
 import "./color_picker.css"
 import { Palette, Pipette, Plus } from "lucide-react";
-import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, is_context_menu_open_state } from "../context_menu";
+import { context_menu_contents_state, context_menu_position_state, context_menu_ref_state, is_context_menu_open_state } from "../render/context_menu";
 import { user_data_state } from "../app";
 
 declare class EyeDropper {

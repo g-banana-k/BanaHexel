@@ -3,8 +3,8 @@ import { Hexagon } from "lucide-react";
 import { MenuBar } from "./menu_bar";
 import { WindowControl } from "./window_control";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-import { State } from "../common/utils";
-import { opening_file_path_state } from "../app";
+import { State } from "../../logic/utils";
+import { opening_file_path_state } from "../../app";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import { ThemeToggleSwitch } from "./color_theme";
 
