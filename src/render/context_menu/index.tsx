@@ -1,26 +1,16 @@
 import { ReactNode, RefObject, useEffect, useRef } from "react";
 import "./index.css"
-<<<<<<< HEAD
-import { atom, useAtom, useAtomValue } from "jotai";
-
-export const is_context_menu_open_atom = atom(false)
-
-export const context_menu_contents_atom = atom<string | ReactNode[]>( "")
-=======
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { SetterOrUpdater } from "../../logic/utils";
 
 export const is_context_menu_open_atom = atom(false)
 
 export const context_menu_contents_atom = atom<string | ReactNode[]>("")
->>>>>>> dev
 
 export const context_menu_position_atom = atom({ x: 0, y: 0 },)
 
 export const context_menu_ref_atom = atom<RefObject<HTMLDivElement> | null>(null);
 
-<<<<<<< HEAD
-=======
 export const useSetContextMenu = (): [
     SetterOrUpdater<string | ReactNode[]>,
     SetterOrUpdater<{        x: number,        y: number,    }>,
@@ -32,7 +22,6 @@ export const useSetContextMenu = (): [
     return [set_contents, set_position, set_open]
 }
 
->>>>>>> dev
 export const ContextMenu = () => {
     const [is_open, set_open] = useAtom(is_context_menu_open_atom);
     const position = useAtomValue(context_menu_position_atom);

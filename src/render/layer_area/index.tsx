@@ -4,20 +4,14 @@ import { useAtom, useAtomValue } from "jotai";
 import { MoveDown, MoveUp, Plus, X } from "lucide-react";
 import { canvas_size_atom, current_layer_atom, layer_arr_atom } from "../../app";
 import { Layer } from "../../logic/data";
-<<<<<<< HEAD
-=======
 import { useSetContextMenu } from "../context_menu";
->>>>>>> dev
 
 export const LayerArea = () => {
     const [layer_arr, set_layer_arr] = useAtom(layer_arr_atom);
     const [current_layer, set_current_layer] = useAtom(current_layer_atom);
     const canvas_size = useAtomValue(canvas_size_atom);
-<<<<<<< HEAD
-=======
 
     const [set_context_menu_contents, set_context_menu_position, set_context_menu_open,] = useSetContextMenu();
->>>>>>> dev
 
     const div_refs = useRef<(HTMLDivElement | null)[]>([]);
     useEffect(() => {
