@@ -1,0 +1,43 @@
+#tool_select_outer {
+    width: 130px;
+    height: 100%;
+    position: relative;
+    overflow: auto;
+    scrollbar-gutter: stable;
+    scrollbar-color: var(--scroll_bar) #0000;
+}
+
+#tool_select {
+    position: absolute;
+}
+
+.tool_icon {
+    height: 32px;
+    width: 32px;
+    padding: 4px;
+    margin: 6px 18px 6px 6px;
+    border-radius: 4px;
+    position: relative;
+    display: inline-block;
+}
+
+.tool_icon:nth-child(2n) {
+    margin-right: 0;
+}
+
+.tool_icon:hover {
+    background-color: var(--tool_icon_hover);
+}
+
+.tool_icon.selected_tool_icon {
+    background-color: var(--tool_icon_selected);
+}
+
+.tool_icon svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}

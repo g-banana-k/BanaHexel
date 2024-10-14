@@ -1,0 +1,25 @@
+#context_menu {
+    position: fixed;
+    width: 200px;
+    background-color: #fffb;
+    color: #111;
+    font-size: 15px;
+    backdrop-filter:blur(10px);
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 2px;
+    z-index: 4;
+    box-shadow: 2px 2px 6px #1118;
+}
+
+.context_menu_content {
+    height: 28px;
+    line-height: 28px;
+    margin: 4px;
+    padding-left: 8px;
+    border-radius: 6px;
+}
+
+.context_menu_content:hover {
+    background-color: #3331;
+}

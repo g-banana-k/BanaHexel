@@ -1,0 +1,50 @@
+.common_slider {
+    border-radius: 4px;
+    user-select: none;
+    margin: 3px 5px;
+}
+
+.common_slider_inner {
+    position: relative;
+}
+
+.common_slider_knob {
+    position: absolute;
+    border-radius: 2px;
+    user-select: none;
+    background-color: var(--slider_knob);
+}
+
+.common_slider_knob:hover {
+    position: absolute;
+    background-color: var(--slider_knob_hover);
+}
+
+.common_slider_with_box_outer {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.common_slider_with_box_box {
+    top: 1px;
+    position: absolute;
+    font-family: inherit;
+    appearance: textfield;
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    background-color: var(--text_box);
+    color: var(--char_color);
+}
+
+.common_slider_with_box_box::-webkit-inner-spin-button,
+.common_slider_with_box_box::-webkit-outer-spin-button {
+    appearance: none;
+}
+
+.common_slider_with_box_box:focus {
+    border: none;
+    border-radius: 2px;
+    background-color: var(--text_box_focus);
+}

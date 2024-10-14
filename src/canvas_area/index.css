@@ -1,0 +1,51 @@
+#canvas_area {
+    flex-grow: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+#canvas_body_div,
+#canvas_background_div,
+#canvas_layers_back_div,
+#canvas_layers_front_div {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas_body_div>canvas,
+#canvas_background_div>canvas,
+#canvas_layers_back_div>canvas,
+#canvas_layers_front_div>canvas  {
+    position:absolute;
+    image-rendering: pixelated;
+    user-select: none,
+}
+
+#canvas_scroll_bar_vertical {
+    right: 0;
+    width: 10px;
+}
+
+#canvas_scroll_bar_horizontal {
+    bottom: 0;
+    height: 10px;
+}
+
+.canvas_scroll_bar {
+    position: absolute;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drug: none;
+    background-color: var(--canvas_scrollbar_1);
+}
+
+.canvas_scroll_bar:hover {
+    position: absolute;
+    background-color: var(--canvas_scrollbar_2);
+}
+
+#canvas_layers_front_div {
+    pointer-events: none;
+}

@@ -1,4 +1,4 @@
-import { ColorThemeClassWrapper } from "./render/color_theme";
+import { ColorThemeClassWrapper } from "./color_theme";
 
 export const StateWrappers = () => <div style={{ display: "none" }}>
     <ColorThemeClassWrapper />
