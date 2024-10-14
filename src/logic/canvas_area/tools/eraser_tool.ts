@@ -1,5 +1,6 @@
 import { argsT, bresenham, toolT } from ".";
-import { create_canvas, Option } from "../../utils";
+import { Canvas } from "../../canvas";
+import { Option } from "../../utils";
 import { CanvasPart } from "../undo";
 
 export const eraser_tool = ({
@@ -27,7 +28,7 @@ export const eraser_tool = ({
             const shift = Math.floor((thickness) / 2);
             b_x = x;
             b_y = y;
-            old_canvas = Option.Some(create_canvas(layer.body, true)[0]);
+            old_canvas = Option.Some(new Canvas(layer.body, true).body);
             lt_x = x;
             lt_y = y;
             rb_x = x;

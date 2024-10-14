@@ -182,25 +182,3 @@ export const PromiseWithResolvers = <T>(): {
 }
 
 export const println = (log: string) => invoke("rust_log", { log })
-
-type create_canvasT = {
-    (c: HTMLCanvasElement | ImageBitmap, clone?: boolean): [HTMLCanvasElement, CanvasRenderingContext2D],
-    (wh: { width: number, height: number }): [HTMLCanvasElement, CanvasRenderingContext2D]
-};
-
-export const create_canvas: create_canvasT = (c: { width: number, height: number } | HTMLCanvasElement | ImageBitmap, clone?: boolean): [HTMLCanvasElement, CanvasRenderingContext2D] => {
-    if ( clone) {
-        const n_c = document.createElement("canvas");
-        n_c.width = c.width;
-        n_c.height = c.height;
-        const ctx = n_c.getContext("2d")!;
-        ctx.drawImage(c as CanvasImageSource,0,0);
-        return [n_c, ctx]
-    } else {
-        const n_c = document.createElement("canvas");
-        n_c.width = c.width;
-        n_c.height = c.height;
-        const ctx = n_c.getContext("2d")!;
-        return [n_c, ctx]
-    }
-}

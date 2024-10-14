@@ -6,7 +6,7 @@ import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, 
 
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
-import { create_canvas, Option, PromiseWithResolvers, Result, State } from "../../logic/utils";
+import { Option, PromiseWithResolvers, Result, State } from "../../logic/utils";
 
 import { undo_stack } from "../../logic/canvas_area/undo";
 import { file_save_state_atom, meta_data_atom } from "../../window";
@@ -14,6 +14,7 @@ import { is_modal_open_atom, modal_contents_atom, modal_size_atom } from "../mod
 import { write_image, write_user_data } from "../../logic/command";
 import { FileStateT, open_file, save_file_new, save_file_with_path } from "../../logic/file";
 import { Layer } from "../../logic/data";
+import { Canvas } from "../../logic/canvas";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
@@ -258,11 +259,11 @@ const project_export = ({
     }, { once: true });
     (await promise).on_some(r_raw => {
         const r = Number.isNaN(r_raw) ? 1 : r_raw;
-        const [canvas, ctx] = create_canvas({ width: canvas_size.width * r, height: canvas_size.height * r });
-        ctx.imageSmoothingEnabled = false;
-        ctx.scale(r, r);
-        layer_arr.forEach(l => { ctx.drawImage(l.body, 0, 0) });
-        canvas_handler({ canvas, set_selected, set_modal_open, set_modal_size, set_modal_contents, canvas_size, layer_arr, file_state })
+        const canvas = new Canvas({ width: canvas_size.width * r, height: canvas_size.height * r })
+        canvas.ctx.imageSmoothingEnabled = false;
+        canvas.ctx.scale(r, r);
+        layer_arr.forEach(l => { canvas.ctx.drawImage(l.body, 0, 0) });
+        canvas_handler({ canvas: canvas.body, set_selected, set_modal_open, set_modal_size, set_modal_contents, canvas_size, layer_arr, file_state })
     })
 }
 

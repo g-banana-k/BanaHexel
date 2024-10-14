@@ -1,7 +1,8 @@
 import { argsT, toolT } from "..";
+import { Canvas } from "../../../canvas";
 import { Layer } from "../../../data";
 import { FileStateT } from "../../../file";
-import { create_canvas, Option, Result, State } from "../../../utils";
+import { Option, Result, State } from "../../../utils";
 import { CanvasPart, UndoStack } from "../../undo";
 
 export const select_tool = ({
@@ -79,7 +80,7 @@ export const select_tool = ({
                 const cl = clip.unwrap();
                 const w = (n => 0 < n ? n : n - 1)(cl.resize.r ? x - cl.x : cl.resize.l ? cl.x - x + cl.w : cl.w);
                 const h = (n => 0 < n ? n : n - 1)(cl.resize.b ? y - cl.y : cl.resize.t ? cl.y - y + cl.h : cl.h);
-                const [n_canvas, n_ctx] = create_canvas({ width: Math.abs(w), height: Math.abs(h) })
+                const n_canvas = new Canvas({ width: Math.abs(w), height: Math.abs(h) })
                 const lt_x = cl.resize.r && w < 0 ? cl.x + w + 1
                     : cl.resize.l && 0 < w ? x
                         : cl.resize.l && w < 0 ? cl.x + cl.w - 1
@@ -88,11 +89,12 @@ export const select_tool = ({
                     : cl.resize.t && 0 < h ? y
                         : cl.resize.t && h < 0 ? cl.y + cl.h - 1
                             : cl.y;
-                n_ctx.imageSmoothingEnabled = false;
-                n_ctx.scale(w / cl.w, h / cl.h);
-                n_ctx.drawImage(cl.canvas, 0 > w ? -cl.w : 0, 0 > h ? -cl.h : 0,);
-                n_ctx.restore();
-                cl.stamp([canvas, ctx], "stroke", [lt_x, lt_y], n_canvas);
+                n_canvas.ctx_safe((n_ctx) => {
+                    n_ctx.imageSmoothingEnabled = false;
+                    n_ctx.scale(w / cl.w, h / cl.h);
+                    n_ctx.drawImage(cl.body(), 0 > w ? -cl.w : 0, 0 > h ? -cl.h : 0,);
+                })
+                cl.stamp([canvas, ctx], "stroke", [lt_x, lt_y], n_canvas.body);
             } else if (clip.is_some()) {
                 const cl = clip.unwrap();
                 cl.stamp([canvas, ctx], "stroke", [cl.x + x - b_x, cl.y + y - b_y])
@@ -111,7 +113,7 @@ export const select_tool = ({
                 const cl = clip.unwrap();
                 const w = (n => 0 < n ? n : n - 1)(cl.resize.r ? x - cl.x : cl.resize.l ? cl.x - x + cl.w : cl.w);
                 const h = (n => 0 < n ? n : n - 1)(cl.resize.b ? y - cl.y : cl.resize.t ? cl.y - y + cl.h : cl.h);
-                const [n_canvas, n_ctx] = create_canvas({ width: Math.abs(w), height: Math.abs(h) })
+                const n_canvas = new Canvas({ width: Math.abs(w), height: Math.abs(h) })
                 const lt_x = cl.resize.r && w < 0 ? cl.x + w + 1
                     : cl.resize.l && 0 < w ? x
                         : cl.resize.l && w < 0 ? cl.x + cl.w - 1
@@ -120,14 +122,14 @@ export const select_tool = ({
                     : cl.resize.t && 0 < h ? y
                         : cl.resize.t && h < 0 ? cl.y + cl.h - 1
                             : cl.y;
-                n_ctx.imageSmoothingEnabled = false;
-                n_ctx.scale(w / cl.w, h / cl.h);
-                n_ctx.drawImage(cl.canvas, 0 > w ? -cl.w : 0, 0 > h ? -cl.h : 0,);
-                n_ctx.restore();
+                n_canvas.ctx_safe((n_ctx) => {
+                    n_ctx.imageSmoothingEnabled = false;
+                    n_ctx.scale(w / cl.w, h / cl.h);
+                    n_ctx.drawImage(cl.body(), 0 > w ? -cl.w : 0, 0 > h ? -cl.h : 0,);
+                });
                 cl.x = lt_x;
                 cl.y = lt_y;
                 cl.canvas = n_canvas;
-                cl.ctx = n_ctx;
                 cl.w = Math.abs(w);
                 cl.h = Math.abs(h);
                 cl.stamp([canvas, ctx], "fill")
@@ -137,17 +139,14 @@ export const select_tool = ({
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 clip = Option.Some(new Clip({ ...cl, x: cl.x + x - b_x, y: cl.y + y - b_y }));
                 clip.unwrap().stamp([canvas, ctx], "fill");
-                file_state.set(_=>({..._, saved: false}));
+                file_state.set(_ => ({ ..._, saved: false }));
             } else if (is_try_clipping) {
                 const [lt_x, rb_x] = b_x < x ? [b_x, x] : [x, b_x];
                 const [lt_y, rb_y] = b_y < y ? [b_y, y] : [y, b_y];
                 const layer = layers_arr.val_global()![current_layer.val_global()];
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const cl_canvas = document.createElement("canvas");
-                cl_canvas.width = rb_x - lt_x + 1;
-                cl_canvas.height = rb_y - lt_y + 1;
-                const cl_ctx = cl_canvas.getContext("2d")!;
-                cl_ctx.drawImage(layer.body, -lt_x, -lt_y);
+                const cl_canvas = new Canvas({ width: rb_x - lt_x + 1, height: rb_y - lt_y + 1 });
+                cl_canvas.ctx.drawImage(layer.body, -lt_x, -lt_y);
                 clip = Option.Some(new Clip({
                     lt_x: lt_x,
                     lt_y: lt_y,
@@ -158,16 +157,15 @@ export const select_tool = ({
                     w: rb_x - lt_x + 1,
                     h: rb_y - lt_y + 1,
                     canvas: cl_canvas,
-                    ctx: cl_ctx
                 }));
                 const cl = clip.unwrap();
                 cl.stamp([canvas, ctx], "fill");
-                o_u = Option.Some(create_canvas(layer.body, true)[0]);
+                o_u = Option.Some(new Canvas(layer.body, true).body);
                 layer.ctx.clearRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 is_try_clipping = false;
-                file_state.set(_ => ({..._, saved: false }));
+                file_state.set(_ => ({ ..._, saved: false }));
             }
         },
         "move": ({ f_x, f_y, zoom, x, y }) => {
@@ -202,7 +200,7 @@ export const select_tool = ({
             const prev_layer = layers_arr.val_global()![prev_layer_i.unwrap_or(0)];
             clip.on_some(cl => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                prev_layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+                prev_layer.ctx.drawImage(cl.body(), cl.x, cl.y);
                 prev_layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
                 clip = Option.None();
@@ -215,7 +213,7 @@ export const select_tool = ({
             Clip.release([clip, layer, layers_arr]);
             clip = Option.None();
             console.log(layer);
-            const [cl_canvas, cl_ctx] = create_canvas(layer.body, true);
+            const cl_canvas = new Canvas(layer.body, true);
             clip = Option.Some(new Clip({
                 lt_x: 0,
                 lt_y: 0,
@@ -226,17 +224,16 @@ export const select_tool = ({
                 w: canvas.width,
                 h: canvas.height,
                 canvas: cl_canvas,
-                ctx: cl_ctx
             }));
             const cl = clip.unwrap();
             cl.stamp([canvas, ctx], "fill");
-            o_u = Option.Some(create_canvas(layer.body, true)[0]);
+            o_u = Option.Some(new Canvas(layer.body, true).body);
             cl.cut([layer, layers_arr, file_state]);
         },
         "on_ctrl_c": async () => {
             if (!clip.is_some()) return;
             const cl = clip.unwrap();
-            const data_url = cl.canvas.toDataURL('image/png');
+            const data_url = cl.body().toDataURL('image/png');
             const blob = await (await fetch(data_url)).blob();
             const clipboard_item = new ClipboardItem({
                 [blob.type]: blob
@@ -262,7 +259,7 @@ export const select_tool = ({
                 if (!blob_res.is_ok()) return;
                 const blob = blob_res.unwrap();
                 const image = await createImageBitmap(blob);
-                const [cl_canvas, cl_ctx] = create_canvas(image, true);
+                const cl_canvas = new Canvas(image, true);
                 clip = Option.Some(new Clip({
                     lt_x: 0,
                     lt_y: 0,
@@ -273,10 +270,9 @@ export const select_tool = ({
                     w: image.width,
                     h: image.height,
                     canvas: cl_canvas,
-                    ctx: cl_ctx
                 }));
                 image.close();
-                o_u = Option.Some(create_canvas(layer.body, true)[0]);
+                o_u = Option.Some(new Canvas(layer.body, true).body);
                 const cl = clip.unwrap();
                 cl.stamp([canvas, ctx], "fill");
                 break;
@@ -293,8 +289,8 @@ export const select_tool = ({
             const u = new CanvasPart(lt_x, lt_y, w, h, o_u.unwrap());
             const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
             undo_stack.push({ i, u, r });
-            file_state.set(_=>({..._, saved: false}));
-            const data_url = cl.canvas.toDataURL('image/png');
+            file_state.set(_ => ({ ..._, saved: false }));
+            const data_url = cl.body().toDataURL('image/png');
             const blob = await (await fetch(data_url)).blob();
             const clipboard_item = new ClipboardItem({
                 [blob.type]: blob
@@ -330,8 +326,7 @@ class Clip {
     y: number;
     w: number;
     h: number;
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
+    canvas: Canvas
     resize: { r: boolean, l: boolean, t: boolean, b: boolean, is: boolean };
     constructor(cl: ClipInit)
     constructor(cl: ClassProps<Clip>)
@@ -343,7 +338,6 @@ class Clip {
             this.w = cl.w;
             this.h = cl.h;
             this.canvas = cl.canvas;
-            this.ctx = cl.ctx;
             this.resize = cl.resize;
         } else {
             this.start = {
@@ -357,54 +351,57 @@ class Clip {
             this.w = cl.w;
             this.h = cl.h;
             this.canvas = cl.canvas;
-            this.ctx = cl.ctx;
             this.resize = cl.resize ?? { r: false, l: false, t: false, b: false, is: false };
         }
     }
+    body() {
+        return this.canvas.body;
+    }
+    ctx() {
+        return this.canvas.ctx;
+    }
     rotate_r90() {
-        const [canvas, ctx] = create_canvas({ width: this.h, height: this.w });
-        ctx.save();
-        ctx.rotate(Math.PI / 2);
-        ctx.drawImage(this.canvas, 0, -this.h);
-        ctx.restore();
+        const canvas = new Canvas({ width: this.h, height: this.w });
+        canvas.ctx_safe((ctx) => {
+            ctx.rotate(Math.PI / 2);
+            ctx.drawImage(this.body(), 0, -this.h);
+        })
         const center_x = this.x + Math.floor(this.w / 2);
         const center_y = this.y + Math.floor(this.h / 2);
         this.x = center_x - Math.floor(this.h / 2);
         this.y = center_y - Math.floor(this.w / 2);
         this.canvas = canvas;
-        this.ctx = ctx;
         [this.w, this.h] = [this.h, this.w];
     }
     rotate_l90() {
-        const [canvas, ctx] = create_canvas({ width: this.h, height: this.w });
-        ctx.save();
-        ctx.rotate(-Math.PI / 2);
-        ctx.drawImage(this.canvas, -this.w, 0);
-        ctx.restore();
+        const canvas = new Canvas({ width: this.h, height: this.w });
+        canvas.ctx_safe((ctx) => {
+            ctx.rotate(-Math.PI / 2);
+            ctx.drawImage(this.body(), -this.w, 0);
+        })
         const center_x = this.x + Math.floor(this.w / 2);
         const center_y = this.y + Math.floor(this.h / 2);
         this.x = center_x - Math.floor(this.h / 2);
         this.y = center_y - Math.floor(this.w / 2);
         this.canvas = canvas;
-        this.ctx = ctx;
         [this.w, this.h] = [this.h, this.w];
     }
     async flip_horizontal() {
-        const img = await createImageBitmap(this.canvas);
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.save();
-        this.ctx.scale(1, -1)
-        this.ctx.drawImage(img, 0, -this.canvas.height);
-        this.ctx.restore();
+        const img = await createImageBitmap(this.body());
+        this.canvas.ctx_safe((ctx) => {
+            ctx.clearRect(0, 0, this.body().width, this.body().height);
+            ctx.scale(1, -1)
+            ctx.drawImage(img, 0, -this.body().height);
+        })
         img.close();
     }
     async flip_vertical() {
-        const img = await createImageBitmap(this.canvas);
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.save();
-        this.ctx.scale(-1, 1)
-        this.ctx.drawImage(img, -this.canvas.width, 0);
-        this.ctx.restore();
+        const img = await createImageBitmap(this.body());
+        this.canvas.ctx_safe((ctx) => {
+            ctx.clearRect(0, 0, this.body().width, this.body().height);
+            ctx.scale(-1, 1)
+            ctx.drawImage(img, -this.body().width, 0);
+        })
         img.close();
     }
     stamp(
@@ -416,7 +413,7 @@ class Clip {
         const [x, y] = xy;
         const [w, h] = [img?.width ?? this.w, img?.height ?? this.h];
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img ?? this.canvas, x ?? this.x, y ?? this.y);
+        ctx.drawImage(img ?? this.body(), x ?? this.x, y ?? this.y);
         if (surround === "stroke") {
             ctx.strokeStyle = "#5fe07544";
             ctx.strokeRect((x ?? this.x) + 0.5, (y ?? this.y) + 0.5, w - 1, h - 1);
@@ -456,7 +453,7 @@ class Clip {
     }
     static release([clip, layer, layers_arr]: [Option<Clip>, Layer, State<Layer[] | undefined>]) {
         clip.on_some(cl => {
-            layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+            layer.ctx.drawImage(cl.body(), cl.x, cl.y);
             layer.preview_update();
             layers_arr.set([...layers_arr.val_local()!]);
         });
@@ -469,13 +466,13 @@ class Clip {
         const i = current_layer;
         const { lt_x, lt_y, w, h } = cl.visible_rect(canvas);
         const u = new CanvasPart(lt_x, lt_y, w, h, o_u);
-        layer.ctx.drawImage(cl.canvas, cl.x, cl.y);
+        layer.ctx.drawImage(cl.body(), cl.x, cl.y);
         const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
         layer.preview_update();
         layers_arr.set([...layers_arr.val_local()!]);
         undo_stack.push({ i, u, r });
         clip = Option.None();
-        
+
         file_state.set(_ => ({ ..._, saved: false }));
     }
 }
@@ -489,8 +486,7 @@ type ClipInit = {
     y: number,
     w: number,
     h: number
-    canvas: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
+    canvas: Canvas
     resize?: { r: boolean, l: boolean, t: boolean, b: boolean, is: boolean };
 }
 
