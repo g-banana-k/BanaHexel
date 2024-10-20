@@ -160,7 +160,7 @@ export const select_tool = ({
                 }));
                 const cl = clip.unwrap();
                 cl.stamp([canvas, ctx], "fill");
-                o_u = Option.Some(new Canvas(layer.body, true).body);
+                o_u = Option.Some(new Canvas(layer.body, {}, true).body);
                 layer.ctx.clearRect(lt_x, lt_y, rb_x - lt_x + 1, rb_y - lt_y + 1);
                 layer.preview_update();
                 layers_arr.set([...layers_arr.val_local()!]);
@@ -213,7 +213,7 @@ export const select_tool = ({
             Clip.release([clip, layer, layers_arr]);
             clip = Option.None();
             console.log(layer);
-            const cl_canvas = new Canvas(layer.body, true);
+            const cl_canvas = new Canvas(layer.body, {}, true);
             clip = Option.Some(new Clip({
                 lt_x: 0,
                 lt_y: 0,
@@ -227,7 +227,7 @@ export const select_tool = ({
             }));
             const cl = clip.unwrap();
             cl.stamp([canvas, ctx], "fill");
-            o_u = Option.Some(new Canvas(layer.body, true).body);
+            o_u = Option.Some(new Canvas(layer.body, {}, true).body);
             cl.cut([layer, layers_arr, file_state]);
         },
         "on_ctrl_c": async () => {
@@ -259,7 +259,7 @@ export const select_tool = ({
                 if (!blob_res.is_ok()) return;
                 const blob = blob_res.unwrap();
                 const image = await createImageBitmap(blob);
-                const cl_canvas = new Canvas(image, true);
+                const cl_canvas = new Canvas(image, {}, true);
                 clip = Option.Some(new Clip({
                     lt_x: 0,
                     lt_y: 0,
@@ -272,7 +272,7 @@ export const select_tool = ({
                     canvas: cl_canvas,
                 }));
                 image.close();
-                o_u = Option.Some(new Canvas(layer.body, true).body);
+                o_u = Option.Some(new Canvas(layer.body, {}, true).body);
                 const cl = clip.unwrap();
                 cl.stamp([canvas, ctx], "fill");
                 break;

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { file_save_state_atom, Window } from "./window";
 
 import "./logic/file"
-import { StateWrappers } from "./state_wrappers";
+import { LogicWrappers } from "./state_wrappers";
 import { Option, StateBySetter } from "./logic/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { useSetAtom } from "jotai";
@@ -22,7 +22,7 @@ const WindowWrapper = ({ path }: { path: string | null }) => {
 invoke<string | null>("initial_file_path").then(initial_path => {
     root.render(
         <div style={{height: "100%", width: "100%"}}>
-            <StateWrappers />
+            <LogicWrappers />
             <WindowWrapper path={initial_path} />
         </div>
     );

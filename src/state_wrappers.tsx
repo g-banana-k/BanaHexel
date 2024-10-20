@@ -1,5 +1,5 @@
-import { ColorThemeClassWrapper } from "./render/color_theme";
+import { ColorThemeClassWrapper } from "./logic/color_theme";
 
-export const StateWrappers = () => <div style={{ display: "none" }}>
+export const LogicWrappers = () => <div style={{ display: "none" }}>
     <ColorThemeClassWrapper />
 </div>

@@ -6,7 +6,7 @@ import { zoom_atom } from "../zoom_in_out";
 import { window_size_atom } from "../../window";
 import { scroll_horizontal_atom, scroll_vertical_atom, ScrollBarHorizontal, ScrollBarVertical } from "./scroll_bar";
 import { useEffect, useRef, useState } from "react";
-import { color_theme_atom, ColorTheme } from "../color_theme";
+import { color_theme_atom, ColorTheme } from "../../logic/color_theme";
 import { background_image } from "../../logic/canvas_area/background";
 import { CanvasEditor } from "../../logic/canvas_area/editor";
 import { SetterOrUpdater } from "../../logic/utils";

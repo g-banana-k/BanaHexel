@@ -28,13 +28,13 @@ export const eraser_tool = ({
             const shift = Math.floor((thickness) / 2);
             b_x = x;
             b_y = y;
-            old_canvas = Option.Some(new Canvas(layer.body, true).body);
+            old_canvas = Option.Some(new Canvas(layer.body, {}, true).body);
             lt_x = x;
             lt_y = y;
             rb_x = x;
             rb_y = y;
             layer.ctx.clearRect(x - shift, y - shift, thickness, thickness);
-            file_state.set(_ => ({..._, saved: false }));
+            file_state.set(_ => ({ ..._, saved: false }));
         },
         "tool_move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -50,7 +50,7 @@ export const eraser_tool = ({
             lt_y = Math.min(lt_y, y);
             rb_x = Math.max(rb_x, x);
             rb_y = Math.max(rb_y, y);
-            file_state.set(_ => ({..._, saved: false }));
+            file_state.set(_ => ({ ..._, saved: false }));
         },
         "up": ({ x, y, was_down }) => {
             if (!was_down) return;
@@ -70,7 +70,7 @@ export const eraser_tool = ({
             ctx.fillStyle = "#fff4";
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
             old_canvas = Option.None();
-            file_state.set(_ => ({..._, saved: false }));
+            file_state.set(_ => ({ ..._, saved: false }));
         },
         "move": ({ x, y }) => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -80,7 +80,7 @@ export const eraser_tool = ({
             ctx.fillRect(x - shift, y - shift, thickness, thickness);
         },
         "on_end": () => {
-            if(!need_on_end.val_global()) return;
+            if (!need_on_end.val_global()) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         },
         "on_ctrl_y": () => {

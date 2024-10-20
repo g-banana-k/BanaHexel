@@ -4,10 +4,15 @@ import { CanvasArea } from "../canvas_area"
 import "./index.css"
 import { ZoomInOut } from "../zoom_in_out"
 import { LayerOption } from "../layer_option"
+import { useRef } from "react"
+import { rgba_to_code } from "../../logic/color"
 
 export const WorkSpace = () => {
-
-    return (<div id="work_space">
+    const ref = useRef<HTMLDivElement>(null);
+    if (ref) {
+        ref.current?.style.setProperty("background-color", rgba_to_code(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), 255))
+    }
+    return (<div ref={ref} id="work_space" >
         <div id="work_space_row_flex_1">
             <ToolMenu />
         </div>

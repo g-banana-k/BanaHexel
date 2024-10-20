@@ -1,14 +1,14 @@
 export class Canvas {
     body: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
-    constructor(c: HTMLCanvasElement | ImageBitmap, clone?: boolean)
-    constructor(wh: { width: number, height: number })
-    constructor(c: { width: number, height: number } | HTMLCanvasElement | ImageBitmap, clone?: boolean) {
+    constructor(c: HTMLCanvasElement | ImageBitmap, opt?: CanvasRenderingContext2DSettings,  clone?: boolean)
+    constructor(wh: { width: number, height: number }, opt?: CanvasRenderingContext2DSettings, )
+    constructor(c: { width: number, height: number } | HTMLCanvasElement | ImageBitmap, opt?: CanvasRenderingContext2DSettings, clone?: boolean) {
         if (clone) {
             const n_c = document.createElement("canvas");
             n_c.width = c.width;
             n_c.height = c.height;
-            const ctx = n_c.getContext("2d")!;
+            const ctx = n_c.getContext("2d", opt)!;
             ctx.drawImage(c as CanvasImageSource, 0, 0);
             this.body = n_c;
             this.ctx = ctx;
@@ -16,7 +16,7 @@ export class Canvas {
             const n_c = document.createElement("canvas");
             n_c.width = c.width;
             n_c.height = c.height;
-            const ctx = n_c.getContext("2d")!;
+            const ctx = n_c.getContext("2d", opt)!;
             this.body = n_c;
             this.ctx = ctx;
         }

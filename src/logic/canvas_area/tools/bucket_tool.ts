@@ -27,7 +27,7 @@ export const bucket_tool = ({
                 const r = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 undo_stack.push({ i, u, r });
                 layer.preview_update();
-                layers_arr.set([...layers_arr.val_local()!]);
+                layers_arr.set(arr => [...arr!]);
             })
         },
         "tool_move": ({ x, y, shift }) => {
@@ -41,7 +41,7 @@ export const bucket_tool = ({
                 const r = new CanvasPart(0, 0, layer.body.width, layer.body.height, layer.body);
                 undo_stack.push({ i, u, r });
                 layer.preview_update();
-                layers_arr.set([...layers_arr.val_local()!]);
+                layers_arr.set(arr => [...arr!]);
             })
         },
         "up": ({ was_down }) => {
@@ -66,6 +66,7 @@ export const bucket_tool = ({
 };
 
 const fill = ({ brush_color, layer, x, y, shift }: { brush_color: State<string>, layer: Layer, x: number, y: number, shift: boolean }): Option<() => void> => {
+
     const n_color = code_to_rgba(brush_color.val_global());
     const o_color = (a => [a[0], a[1], a[2], a[3]] as [number, number, number, number])(layer.ctx.getImageData(x, y, 1, 1).data);
     if (o_color[0] === n_color[0]
@@ -88,6 +89,7 @@ const fill = ({ brush_color, layer, x, y, shift }: { brush_color: State<string>,
             layer.ctx.putImageData(d_image_data, 0, 0);
         }
     });
+
 }
 
 const flood_fill = ({ layer, x, y, n_color, o_color }: { layer: Layer, x: number, y: number, n_color: [number, number, number, number], o_color: [number, number, number, number] }) => {

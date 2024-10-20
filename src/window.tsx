@@ -8,10 +8,10 @@ import { Modal } from "./render/modal";
 import { listen } from "@tauri-apps/api/event";
 import { Option, State, StateBySetter } from "./logic/utils";
 import * as dialog from "@tauri-apps/plugin-dialog";
-import { ColorTheme } from "./render/color_theme";
+import { ColorTheme } from "./logic/color_theme";
 import { read_user_data, write_user_data } from "./logic/command";
 import { FileStateT, MetaDataT, save_file_with_path } from "./logic/file";
-import { context_menu_contents_atom, context_menu_position_atom, context_menu_ref_atom, ContextMenu, is_context_menu_open_atom, useSetContextMenu } from "./render/context_menu";
+import {  context_menu_ref_atom, ContextMenu, useSetContextMenu } from "./render/context_menu";
 import App, { canvas_size_atom, layer_arr_atom, user_data_atom } from "./app";
 
 listen("confirm_close", () => {
@@ -47,7 +47,7 @@ export const Window = () => {
             })
         });
         const on_keydown = async (e: KeyboardEvent) => {
-            if (e.key === "F12" || e.key === "F5") {
+            if (e.key === "F12" || e.key === "FF5") {
                 e.preventDefault();
             }
             if (e.key === "s" && e.ctrlKey) {
