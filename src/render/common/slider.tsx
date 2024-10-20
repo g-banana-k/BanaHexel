@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./slider.css";
 import { useAtomValue } from "jotai";
-import { color_theme_atom, ColorTheme } from "../color_theme";
+import { color_theme_atom, ColorTheme } from "../../logic/color_theme";
 
 export const Slider = ({
     setter,

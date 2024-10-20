@@ -1,5 +1,3 @@
-import "../color_theme/index.css"
-
 import { Moon, Sun } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";

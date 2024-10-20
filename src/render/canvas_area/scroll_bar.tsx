@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { atom, useAtom, useAtomValue } from "jotai";
-import { color_theme_atom } from "../color_theme";
+import { color_theme_atom } from "../../logic/color_theme";
 import { zoom_atom } from "../zoom_in_out";
 
 export const scroll_vertical_atom = atom( 0);
