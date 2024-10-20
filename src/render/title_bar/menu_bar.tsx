@@ -6,7 +6,7 @@ import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, 
 
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
-import { Option, PromiseWithResolvers, Result, SetterOrUpdater, State } from "../../logic/utils";
+import { Option, PromiseWithResolvers, Result, SetterOrUpdater, State, StateBySetter } from "../../logic/utils";
 
 import { undo_stack } from "../../logic/canvas_area/undo";
 import { file_save_state_atom, meta_data_atom } from "../../window";
@@ -19,25 +19,35 @@ import { Canvas } from "../../logic/canvas";
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
     let [selected, set_selected] = useState(-1);
-    const layer_arr = useAtomValue(layer_arr_atom)!;
+    const layer_arr = new StateBySetter(useSetAtom(layer_arr_atom))!;
     const canvas_size = useAtomValue(canvas_size_atom)!;
     const file_state = new State(useAtom(file_save_state_atom));
 
     const set_loading = useSetAtom(is_loading_atom);
-    const set_layer_arr = useSetAtom(layer_arr_atom);
     const set_canvas_size = useSetAtom(canvas_size_atom);
     const set_current_layer = useSetAtom(current_layer_atom);
 
     const [meta_data] = useAtom(meta_data_atom);
 
-    const [set_modal_contents,  set_modal_size, set_modal_open] = useSetModal();
+    const [set_modal_contents, set_modal_size, set_modal_open] = useSetModal();
     const user_data = useAtomValue(user_data_atom);
 
-    document.addEventListener("mousedown", e => {
-        if (!menu_bar_ref.current) return;
-        if (menu_bar_ref.current.contains(e.target as unknown as Node)) return;
-        set_selected(-1)
+    useEffect(() => {
+        const on_mousedown = (e: MouseEvent) => {
+            if (!menu_bar_ref.current) return;
+            const st = performance.now()
+            const f = menu_bar_ref.current.contains(e.target as unknown as Node);
+            const et = performance.now()
+            console.log(et - st);
+            if (f) return;
+            set_selected(-1)
+        };
+        document.addEventListener("mousedown", on_mousedown);
+        return () => {
+            document.removeEventListener("mousedown", on_mousedown);
+        }
     });
+
     return (
         <div ref={menu_bar_ref} id="title_bar_menu_bar">
             <MenuButton label="ファイル" id="title_bar_menu_file_button" nth={0} selected={selected} set_selected={set_selected}>
@@ -83,7 +93,7 @@ export const MenuBar = () => {
                         const canvas_h = !Number.isNaN(h) ? h : 64;
                         set_loading(true)
                         await load_file({ meta_data: { canvas_size: { width: canvas_w, height: canvas_h } } }, {
-                            set_layer_arr, set_canvas_size, set_loading, set_current_layer
+                            set_layer_arr: layer_arr.set, set_canvas_size, set_loading, set_current_layer
                         });
                         set_loading(false)
                         file_state.set({ saving: false, saved: false, path: Option.None() })
@@ -93,7 +103,7 @@ export const MenuBar = () => {
                     set_selected(-1);
                     save_file_new({
                         file_state: file_state.as_state_by_setter(),
-                        layer_arr: layer_arr,
+                        layer_arr: layer_arr.val_global()!,
                         meta_data: meta_data.unwrap(),
                     })
                     write_user_data({ user_data: user_data.unwrap() })
@@ -102,7 +112,7 @@ export const MenuBar = () => {
                     set_selected(-1);
                     save_file_with_path({
                         file_state: file_state.as_state_by_setter(),
-                        layer_arr: layer_arr,
+                        layer_arr: layer_arr.val_global()!,
                         meta_data: meta_data.unwrap(),
                     })
                     write_user_data({ user_data: user_data.unwrap() })
@@ -112,7 +122,7 @@ export const MenuBar = () => {
                     open_file({
                         undo_stack,
                         set_loading,
-                        set_layer_arr,
+                        set_layer_arr: layer_arr.set,
                         set_canvas_size,
                         set_current_layer,
                         file_state,
@@ -120,13 +130,13 @@ export const MenuBar = () => {
                     write_user_data({ user_data: user_data.unwrap() })
                 }} >開く</MenuContent>
                 <MenuContent on_click={
-                    project_export({
+                    () => project_export({
                         set_selected,
                         set_modal_open,
                         set_modal_size,
                         set_modal_contents,
                         canvas_size,
-                        layer_arr,
+                        layer_arr: layer_arr.val_global()!,
                         file_state: file_state.val_global(),
                         canvas_handler: async ({ canvas, file_state }) => {
                             write_image({
@@ -137,13 +147,13 @@ export const MenuBar = () => {
                     })
                 }>エクスポート</MenuContent>
                 <MenuContent on_click={
-                    project_export({
+                    () => project_export({
                         set_selected,
                         set_modal_open,
                         set_modal_size,
                         set_modal_contents,
                         canvas_size,
-                        layer_arr,
+                        layer_arr: layer_arr.val_global()!,
                         file_state: file_state.val_global(),
                         canvas_handler: async ({ canvas }) => {
                             const data_url = canvas.toDataURL('image/png');
@@ -216,7 +226,7 @@ export const MenuBar = () => {
     )
 }
 
-const project_export = ({
+const project_export = async ({
     set_selected,
     set_modal_open,
     set_modal_size,
@@ -227,7 +237,7 @@ const project_export = ({
     file_state
 }: project_export_argsT & {
     canvas_handler: (args: project_export_argsT & { canvas: HTMLCanvasElement }) => Promise<void>;
-}) => async () => {
+}) => {
     set_selected(-1);
     const { promise, resolve } = PromiseWithResolvers<Option<number>>();
     let r = NaN;
