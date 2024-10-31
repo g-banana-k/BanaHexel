@@ -168,16 +168,16 @@ export const MenuBar = () => {
                 }>クリップボードにエクスポート</MenuContent>
             </MenuButton>
             <MenuButton label="ヘルプ" id="title_bar_menu_help_button" nth={1} selected={selected} set_selected={set_selected}>
-                <a href="https://bananahexagon.github.io/banahexel_site" target="_blank"><MenuContent on_click={() => {
+                <a href="https://g-banana-k.github.io/banahexel_site" target="_blank"><MenuContent on_click={() => {
                     set_selected(-1);
                 }}>ホームページ</MenuContent></a>
                 <MenuContent on_click={() => {
                     set_selected(-1);
                     invoke("open_devtools", { window: Window })
                 }} >開発者ツール</MenuContent>
-                {/* <MenuContent on_click={() => {
+                <MenuContent on_click={() => {
                     window.location.reload();
-                }} >WebViewを再読み込み</MenuContent> */}
+                }} >WebViewを再読み込み</MenuContent>
                 <MenuContent on_click={async () => {
                     set_selected(-1);
                     set_modal_open(true);

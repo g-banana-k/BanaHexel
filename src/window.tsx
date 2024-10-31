@@ -47,7 +47,7 @@ export const Window = () => {
             })
         });
         const on_keydown = async (e: KeyboardEvent) => {
-            if (e.key === "F12" || e.key === "FF5") {
+            if (e.key === "F12" || e.key === "F5") {
                 e.preventDefault();
             }
             if (e.key === "s" && e.ctrlKey) {
