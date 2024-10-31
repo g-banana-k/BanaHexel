@@ -13,7 +13,7 @@ export const context_menu_ref_atom = atom<RefObject<HTMLDivElement> | null>(null
 
 export const useSetContextMenu = (): [
     SetterOrUpdater<string | ReactNode[]>,
-    SetterOrUpdater<{        x: number,        y: number,    }>,
+    SetterOrUpdater<{ x: number, y: number, }>,
     SetterOrUpdater<boolean>,
 ] => {
     const set_open = useSetAtom(is_context_menu_open_atom);
@@ -37,12 +37,18 @@ export const ContextMenu = () => {
     useEffect(() => {
         const div = ref?.current;
         if (!div) return;
-        document.addEventListener("mousedown", e => {
+        const on_mousedown = (e: MouseEvent) => {
             if (!div.contains(e.target as Node)) set_open(false);
-        })
-        div.addEventListener("click", e => {
+        };
+        const on_click = (e: MouseEvent) => {
             if (e.target !== e.currentTarget) set_open(false);
-        })
+        }
+        document.addEventListener("mousedown", on_mousedown)
+        div.addEventListener("click", on_click)
+        return () => {
+            document.removeEventListener("mousedown", on_mousedown)
+            div.removeEventListener("click", on_click)
+        }
     }, [ref])
 
     return (<div ref={ref_raw} id="context_menu" style={{
