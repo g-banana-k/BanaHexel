@@ -13,7 +13,6 @@ const root = createRoot(document.getElementById("root") as Element);
 const WindowWrapper = ({ path }: { path: string | null }) => {
     const path_state = new StateBySetter(useSetAtom(file_save_state_atom));
     if (typeof path === "string") {
-        console.log(path);
         path_state.set(_ => ({ ..._, path: Option.Some(path) }));
     }
     return (<Window />)

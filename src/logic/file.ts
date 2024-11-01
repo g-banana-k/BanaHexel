@@ -26,7 +26,7 @@ export const save_file_with_path = ({ file_state, layer_arr, meta_data }: {
     const f_s = file_state.val_local().unwrap();
     f_s.path.on_some(path => {
         write_file_with_path(path, { layers: layer_arr.map((l) => l.body), meta_data })
-    })
+    }).on_none(() => save_file_new({ file_state, layer_arr, meta_data }))
     file_state.set(_ => ({ ..._, saving: false }));
 }
 
@@ -52,6 +52,7 @@ export const open_file = async ({
     set_layer_arr,
     set_canvas_size,
     set_current_layer,
+    set_meta_data,
     file_state,
 }: {
     undo_stack: UndoStack,
@@ -59,6 +60,7 @@ export const open_file = async ({
     set_canvas_size: SetterOrUpdater<{ width: number, height: number } | undefined>,
     set_loading: SetterOrUpdater<boolean>,
     set_current_layer: SetterOrUpdater<number>,
+    set_meta_data: SetterOrUpdater<Option<MetaDataT>>
     file_state: State<FileStateT>,
 }) => {
     if (file_state.val_global().saving) return;
@@ -66,9 +68,9 @@ export const open_file = async ({
     new_data.on_some(async v => {
         undo_stack?.clear();
         set_loading(true);
-        file_state.set(_=>({..._, path: Option.Some(v[0])}))
-        await load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer });
+        file_state.set(_ => ({ ..._, path: Option.Some(v[0]) }))
+        await load_file(v[1], { set_loading, set_layer_arr, set_canvas_size, set_current_layer, set_meta_data });
         set_loading(false);
-        file_state.set(_=>({..._,saving:false,  saved: true}))
+        file_state.set(_ => ({ ..._, saving: false, saved: true }))
     })
 }

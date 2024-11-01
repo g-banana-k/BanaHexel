@@ -26,8 +26,9 @@ export const MenuBar = () => {
     const set_loading = useSetAtom(is_loading_atom);
     const set_canvas_size = useSetAtom(canvas_size_atom);
     const set_current_layer = useSetAtom(current_layer_atom);
+    const set_meta_data = useSetAtom(meta_data_atom);
 
-    const [meta_data] = useAtom(meta_data_atom);
+    const meta_data = useAtomValue(meta_data_atom);
 
     const [set_modal_contents, set_modal_size, set_modal_open] = useSetModal();
     const user_data = useAtomValue(user_data_atom);
@@ -35,10 +36,7 @@ export const MenuBar = () => {
     useEffect(() => {
         const on_mousedown = (e: MouseEvent) => {
             if (!menu_bar_ref.current) return;
-            const st = performance.now()
             const f = menu_bar_ref.current.contains(e.target as unknown as Node);
-            const et = performance.now()
-            console.log(et - st);
             if (f) return;
             set_selected(-1)
         };
@@ -93,7 +91,7 @@ export const MenuBar = () => {
                         const canvas_h = !Number.isNaN(h) ? h : 64;
                         set_loading(true)
                         await load_file({ meta_data: { canvas_size: { width: canvas_w, height: canvas_h } } }, {
-                            set_layer_arr: layer_arr.set, set_canvas_size, set_loading, set_current_layer
+                            set_layer_arr: (layers) => layer_arr.set(layers), set_canvas_size, set_loading, set_current_layer,set_meta_data
                         });
                         set_loading(false)
                         file_state.set({ saving: false, saved: false, path: Option.None() })
@@ -122,9 +120,10 @@ export const MenuBar = () => {
                     open_file({
                         undo_stack,
                         set_loading,
-                        set_layer_arr: layer_arr.set,
+                        set_layer_arr: (layers) => layer_arr.set(layers),
                         set_canvas_size,
                         set_current_layer,
+                        set_meta_data,
                         file_state,
                     })
                     write_user_data({ user_data: user_data.unwrap() })

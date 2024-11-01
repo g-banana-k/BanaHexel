@@ -6,7 +6,7 @@ import { Palette, Pipette, Plus } from "lucide-react";
 import { code_to_rgba, from_hx, rgba_to_code } from "../../logic/color";
 import { Option, SetterOrUpdater, State } from "../../logic/utils";
 import { user_data_atom } from "../../app";
-import { context_menu_contents_atom, context_menu_position_atom, context_menu_ref_atom, is_context_menu_open_atom, useSetContextMenu } from "../context_menu";
+import { context_menu_ref_atom, useSetContextMenu } from "../context_menu";
 
 declare class EyeDropper {
     constructor()

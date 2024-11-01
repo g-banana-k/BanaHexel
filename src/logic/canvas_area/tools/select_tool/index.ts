@@ -72,7 +72,6 @@ export const select_tool = ({
                 Clip.release_with_undo_stack([clip, layer, layers_arr, current_layer.val_local(), ctx, canvas, o_u.unwrap(), undo_stack, file_state])
                 clip = Option.None();
                 is_try_clipping = false;
-                console.log(clip)
             } else { }
         },
         "tool_move": ({ x, y }) => {
@@ -212,7 +211,6 @@ export const select_tool = ({
             const layer = layers_arr.val_global()![current_layer.val_global()];
             Clip.release([clip, layer, layers_arr]);
             clip = Option.None();
-            console.log(layer);
             const cl_canvas = new Canvas(layer.body, {}, true);
             clip = Option.Some(new Clip({
                 lt_x: 0,
