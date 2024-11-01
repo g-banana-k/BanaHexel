@@ -1,3 +1,3 @@
 # BanaHexel
 
-[Home Page](https://bananahexagon.github.io/banahexel_site)
+[Home Page](https://g-banana-k.github.io/banahexel_site)
