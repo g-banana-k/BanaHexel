@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Window } from "@tauri-apps/api/window";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, load_file, user_data_atom } from "../../app";
+import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, user_data_atom } from "../../app";
 
 import { Info } from "lucide-react";
 import { getTauriVersion } from "@tauri-apps/api/app";
@@ -15,6 +15,7 @@ import { write_image, write_user_data } from "../../logic/command";
 import { FileStateT, open_file, save_file_new, save_file_with_path } from "../../logic/file";
 import { Layer } from "../../logic/data";
 import { Canvas } from "../../logic/canvas";
+import { load_file } from "../../logic/app";
 
 export const MenuBar = () => {
     const menu_bar_ref = useRef<HTMLDivElement>(null);
@@ -91,7 +92,7 @@ export const MenuBar = () => {
                         const canvas_h = !Number.isNaN(h) ? h : 64;
                         set_loading(true)
                         await load_file({ meta_data: { canvas_size: { width: canvas_w, height: canvas_h } } }, {
-                            set_layer_arr: (layers) => layer_arr.set(layers), set_canvas_size, set_loading, set_current_layer,set_meta_data
+                            set_layer_arr: (layers) => layer_arr.set(layers), set_canvas_size, set_loading, set_current_layer, set_meta_data
                         });
                         set_loading(false)
                         file_state.set({ saving: false, saved: false, path: Option.None() })
@@ -119,11 +120,13 @@ export const MenuBar = () => {
                     set_selected(-1);
                     open_file({
                         undo_stack,
-                        set_loading,
-                        set_layer_arr: (layers) => layer_arr.set(layers),
-                        set_canvas_size,
-                        set_current_layer,
-                        set_meta_data,
+                        setters: {
+                            set_loading,
+                            set_layer_arr: (layers) => layer_arr.set(layers),
+                            set_canvas_size,
+                            set_current_layer,
+                            set_meta_data,
+                        },
                         file_state,
                     })
                     write_user_data({ user_data: user_data.unwrap() })

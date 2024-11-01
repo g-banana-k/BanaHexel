@@ -2,7 +2,7 @@ import { read_file, write_file_new, write_file_with_path } from "./command";
 import { Layer } from "./data"
 import { Option, SetterOrUpdater, State, StateBySetter } from "./utils"
 import { UndoStack } from "./canvas_area/undo";
-import { load_file } from "../app";
+import { DataSettersT, load_file } from "./app";
 
 export type FileStateT = {
     saving: boolean,
@@ -48,19 +48,17 @@ export const save_file_new = async ({ file_state, layer_arr, meta_data }: {
 
 export const open_file = async ({
     undo_stack,
-    set_loading,
-    set_layer_arr,
-    set_canvas_size,
-    set_current_layer,
-    set_meta_data,
+    setters: {
+        set_loading,
+        set_layer_arr,
+        set_canvas_size,
+        set_current_layer,
+        set_meta_data,
+    },
     file_state,
 }: {
     undo_stack: UndoStack,
-    set_layer_arr: SetterOrUpdater<Layer[] | undefined>,
-    set_canvas_size: SetterOrUpdater<{ width: number, height: number } | undefined>,
-    set_loading: SetterOrUpdater<boolean>,
-    set_current_layer: SetterOrUpdater<number>,
-    set_meta_data: SetterOrUpdater<Option<MetaDataT>>
+    setters: DataSettersT
     file_state: State<FileStateT>,
 }) => {
     if (file_state.val_global().saving) return;
