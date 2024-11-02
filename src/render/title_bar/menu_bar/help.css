@@ -1,0 +1,23 @@
+.app_version_info_container {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    font-size: 13px;
+    line-height: 26px;
+}
+
+.app_version_info_icon {
+    margin-right: 20px;
+    display: block;
+}
+
+.app_version_info_main {
+    flex-grow: 1;
+    margin-right: 20px;
+}
+
+.app_version_info_title {
+    height: 50px;
+    line-height: 50px;
+    font-size: 23px;
+}

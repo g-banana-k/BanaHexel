@@ -93,9 +93,6 @@ export const ColorPicker = ({
     }, [])
 
     const is_palette_opening = new State(useState(false));
-    const user_data = new State(useAtom(user_data_atom));
-
-    const [set_context_menu_contents, set_context_menu_position, set_context_menu_open,] = useSetContextMenu();
 
     const [context_menu_ref, _set_context_menu_ref] = useAtom(context_menu_ref_atom);
 
@@ -154,111 +151,62 @@ export const ColorPicker = ({
                     ></input>
                 </div>
                 : ""}
-            {is_palette_opening.val_local() ?
-                <div className="common_color_picker_palette" style={{ top: height }}>
-                    {user_data.val_local().unwrap().palette.map(({ code, uuid }) => {
-                        return (<div
-                            key={uuid}
-                            className="common_color_picker_palette_color_button has_own_context_menu"
-                            style={{
-                                backgroundColor: code,
-                            }}
-                            onContextMenu={e => {
-                                if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;
-                                e.preventDefault();
-                                if (context_menu_ref && context_menu_ref.current!.contains(e.target as Node)) return;
-                                set_context_menu_open(_ => !_);
-                                set_context_menu_position({ x: e.clientX, y: e.clientY });
-                                set_context_menu_contents([
-                                    <div className="context_menu_content" onClick={() => {
-                                        user_data.set(Option.Some({
-                                            ...user_data.val_local().unwrap(),
-                                            palette: user_data.val_local().unwrap().palette.filter(
-                                                ({ uuid: uuid2 }) => uuid2 != uuid
-                                            )
-                                        }));
-                                    }}>削除</div>,
-                                ]);
-                            }}
-                        />)
-                    })}
-                    <div
-                        className="common_color_picker_palette_add_button"
-                        onClick={() => {
-                            user_data.set(user_data => Option.Some({
-                                ...user_data.unwrap(),
-                                palette: [...user_data.unwrap().palette, { code: color, uuid: crypto.randomUUID() }]
-                            }));
-                        }}
-                    ><Plus size={24} /></div>
-                </div> : ""
+            {is_palette_opening.val_local() ? <ColorPalette height={height} color={color} /> : ""
             }
         </div >
     )
 }
 
-// const color_models = ["RGBA", "HSVA", "HSLA"] as const;
-const color_models = ["RGBA"] as const;
+export const ColorPalette = ({
+    height,
+    color
+}: {
+    height: number,
+    color: string
+}) => {
+    const [context_menu_ref, _set_context_menu_ref] = useAtom(context_menu_ref_atom);
 
-// const rgba_to_hsva = (rgba: [number, number, number, number]): [number, number, number, number] => {
-//     const [r, g, b, a] = rgba.map(c => c / 255);
-//     const max = Math.max(r, g, b);
-//     const min = Math.min(r, g, b);
-//     const delta = max - min;
-//
-//     let h = 0;
-//     if (delta === 0) {
-//         h = 0; // Hue is undefined
-//     } else if (max === r) {
-//         h = ((g - b) / delta + (g < b ? 6 : 0)) * 60;
-//     } else if (max === g) {
-//         h = ((b - r) / delta + 2) * 60;
-//     } else {
-//         h = ((r - g) / delta + 4) * 60;
-//     }
-//
-//     const s = max === 0 ? 0 : (delta / max) * 100;
-//     const v = max * 100;
-//
-//     return [Math.round(h), Math.round(s), Math.round(v), Math.round(a * 255)];
-// };
-//
-// const rgba_to_hsba = (rgba: [number, number, number, number]): [number, number, number, number] => {
-//     const hsva = rgba_to_hsva(rgba);
-//     return [hsva[0], hsva[1], hsva[2], hsva[3]];
-// };
-//
-// const hsva_to_rgba = (hsva: [number, number, number, number]): [number, number, number, number] => {
-//     const [h, s, v, a] = hsva;
-//     const c = (v / 100) * (s / 100);
-//     const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-//     const m = (v / 100) - c;
-//
-//     let r = 0, g = 0, b = 0;
-//
-//     if (h < 60) {
-//         r = c; g = x; b = 0;
-//     } else if (h < 120) {
-//         r = x; g = c; b = 0;
-//     } else if (h < 180) {
-//         r = 0; g = c; b = x;
-//     } else if (h < 240) {
-//         r = 0; g = x; b = c;
-//     } else if (h < 300) {
-//         r = x; g = 0; b = c;
-//     } else {
-//         r = c; g = 0; b = x;
-//     }
-//
-//     return [
-//         Math.round((r + m) * 255),
-//         Math.round((g + m) * 255),
-//         Math.round((b + m) * 255),
-//         Math.round(a) // Alpha remains the same
-//     ];
-// };
-//
-// const hsba_to_rgba = (hsba: [number, number, number, number]): [number, number, number, number] => {
-//     return hsva_to_rgba([hsba[0], hsba[1], hsba[2], hsba[3]]);
-// };
-// 
+    const user_data = new State(useAtom(user_data_atom));
+
+    const [set_context_menu_contents, set_context_menu_position, set_context_menu_open,] = useSetContextMenu();
+
+    return (<div className="common_color_picker_palette" style={{ top: height }}>
+        {user_data.val_local().unwrap().palette.map(({ code, uuid }) => {
+            return (<div
+                key={uuid}
+                className="common_color_picker_palette_color_button has_own_context_menu"
+                style={{
+                    backgroundColor: code,
+                }}
+                onContextMenu={e => {
+                    if ((e.target as HTMLElement).classList.contains("has_own_context_menu") && e.target !== e.currentTarget) return;
+                    e.preventDefault();
+                    if (context_menu_ref && context_menu_ref.current!.contains(e.target as Node)) return;
+                    set_context_menu_open(_ => !_);
+                    set_context_menu_position({ x: e.clientX, y: e.clientY });
+                    set_context_menu_contents([
+                        <div className="context_menu_content" onClick={() => {
+                            user_data.set(Option.Some({
+                                ...user_data.val_local().unwrap(),
+                                palette: user_data.val_local().unwrap().palette.filter(
+                                    ({ uuid: uuid2 }) => uuid2 != uuid
+                                )
+                            }));
+                        }}>削除</div>,
+                    ]);
+                }}
+            />)
+        })}
+        <div
+            className="common_color_picker_palette_add_button"
+            onClick={() => {
+                user_data.set(user_data => Option.Some({
+                    ...user_data.unwrap(),
+                    palette: [...user_data.unwrap().palette, { code: color, uuid: crypto.randomUUID() }]
+                }));
+            }}
+        ><Plus size={24} /></div>
+    </div>)
+}
+
+const color_models = ["RGBA"] as const;

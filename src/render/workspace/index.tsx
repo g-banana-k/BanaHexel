@@ -4,8 +4,6 @@ import { CanvasArea } from "../canvas_area"
 import "./index.css"
 import { ZoomInOut } from "../zoom_in_out"
 import { LayerOption } from "../layer_option"
-import { useRef } from "react"
-import { rgba_to_code } from "../../logic/color"
 
 export const WorkSpace = () => {
     return (<div id="work_space" >

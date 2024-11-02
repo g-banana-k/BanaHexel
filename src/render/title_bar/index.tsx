@@ -2,7 +2,7 @@ import "./index.css";
 import { Hexagon } from "lucide-react";
 import { MenuBar } from "./menu_bar";
 import { WindowControl } from "./window_control";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { State } from "../../logic/utils";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import { ThemeToggleSwitch } from "./color_theme";
