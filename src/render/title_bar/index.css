@@ -11,17 +11,19 @@
 
 #title_bar_app_icon {
     height: 36px;
-    width: 40px;
+    width: 48px;
     position: relative;
 }
 
-#title_bar_app_icon svg {
+#title_bar_app_icon>img {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     margin: auto;
+    height: 32px;
+    -webkit-user-drag: none;
 }
 
 .title_bar_menu_button_label {
@@ -72,7 +74,7 @@
 }
 
 #window_control_maximize_button:hover,
-#window_control_minimize_button:hover  {
+#window_control_minimize_button:hover {
     background-color: var(--window_control_hover);
 }
 

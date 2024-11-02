@@ -1,5 +1,5 @@
 import "./index.css";
-import { Hexagon } from "lucide-react";
+import banahexel from "/banahexel.png"
 import { MenuBar } from "./menu_bar";
 import { WindowControl } from "./window_control";
 import { useAtom } from "jotai";
@@ -14,7 +14,7 @@ export const TitleBar = (props: { is_loading?: boolean }) => {
     appWindow().setTitle(`${file_state.val_local().path.unwrap_or("新規プロジェクト").split("/").at(-1)?.split("\\").at(-1)!} - BanaHexel`)
     return (
         <div id="title_bar_container">
-            <div id="title_bar_app_icon" ><Hexagon size="16" /></div>
+            <div id="title_bar_app_icon" ><img src={banahexel} /></div>
             {props.is_loading ? "" : <MenuBar />}
             <div data-tauri-drag-region className="title_bar_flex_space">
                 <div data-tauri-drag-region id="title_bar_save_state">
