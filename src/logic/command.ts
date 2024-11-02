@@ -41,7 +41,7 @@ export const write_file_new = async (
 ): Promise<Result<Option<string>, unknown>> => {
     const layers: string[] = [];
     data.layers.forEach((c) => {
-        layers.push(c.toDataURL())
+        layers.push(c.toDataURL("image/png").split(",")[1])
     });
     const res = (await Result.from_try_catch_async(async () => await invoke<string>("save_file_new", {
         layers: layers,
@@ -61,7 +61,7 @@ export const write_file_with_path = async (
 ): Promise<Option<0>> => {
     const layers: string[] = [];
     data.layers.forEach((c) => {
-        layers.push(c.toDataURL())
+        layers.push(c.toDataURL("image/png").split(",")[1])
     });
     await invoke("write_file_with_path", {
         path: path,
@@ -97,10 +97,9 @@ export const read_user_data = async (): Promise<UserDataT> => {
 }
 
 export const write_image = async ({img, name}: {img: HTMLCanvasElement, name: string}) => {
-    const url = img.toDataURL();
+    const data = img.toDataURL("image/png").split(",")[1];
     const res = (await Result.from_try_catch_async(async () => await invoke<string>("export_image", {
-        img: url,
+        img: data,
         name,
     }))).on_ok(v => v ? Option.Some<string>(v) : Option.None<string>());
-    URL.revokeObjectURL(url);
 }

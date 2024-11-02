@@ -27,7 +27,7 @@ export class Canvas {
         this.ctx.restore();
     }
     url_safe(proc: (url: string) => void) {
-        const url = this.body.toDataURL();
+        const url = this.body.toDataURL("image/png");
         proc(url);
         URL.revokeObjectURL(url);
     }

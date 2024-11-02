@@ -145,7 +145,7 @@ export const FileMenuButton = () => {
                     layer_arr: layer_arr.val_global()!,
                     file_state: file_state.val_global(),
                     canvas_handler: async ({ canvas }) => {
-                        const data_url = canvas.toDataURL('image/png');
+                        const data_url = canvas.toDataURL("image/png");
                         const blob = await (await fetch(data_url)).blob();
                         const clipboard_item = new ClipboardItem({
                             [blob.type]: blob

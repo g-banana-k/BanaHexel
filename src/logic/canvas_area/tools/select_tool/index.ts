@@ -231,7 +231,7 @@ export const select_tool = ({
         "on_ctrl_c": async () => {
             if (!clip.is_some()) return;
             const cl = clip.unwrap();
-            const data_url = cl.body().toDataURL('image/png');
+            const data_url = cl.body().toDataURL("image/png");
             const blob = await (await fetch(data_url)).blob();
             const clipboard_item = new ClipboardItem({
                 [blob.type]: blob
@@ -252,8 +252,8 @@ export const select_tool = ({
             const items = items_res.unwrap()
             for (const item of items) {
                 const types = item.types;
-                if (!(types.includes('image/png') || types.includes('image/jpeg'))) continue;
-                const blob_res = await Result.from_try_catch_async(async () => await item.getType('image/png')); await item.getType('image/png');
+                if (!(types.includes("image/png") || types.includes('image/jpeg'))) continue;
+                const blob_res = await Result.from_try_catch_async(async () => await item.getType("image/png")); await item.getType("image/png");
                 if (!blob_res.is_ok()) return;
                 const blob = blob_res.unwrap();
                 const image = await createImageBitmap(blob);
@@ -288,7 +288,7 @@ export const select_tool = ({
             const r = new CanvasPart(lt_x, lt_y, w, h, layer.body);
             undo_stack.push({ i, u, r });
             file_state.set(_ => ({ ..._, saved: false }));
-            const data_url = cl.body().toDataURL('image/png');
+            const data_url = cl.body().toDataURL("image/png");
             const blob = await (await fetch(data_url)).blob();
             const clipboard_item = new ClipboardItem({
                 [blob.type]: blob

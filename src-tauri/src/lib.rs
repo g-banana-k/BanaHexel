@@ -12,7 +12,7 @@ use zip::{write::FileOptions, ZipArchive, ZipWriter};
 use base64;
 
 use base64::prelude::*;
-use tauri::{command, AppHandle, Manager};
+use tauri::{command, image, AppHandle, Manager};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[command(rename_all = "snake_case")]
@@ -97,7 +97,6 @@ fn export_image(
     };
 
     let mut file = File::create(&path).map_err(|e| e.to_string())?;
-
     let image_data = BASE64_STANDARD.decode(img).map_err(|e| e.to_string())?;
 
     file.write_all(&image_data).map_err(|e| e.to_string())?;
