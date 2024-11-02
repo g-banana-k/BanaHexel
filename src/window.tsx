@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import { Modal } from "./render/modal";
 import { listen } from "@tauri-apps/api/event";
-import { Option, State, StateBySetter } from "./logic/utils";
+import { Option, StateBySetter } from "./logic/utils";
 import * as dialog from "@tauri-apps/plugin-dialog";
 import { ColorTheme } from "./logic/color_theme";
 import { read_user_data, write_user_data } from "./logic/command";
