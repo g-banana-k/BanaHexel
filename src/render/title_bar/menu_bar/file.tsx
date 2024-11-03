@@ -176,7 +176,7 @@ const project_export = async ({
     let r = NaN;
     set_modal_open(true);
     set_modal_size({ w: 500, h: 200 });
-    set_modal_contents([<div className="image_export_modal">
+    set_modal_contents([<div key={crypto.randomUUID()} className="image_export_modal">
         <div className="image_export_modal_title">
             エクスポート
         </div>

@@ -28,7 +28,7 @@ export const HelpMenuButton = () => {
                 set_modal_open(true);
                 set_modal_size({ w: 500, h: 250 })
                 set_modal_contents([
-                    <div className="app_version_info_container">
+                    <div key={crypto.randomUUID()} className="app_version_info_container">
                         <div className="app_version_info_icon">
                             <Info size={50} style={{
                             }} />

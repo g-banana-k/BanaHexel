@@ -185,7 +185,7 @@ export const ColorPalette = ({
                     set_context_menu_open(_ => !_);
                     set_context_menu_position({ x: e.clientX, y: e.clientY });
                     set_context_menu_contents([
-                        <div className="context_menu_content" onClick={() => {
+                        <div key={crypto.randomUUID()} className="context_menu_content" onClick={() => {
                             user_data.set(Option.Some({
                                 ...user_data.val_local().unwrap(),
                                 palette: user_data.val_local().unwrap().palette.filter(
