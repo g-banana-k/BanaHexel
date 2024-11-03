@@ -1,5 +1,5 @@
 #tool_select_outer {
-    width: 130px;
+    width: 122px;
     height: 100%;
     position: relative;
     overflow: auto;
@@ -15,7 +15,7 @@
     height: 32px;
     width: 32px;
     padding: 4px;
-    margin: 6px 18px 6px 6px;
+    margin: 6px 24px 6px 0;
     border-radius: 4px;
     position: relative;
     display: inline-block;

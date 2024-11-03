@@ -57,7 +57,20 @@ export const LayerArea = () => {
                                             l[i-1].preview_update();
                                             set_layer_arr(l);
                                         }}
-                                    >上にマージ</div>
+                                    >上にマージ</div>,
+                                    <div
+                                    className="context_menu_content"
+                                    onClick={() => {
+                                        if (i === layer_arr.length-1) return;
+                                        layer_arr[i + 1].ctx.drawImage(layer_arr[i].body, 0, 0);
+                                        const l = [...layer_arr.filter((_, j) => j !== i)];
+                                        if (current_layer < i - 1) { }
+                                        else if (i - 1 <= current_layer && current_layer < i + 1) set_current_layer(i)
+                                        else set_current_layer(current_layer - 1);
+                                        l[i].preview_update();
+                                        set_layer_arr(l);
+                                    }}
+                                >下にマージ</div>
                                 ]);
                             }}
                         />
