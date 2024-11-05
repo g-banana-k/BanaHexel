@@ -30,7 +30,6 @@ export const CanvasEditor = ({
     scroll_horizontal,
     scroll_vertical,
 }: CanvasEditorPropsT) => {
-    let [once, set_once] = useState(true);
     let [is_mouse_down, set_mouse_down_raw] = useAtom(is_mouse_down_in_editor_atom);
     const layers_arr = new State(useAtom(layer_arr_atom));
     const current_layer = new State(useAtom(current_layer_atom));
@@ -87,12 +86,9 @@ export const CanvasEditor = ({
         const div = div_ref.current;
         const canvas = canvas_ref.current;
         if (!div || !canvas) return;
-        if (!once) return;
         canvas.width = canvas_width;
         canvas.height = canvas_height;
         const ctx = canvas.getContext("2d")!;
-        set_once(false);
-        once = false;
         fn_data.set(Option.Some(editor_tools({
             canvas,
             ctx,

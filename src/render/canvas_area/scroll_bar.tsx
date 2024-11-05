@@ -14,7 +14,6 @@ export const ScrollBarVertical = (props: {
     const color_theme = useAtomValue(color_theme_atom)
     let [scroll, set_scroll] = useAtom(scroll_vertical_atom);
     const zoom = useAtomValue(zoom_atom);
-    let [once, set_once] = useState(false);
 
     let [is_dragging, set_dragging] = useState(false);
 
@@ -28,9 +27,6 @@ export const ScrollBarVertical = (props: {
     useEffect(() => {
         const bar = bar_ref.current;
         if (!bar) return;
-        if (once) return;
-        set_once(true);
-        once = true;
         let start_bar = 0;
         let start_ptr_y = 0;
         const on_mousedown = (e: MouseEvent) => {
@@ -93,7 +89,6 @@ export const ScrollBarHorizontal = (props: {
     const color_theme = useAtomValue(color_theme_atom)
     let [scroll, set_scroll] = useAtom(scroll_horizontal_atom);
     const zoom = useAtomValue(zoom_atom);
-    let [once, set_once] = useState(false);
 
     let [is_dragging, set_dragging] = useState(false);
 
@@ -107,9 +102,6 @@ export const ScrollBarHorizontal = (props: {
     useEffect(() => {
         const bar = bar_ref.current;
         if (!bar) return;
-        if (once) return;
-        set_once(true);
-        once = true;
         let start_bar = 0;
         let start_ptr_x = 0;
         const on_mousedown = (e: MouseEvent) => {

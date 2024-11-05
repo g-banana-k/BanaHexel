@@ -24,16 +24,11 @@ export const Slider = ({
 
     let [is_dragging, set_dragging] = useState(false);
 
-    let [once, set_once] = useState(true);
-
     useAtomValue(color_theme_atom);
 
     useEffect(() => {
         const knob = knob_ref.current;
         if (!knob) return;
-        if (!once) return;
-        set_once(true);
-        once = true;
         let start_ptr_x = 0;
         let start_v = 0;
         const on_mousedown = (e: MouseEvent) => {
