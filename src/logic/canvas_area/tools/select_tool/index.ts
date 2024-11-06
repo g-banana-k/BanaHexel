@@ -13,7 +13,7 @@ export const select_tool = ({
     undo_stack,
     file_state,
     need_on_end,
-}: argsT): toolT => {
+}: argsT, cleanups: (()=>void)[]): toolT => {
     let b_x = 0;
     let b_y = 0;
     let prev_layer_i = Option.None<number>();
@@ -22,7 +22,7 @@ export const select_tool = ({
 
     let o_u = Option.None<HTMLCanvasElement>();
 
-    document.addEventListener("select_area_event", async e => {
+    const handler = async (e:CustomEvent<"flip_vertical" | "flip_horizontal" | "rotate_l90" | "rotate_r90" | "trash">) => {
         if (!clip.is_some()) return;
         const cl = clip.unwrap()
         if (e.detail === "flip_vertical") {
@@ -51,7 +51,10 @@ export const select_tool = ({
             undo_stack.push({ i, u, r });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-    })
+    };
+    document.addEventListener("select_area_event", handler);
+    cleanups.push(()=>{document.removeEventListener("select_area_event", handler)});
+
     return {
         "down": ({ f_x, f_y, zoom, x, y }) => {
             b_x = x;

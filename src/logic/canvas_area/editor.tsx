@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { canvas_toolsT } from "../../render/canvas_area";
-import { editor_tools } from "./tools";
+import { editor_tools, toolsT } from "./tools";
 import { undo_stack } from "./undo";
 import { current_layer_atom, layer_arr_atom } from "../../app";
 import { Option, State } from "../utils";
@@ -52,7 +52,7 @@ export const CanvasEditor = ({
     const need_on_end = new State(useState(true))
 
     const zoom = useRef(z);
-    const fn_data = new State(useState(Option.None<ReturnType<typeof editor_tools>>()));
+    const fn_data = new State(useState(Option.None<toolsT>()));
 
     useEffect(() => { zoom.current = z }, [z]);
 
@@ -89,7 +89,7 @@ export const CanvasEditor = ({
         canvas.width = canvas_width;
         canvas.height = canvas_height;
         const ctx = canvas.getContext("2d")!;
-        fn_data.set(Option.Some(editor_tools({
+        const [tools, tools_cleanup] = editor_tools({
             canvas,
             ctx,
             brush_color,
@@ -100,7 +100,8 @@ export const CanvasEditor = ({
             undo_stack,
             file_state,
             need_on_end
-        })));
+        });
+        fn_data.set(Option.Some(tools));
         const on_mousemove = (e: MouseEvent) => {
             const canvas_rect = canvas.getBoundingClientRect();
             const [f_x, f_y] = [(e.clientX - canvas_rect.left) / zoom.current, (e.clientY - canvas_rect.top) / zoom.current];
@@ -147,7 +148,7 @@ export const CanvasEditor = ({
                 if (fn) fn({ kind });
             } else {
                 if (!("acvxyz".includes(e.key))) return;
-                file_state.set(_ => ({ ..._,  saved: false}));
+                file_state.set(_ => ({ ..._, saved: false }));
                 if ("acvx".includes(e.key)) set_selected_tool_id("select_tool");
                 const fns = fn_data.val_local().unwrap();
                 if (e.key === "a") {
@@ -215,6 +216,7 @@ export const CanvasEditor = ({
             document.removeEventListener("keydown", on_keydown);
             document.removeEventListener("keyup", on_keyup);
             fn_data.set(Option.None());
+            tools_cleanup();
         }
     }, []);
 

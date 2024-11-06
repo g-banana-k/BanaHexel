@@ -70,10 +70,10 @@ export const FileMenuButton = () => {
                         set_modal_open(false);
                     }} >作成</div>
                 </div>]);
-                document.addEventListener("modal_close", _ => {
-                    resolve(Option.None())
-                }, { once: true });
+                const on_modal_close = () => { resolve(Option.None()) };
+                document.addEventListener("modal_close", on_modal_close, { once: true });
                 (await promise).on_some(async ({ w, h }) => {
+                    document.removeEventListener("modal_close", on_modal_close);
                     undo_stack.clear();
                     const canvas_w = !Number.isNaN(w) ? w : 64;
                     const canvas_h = !Number.isNaN(h) ? h : 64;
@@ -195,10 +195,10 @@ const project_export = async ({
             set_modal_open(false);
         }} >エクスポート</div>
     </div>]);
-    document.addEventListener("modal_close", _ => {
-        resolve(Option.None())
-    }, { once: true });
+    const on_modal_close = () => { resolve(Option.None()) }
+    document.addEventListener("modal_close", on_modal_close, { once: true });
     (await promise).on_some(r_raw => {
+        document.removeEventListener("modal_close", on_modal_close)
         const r = Number.isNaN(r_raw) ? 1 : r_raw;
         const canvas = new Canvas({ width: canvas_size.width * r, height: canvas_size.height * r })
         canvas.ctx.imageSmoothingEnabled = false;

@@ -42,6 +42,9 @@ export type argsT = {
     need_on_end: State<boolean>,
 };
 
+export type toolsT = { [key in canvas_toolsT]: toolT }
+
+
 export const editor_tools = ({
     canvas,
     ctx,
@@ -53,7 +56,7 @@ export const editor_tools = ({
     undo_stack,
     file_state,
     need_on_end
-}: argsT): { [key in canvas_toolsT]: toolT } => {
+}: argsT): [toolsT, () => void] => {
     const packed = {
         canvas,
         ctx,
@@ -66,7 +69,8 @@ export const editor_tools = ({
         file_state,
         need_on_end,
     };
-    return {
+    const cleanups: (() => void)[] = [];
+    return [{
         "none": (() => {
             return {
                 "move": ({ x, y }) => {
@@ -81,9 +85,11 @@ export const editor_tools = ({
         "eraser_tool": eraser_tool(packed),
         "bucket_tool": bucket_tool(packed),
         "stamp_tool": stamp_tool(packed),
-        "select_tool": select_tool(packed),
+        "select_tool": select_tool(packed, cleanups),
         "rect_tool": rect_tool(packed),
-    }
+    }, () => {
+        cleanups.forEach(c => c());
+    }]
 };
 
 export const bresenham = (f: (x: number, y: number) => void, x1: number, y1: number, x2: number, y2: number) => {
