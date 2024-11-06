@@ -1,8 +1,8 @@
 import { useAtom } from "jotai";
 import "./index.css";
 import { brush_tool_color_atom, eraser_tool_thickness_atom } from ".";
-import { SliderWithBox } from "../common/slider";
-import { ColorPicker } from "../common/color_picker";
+import { SliderWithBox } from "../color_picker/slider";
+import { ColorPicker } from "../color_picker/color_picker";
 
 export const EraserToolMenu = () => {
     const [brush_color, set_brush_color] = useAtom(brush_tool_color_atom);

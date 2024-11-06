@@ -1,8 +1,8 @@
 import { useAtom } from "jotai";
 import "./index.css";
 import { FlipHorizontal2, FlipVertical2, RotateCcwSquare, RotateCwSquare, Trash2 } from "lucide-react";
-import { ColorPicker } from "../common/color_picker";
-import { SliderWithBox } from "../common/slider";
+import { ColorPicker } from "../color_picker/color_picker";
+import { SliderWithBox } from "../color_picker/slider";
 import { brush_tool_color_atom, brush_tool_thickness_atom } from ".";
 
 export const SelectToolMenu = () => {
