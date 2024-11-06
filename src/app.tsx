@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import { DataFileT, read_file_from_path, UserDataT } from "./logic/command";
-import { Option, Result, SetterOrUpdater, State, StateBySetter, UnRequired } from "./logic/utils";
-import { binary_to_bitmap, Layer } from "./logic/data";
-import { file_save_state_atom, meta_data_atom } from "./window";
+import { read_file_from_path, UserDataT } from "./logic/command";
+import { Option, State } from "./logic/utils";
+import {  Layer } from "./logic/data";
+import { file_save_state_atom } from "./window";
 import { LayerArea } from "./render/layer_area";
 import { WorkSpace } from "./render/workspace";
 import { ProjectLoading } from "./render/project_loading";
-import { atom, useAtom, useSetAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { load_file, useDataSetters } from "./logic/app";
 
 export const user_data_atom = atom(Option.None<UserDataT>())
