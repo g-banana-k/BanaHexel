@@ -1,7 +1,7 @@
 import { atom, useAtom } from "jotai"
 import "./index.css"
 import { Layers3 } from "lucide-react"
-import { State } from "../../logic/utils"
+import { State } from "../../logic/common/utils"
 
 export const layers_display_opacity_atom = atom({back: 50, front: 50})
 

@@ -3,7 +3,7 @@ import "./index.css";
 import { X } from "lucide-react";
 import { ReactNode } from "react";
 import { useSetAtom } from "jotai";
-import { SetterOrUpdater } from "../../logic/utils";
+import { SetterOrUpdater } from "../../logic/common/utils";
 
 export const is_modal_open_atom = atom(
     false)

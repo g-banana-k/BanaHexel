@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { color_theme_atom, ColorTheme } from "../../logic/color_theme";
 import { background_image } from "../../logic/canvas_area/background";
 import { CanvasEditor } from "../../logic/canvas_area/editor";
-import { SetterOrUpdater } from "../../logic/utils";
+import { SetterOrUpdater } from "../../logic/common/utils";
 
 export const CanvasArea = () => {
     const [current_layer, _set_current_layer] = useAtom(current_layer_atom);

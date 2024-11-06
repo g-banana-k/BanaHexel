@@ -1,7 +1,7 @@
 import { canvas_toolsT } from "../../../render/canvas_area";
-import { Layer } from "../../data";
+import { Layer } from "../../common/data";
 import { FileStateT } from "../../file";
-import { State } from "../../utils";
+import { State } from "../../common/utils";
 import { Cache, UndoStack } from "../undo";
 import { brush_tool } from "./brush_tool";
 import { bucket_tool } from "./bucket_tool";

@@ -1,6 +1,6 @@
 import { argsT, bresenham, toolT } from ".";
-import { Canvas } from "../../canvas";
-import { Option } from "../../utils";
+import { Canvas } from "../../common/canvas";
+import { Option } from "../../common/utils";
 import { CanvasPart } from "../undo";
 
 export const eraser_tool = ({

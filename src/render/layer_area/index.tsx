@@ -3,7 +3,7 @@ import "./index.css";
 import { useAtom, useAtomValue } from "jotai";
 import { MoveDown, MoveUp, Plus, X } from "lucide-react";
 import { canvas_size_atom, current_layer_atom, layer_arr_atom } from "../../app";
-import { Layer } from "../../logic/data";
+import { Layer } from "../../logic/common/data";
 import { useSetContextMenu } from "../context_menu";
 
 export const LayerArea = () => {

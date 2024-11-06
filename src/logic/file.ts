@@ -1,6 +1,6 @@
 import { read_file, write_file_new, write_file_with_path } from "./command";
-import { Layer } from "./data"
-import { Option, SetterOrUpdater, State, StateBySetter } from "./utils"
+import { Layer } from "./common/data"
+import { Option, SetterOrUpdater, State, StateBySetter } from "./common/utils"
 import { UndoStack } from "./canvas_area/undo";
 import { DataSettersT, load_file } from "./app";
 

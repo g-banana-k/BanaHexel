@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import "./color_picker.css"
 import { Palette, Pipette, Plus } from "lucide-react";
 import { code_normalize, code_to_rgba, from_hx, rgba_to_code } from "../../logic/color";
-import { Option, SetterOrUpdater, State } from "../../logic/utils";
+import { Option, SetterOrUpdater, State } from "../../logic/common/utils";
 import { user_data_atom } from "../../app";
 import { context_menu_ref_atom, useSetContextMenu } from "../context_menu";
 

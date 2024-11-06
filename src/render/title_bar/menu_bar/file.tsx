@@ -2,13 +2,13 @@ import "./file.css"
 
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { menu_bar_selected_atom, MenuButton, MenuContent } from ".";
-import { Option, PromiseWithResolvers, Result, SetterOrUpdater, State, StateBySetter } from "../../../logic/utils";
+import { Option, PromiseWithResolvers, Result, SetterOrUpdater, State, StateBySetter } from "../../../logic/common/utils";
 import { useSetModal } from "../../modal";
 import { load_file } from "../../../logic/app";
 import { FileStateT, open_file, save_file_new, save_file_with_path } from "../../../logic/file";
 import { write_image, write_user_data } from "../../../logic/command";
-import { Layer } from "../../../logic/data";
-import { Canvas } from "../../../logic/canvas";
+import { Layer } from "../../../logic/common/data";
+import { Canvas } from "../../../logic/common/canvas";
 import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom, user_data_atom } from "../../../app";
 import { file_save_state_atom, meta_data_atom } from "../../../window";
 import { undo_stack } from "../../../logic/canvas_area/undo";

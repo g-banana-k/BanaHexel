@@ -1,7 +1,7 @@
 import { argsT, toolT } from ".";
 import { code_to_rgba } from "../../color";
-import { Layer } from "../../data";
-import { Option, State } from "../../utils";
+import { Layer } from "../../common/data";
+import { Option, State } from "../../common/utils";
 import { CanvasPart } from "../undo";
 
 export const bucket_tool = ({

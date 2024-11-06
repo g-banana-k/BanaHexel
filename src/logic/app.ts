@@ -1,8 +1,8 @@
 import { useSetAtom } from "jotai";
 import { DataFileT } from "./command";
-import { binary_to_bitmap, Layer } from "./data";
+import { binary_to_bitmap, Layer } from "./common/data";
 import { MetaDataT } from "./file";
-import { Option, Result, SetterOrUpdater, UnRequired } from "./utils";
+import { Option, Result, SetterOrUpdater, UnRequired } from "./common/utils";
 import { canvas_size_atom, current_layer_atom, is_loading_atom, layer_arr_atom } from "../app";
 import { meta_data_atom } from "../window";
 

@@ -1,5 +1,5 @@
 import { atom,useSetAtom } from "jotai";
-import { Option, SetterOrUpdater } from "../../logic/utils";
+import { Option, SetterOrUpdater } from "../common/utils";
 import { useEffect } from "react";
 import { UserDataT } from "../../logic/command";
 import { user_data_atom } from "../../app";

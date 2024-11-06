@@ -1,8 +1,8 @@
 import { argsT, toolT } from "..";
-import { Canvas } from "../../../canvas";
-import { Layer } from "../../../data";
+import { Canvas } from "../../../common/canvas";
+import { Layer } from "../../../common/data";
 import { FileStateT } from "../../../file";
-import { Option, Result, State } from "../../../utils";
+import { Option, Result, State } from "../../../common/utils";
 import { CanvasPart, UndoStack } from "../../undo";
 
 export const select_tool = ({

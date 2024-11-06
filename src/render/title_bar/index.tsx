@@ -3,7 +3,7 @@ import banahexel from "/banahexel.png"
 import { MenuBar } from "./menu_bar";
 import { WindowControl } from "./window_control";
 import { useAtom } from "jotai";
-import { State } from "../../logic/utils";
+import { State } from "../../logic/common/utils";
 import { getCurrentWindow as appWindow } from "@tauri-apps/api/window";
 import { ThemeToggleSwitch } from "./color_theme";
 import { file_save_state_atom } from "../../window";

@@ -4,7 +4,7 @@ import { file_save_state_atom, Window } from "./window";
 
 import "./logic/file"
 import { LogicWrappers } from "./state_wrappers";
-import { Option, StateBySetter } from "./logic/utils";
+import { Option, StateBySetter } from "./logic/common/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { useSetAtom } from "jotai";
 

@@ -1,7 +1,7 @@
 import { ReactNode, RefObject, useEffect, useRef } from "react";
 import "./index.css"
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { SetterOrUpdater } from "../../logic/utils";
+import { SetterOrUpdater } from "../../logic/common/utils";
 
 export const is_context_menu_open_atom = atom(false)
 
