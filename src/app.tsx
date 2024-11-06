@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { read_file_from_path, UserDataT } from "./logic/command";
 import { Option, State } from "./logic/utils";
-import {  Layer } from "./logic/data";
+import { Layer } from "./logic/data";
 import { file_save_state_atom } from "./window";
 import { LayerArea } from "./render/layer_area";
 import { WorkSpace } from "./render/workspace";
 import { ProjectLoading } from "./render/project_loading";
 import { atom, useAtom } from "jotai";
 import { load_file, useDataSetters } from "./logic/app";
+import { useAsyncEffect } from "./logic/hooks";
 
 export const user_data_atom = atom(Option.None<UserDataT>())
 
@@ -23,25 +24,23 @@ export const App = () => {
     const [is_loading, set_loading] = useAtom(is_loading_atom);
     const setters = useDataSetters();
     const file_state = new State(useAtom(file_save_state_atom));
-    useEffect(() => {
-        (async () => {
-            set_loading(true);
-            if (file_state.val_global().path.is_some()) {
-                const res = (await read_file_from_path(file_state.val_global().path.unwrap())).unwrap();
-                await load_file(res, setters);
-                file_state.set({ saving: false, saved: false, path: Option.None() })
-            } else {
-                await load_file({
-                    meta_data: {
-                        canvas_size: {
-                            width: 64,
-                            height: 64,
-                        },
+    useAsyncEffect(async () => {
+        set_loading(true);
+        if (file_state.val_global().path.is_some()) {
+            const res = (await read_file_from_path(file_state.val_global().path.unwrap())).unwrap();
+            await load_file(res, setters);
+            file_state.set({ saving: false, saved: false, path: Option.None() })
+        } else {
+            await load_file({
+                meta_data: {
+                    canvas_size: {
+                        width: 64,
+                        height: 64,
                     },
-                }, setters);
-                file_state.set({ saving: false, saved: false, path: Option.None() })
-            }
-        })()
+                },
+            }, setters);
+            file_state.set({ saving: false, saved: false, path: Option.None() })
+        }
     }, [])
 
     return (
