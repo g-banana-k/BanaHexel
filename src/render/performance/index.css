@@ -1,0 +1,32 @@
+#performance_outer {
+    position: relative;
+}
+
+#performance_icon {
+    width: 36px;
+    height: 36px;
+    position: relative;
+}
+
+#performance_icon>svg {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+}
+
+#performance_container {
+    background-color:var(--modal_background);
+    position: absolute;
+    width: 400px;
+    height: 150px;
+    top: -168px;
+    left: -192px;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 2px 2px 6px #1118;
+    display: none;
+}
+
+#performance_outer.open #performance_container {
+    display: block;
+}

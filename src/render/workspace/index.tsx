@@ -9,17 +9,13 @@ import { PerformanceMonitor } from "../performance"
 export const WorkSpace = () => {
     return (<div id="work_space" >
         <div id="work_space_row_flex_1">
-            <ToolMenu />
         </div>
         <div id="work_space_row_flex_2">
-            <ToolSelect />
-            <CanvasArea />
         </div>
         <div id="work_space_row_flex_3">
-            <div className="work_space_flex_space"></div>
+        <div className="work_space_flex_space"></div>
             <PerformanceMonitor />
-            <LayerOption />
-            <ZoomInOut />
+            <div className="work_space_flex_space"></div>
         </div>
     </div>
     )
