@@ -40,7 +40,6 @@ export class FPSMonitor {
         {
             const { x, y } = get_pos(this.record[0]);
             ctx.moveTo(x, canvas.height - y);
-            console.log(y);
         }
         this.record.forEach((([t, f]) => {
             const { x, y } = get_pos([t, f]);

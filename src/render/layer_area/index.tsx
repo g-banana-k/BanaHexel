@@ -15,13 +15,16 @@ export const LayerArea = () => {
 
     const div_refs = useRef<(HTMLDivElement | null)[]>([]);
     useEffect(() => {
+        const s = performance.now();
         layer_arr?.forEach((l, i) => {
             const preview_div = div_refs.current[i];
             if (!preview_div) return;
-            preview_div.innerHTML = "";
+            if (preview_div.firstChild != l.preview) {
+                preview_div.innerHTML = "";
 
-            l.preview.classList.add("layer_thumbnail_preview");
-            preview_div.appendChild(l.preview);
+                l.preview.classList.add("layer_thumbnail_preview");
+                preview_div.appendChild(l.preview);
+            }
 
             if (i === current_layer) {
                 preview_div.classList.add("layer_thumbnail_selected");
@@ -29,6 +32,8 @@ export const LayerArea = () => {
                 preview_div.classList.remove("layer_thumbnail_selected");
             }
         });
+        const e = performance.now();
+        console.log(e - s);
     }, [layer_arr, current_layer]);
 
     return (
